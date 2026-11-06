@@ -5,6 +5,26 @@
    - utilidades (precios, escapar HTML, avisos)
 ===================================================== */
 
+/* ---------- Fotos con placeholder ----------
+   Si una foto todavía no existe (por ejemplo /img/hero/look-1.png),
+   se oculta la imagen rota y queda visible la caja con su etiqueta. */
+
+function marcarFotoFaltante(img) {
+  if (img.closest(".foto")) img.classList.add("foto-faltante");
+}
+
+document.addEventListener(
+  "error",
+  (e) => e.target.tagName === "IMG" && marcarFotoFaltante(e.target),
+  true
+);
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".foto > img").forEach((img) => {
+    if (img.complete && img.naturalWidth === 0) marcarFotoFaltante(img);
+  });
+});
+
 /* ---------- Utilidades ---------- */
 
 /* Escapa texto antes de meterlo en innerHTML (evita XSS) */

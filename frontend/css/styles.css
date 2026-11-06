@@ -1,23 +1,49 @@
 /* =====================================================
-   ESTILOS BASE DE LA TIENDA
-   Cambiá las variables de :root para adaptar la marca.
+   OCTAVO COMPÁS INDUMENTARIA — ESTILOS DE LA TIENDA
+   Todo el sistema visual sale de las variables de :root.
 ===================================================== */
 
 :root {
-  --color-texto: #161616;
-  --color-suave: #6b6b6b;
-  --color-fondo: #ffffff;
-  --color-fondo-2: #f4f3f1;
-  --color-borde: #e4e2de;
-  --color-marca: #161616;
-  --color-acento: #c2410c;
-  --color-error: #b42318;
-  --color-ok: #1f7a4d;
+  /* Colores de marca */
+  --c-fondo: #FBF9F7;          /* blanco cálido */
+  --c-texto: #141217;          /* casi negro */
+  --c-texto-2: #6B6470;        /* secundario (AA sobre fondo y superficie) */
+  --c-borde: #E6E0E3;
+  --c-superficie: #F3ECF1;     /* bloques suaves */
+  --c-beige: #EDE6DF;          /* fondo del hero */
+  --c-acento: #9B1F6E;         /* magenta: usar con moderación */
+  --c-acento-claro: #E7A6CF;   /* acento sobre fondo oscuro */
+  --c-oscuro: #141217;
+  --c-oscuro-2: #1C1720;
+  --c-texto-oscuro-2: #B9B0BE; /* secundario sobre fondo oscuro (AA) */
+  --c-error: #A8201A;
+  --c-ok: #1F6B45;
 
-  --fuente: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --radio: 6px;
-  --ancho-max: 1280px;
-  --sombra: 0 8px 30px rgba(0, 0, 0, 0.08);
+  /* Tipografía */
+  --f-titulos: "Cormorant Garamond", "Times New Roman", Georgia, serif;
+  --f-texto: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --tracking: 0.14em;          /* menú, etiquetas y botones */
+
+  /* Medidas */
+  --ancho-max: 1360px;
+  --margen: clamp(20px, 4vw, 48px);
+  --alto-header: 72px;
+  --alto-anuncio: 36px;
+  --transicion: 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* Alias para el código existente (admin, etc.) */
+  --color-texto: var(--c-texto);
+  --color-suave: var(--c-texto-2);
+  --color-fondo: var(--c-fondo);
+  --color-fondo-2: var(--c-superficie);
+  --color-borde: var(--c-borde);
+  --color-marca: var(--c-texto);
+  --color-acento: var(--c-acento);
+  --color-error: var(--c-error);
+  --color-ok: var(--c-ok);
+  --fuente: var(--f-texto);
+  --radio: 0;
+  --sombra: 0 12px 40px rgba(20, 18, 23, 0.08);
 }
 
 *,
@@ -26,12 +52,17 @@
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
-  font-family: var(--fuente);
-  color: var(--color-texto);
-  background: var(--color-fondo);
-  line-height: 1.5;
+  font-family: var(--f-texto);
+  font-size: 15px;
+  color: var(--c-texto);
+  background: var(--c-fondo);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -62,15 +93,23 @@ textarea {
 }
 
 h1, h2, h3, h4 {
-  line-height: 1.2;
+  line-height: 1.15;
   margin: 0 0 0.5em;
+  font-weight: 500;
+}
+
+h1, h2,
+.titulo-serif {
+  font-family: var(--f-titulos);
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .contenedor {
   width: 100%;
   max-width: var(--ancho-max);
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--margen);
 }
 
 .oculto-visual {
@@ -79,11 +118,38 @@ h1, h2, h3, h4 {
   height: 1px;
   overflow: hidden;
   clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.saltar-contenido {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 300;
+  background: var(--c-texto);
+  color: #fff;
+  padding: 12px 18px;
+}
+
+.saltar-contenido:focus {
+  top: 12px;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-acento);
-  outline-offset: 2px;
+  outline: 2px solid var(--c-acento);
+  outline-offset: 3px;
+}
+
+/* Texto chico en mayúsculas (etiquetas, "colección 2026") */
+.sobretitulo {
+  display: block;
+  font-family: var(--f-texto);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--c-acento);
+  margin-bottom: 14px;
 }
 
 /* ---------- Botones ---------- */
@@ -92,20 +158,25 @@ h1, h2, h3, h4 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 14px 24px;
-  border: 1px solid var(--color-marca);
-  border-radius: var(--radio);
-  background: var(--color-marca);
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 28px;
+  border: 1px solid var(--c-texto);
+  border-radius: 0;
+  background: var(--c-texto);
   color: #fff;
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+  text-align: center;
   cursor: pointer;
-  transition: opacity 0.2s, background 0.2s;
+  transition: background var(--transicion), color var(--transicion), border-color var(--transicion);
 }
 
 .boton:hover {
-  opacity: 0.88;
+  background: #2C2731;
+  border-color: #2C2731;
 }
 
 .boton:disabled,
@@ -116,20 +187,128 @@ h1, h2, h3, h4 {
 
 .boton-secundario {
   background: transparent;
-  color: var(--color-marca);
+  color: var(--c-texto);
+}
+
+.boton-secundario:hover {
+  background: var(--c-texto);
+  color: #fff;
+}
+
+.boton-destacado {
+  background: var(--c-acento);
+  border-color: var(--c-acento);
+  color: #fff;
+}
+
+.boton-destacado:hover {
+  background: #7E1859;
+  border-color: #7E1859;
+}
+
+/* Sobre fondo oscuro */
+.boton-claro {
+  background: #fff;
+  border-color: #fff;
+  color: var(--c-texto);
+}
+
+.boton-claro:hover {
+  background: var(--c-acento-claro);
+  border-color: var(--c-acento-claro);
 }
 
 .boton-ancho {
   width: 100%;
 }
 
+.boton svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Link con subrayado fino ("Ver todo", "Entrar") */
+.link-subrayado {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+  padding-bottom: 4px;
+  border-bottom: 1px solid currentColor;
+  transition: color var(--transicion);
+}
+
+.link-subrayado:hover {
+  color: var(--c-acento);
+}
+
 .boton-icono {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
   background: none;
   border: none;
-  font-size: 1.3rem;
+  padding: 0;
   cursor: pointer;
-  padding: 8px;
   position: relative;
+  color: inherit;
+}
+
+.boton-icono svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Íconos de trazo fino (SVG inline) */
+.icono {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- Fotos con placeholder ----------
+   La caja muestra un color suave con una etiqueta que dice qué foto va.
+   La <img> va encima: cuando el archivo existe, tapa la etiqueta.
+   Si el archivo todavía no existe, comun.js oculta la imagen rota. */
+
+.foto {
+  position: relative;
+  overflow: hidden;
+  background: var(--c-superficie);
+}
+
+.foto::before {
+  content: attr(data-foto);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-texto-2);
+  outline: 1px solid rgba(20, 18, 23, 0.08);
+  outline-offset: -14px;
+}
+
+.foto > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.foto > img.foto-faltante {
+  display: none;
 }
 
 /* ---------- Header ---------- */
