@@ -393,7 +393,7 @@ dialog h3 {
 }
 
 .tabla th {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.14em;
 }
@@ -413,7 +413,7 @@ dialog h3 {
   border-radius: 999px;
   background: var(--c-acento);
   color: #fff;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   letter-spacing: 0;
 }
 
