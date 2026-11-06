@@ -198,3 +198,14 @@ que faltan atender), muestra si coinciden con un pedido y permite pasarlas a
 - [ ] Cuentas de cliente e historial de pedidos
 - [ ] Páginas legales: términos, privacidad, botón de arrepentimiento
 - [ ] Facturación electrónica (ARCA)
+
+## 9. Demo para compartir (sin servidor)
+
+```powershell
+npm run demo   # arma demo/octavo-compas-demo.html
+```
+
+Es la tienda completa en un solo archivo HTML, con el catálogo de ejemplo adentro:
+navegación, filtros, ficha, carrito (guardado en el navegador) y telón de entrada.
+Los pagos y el envío de solicitudes están desactivados. Sirve para mostrarla
+(por ejemplo, publicada como artefacto de Claude). Volvé a correrlo después de cada cambio.
