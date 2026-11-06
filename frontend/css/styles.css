@@ -1217,7 +1217,7 @@ h1, h2,
 /* ---------- Comprá por disciplina (carrusel editorial) ---------- */
 
 .disc {
-  --disc-ancho: clamp(250px, 23vw, 340px);
+  --disc-ancho: clamp(300px, 24vw, 340px);
   /* Donde empieza el contenido (alineado con .contenedor) */
   --disc-inicio: max(var(--margen), calc((100vw - var(--ancho-max)) / 2 + var(--margen)));
   overflow: hidden;
@@ -1675,7 +1675,33 @@ h1, h2,
 
 @media (max-width: 760px) {
   .disc {
-    --disc-ancho: 62vw;
+    --disc-ancho: clamp(230px, 68vw, 300px);
+  }
+
+  /* Tarjeta A medida: en celular va la versión corta para que entre en el 3:4 */
+  .disc-final-caja {
+    gap: 10px;
+    padding: 20px;
+  }
+
+  .disc-final-ejemplos,
+  .disc-final-caja .link-subrayado {
+    display: none;
+  }
+
+  .disc-final-titulo {
+    font-size: 1.5rem;
+  }
+
+  .disc-final-caja p {
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+
+  .disc-final-caja .boton {
+    min-height: 44px;
+    padding: 0 16px;
   }
 
   .disc-carrusel {
