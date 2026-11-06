@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tienda</title>
+  <title>Tienda | Octavo Compás Indumentaria</title>
+  <meta name="description" content="Ropa de danza para ballet, contemporáneo, folklore y tango, y vestidos de fiesta y gala. Elegí por talle, color y precio. Envíos a todo el país.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="/img/marca/isotipo.svg" type="image/svg+xml">
   <script src="/js/comun.js" defer></script>
   <script src="/js/tienda.js" defer></script>
 </head>
@@ -15,35 +17,64 @@
   <header id="header"></header>
 
   <main id="contenido" class="contenedor">
-    <nav class="migas" id="migas" aria-label="Ubicación"><a href="/">Inicio</a> / Tienda</nav>
-    <h1 id="titulo">Tienda</h1>
+    <div class="tienda-cabecera">
+      <nav class="migas" id="migas" aria-label="Ubicación"><a href="/">Inicio</a> / Tienda</nav>
+      <span class="sobretitulo" id="sobretitulo" hidden></span>
+      <h1 id="titulo">Tienda</h1>
+      <p class="tienda-descripcion" id="descripcion-categoria" hidden></p>
+    </div>
 
     <div class="tienda">
       <aside class="filtros" id="filtros" aria-label="Filtros">
-        <h3>Categorías</h3>
-        <ul id="filtro-categorias"></ul>
+        <div class="filtros-cabecera">
+          <h2>Filtros</h2>
+          <button class="boton-icono" type="button" id="cerrar-filtros" aria-label="Cerrar filtros">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
 
-        <h3>Talle</h3>
-        <div class="opciones-talle" id="filtro-talles"></div>
+        <div class="filtros-cuerpo">
+          <div class="filtro-grupo">
+            <h3>Categorías</h3>
+            <ul id="filtro-categorias"></ul>
+          </div>
 
-        <h3>Color</h3>
-        <div class="opciones-color" id="filtro-colores"></div>
+          <div class="filtro-grupo">
+            <h3>Talle</h3>
+            <div class="opciones-talle" id="filtro-talles"></div>
+          </div>
 
-        <h3>Precio</h3>
-        <form class="rango-precio" id="filtro-precio">
-          <input type="number" name="min" placeholder="Mín" min="0" aria-label="Precio mínimo">
-          <input type="number" name="max" placeholder="Máx" min="0" aria-label="Precio máximo">
-          <button class="chip" type="submit">OK</button>
-        </form>
+          <div class="filtro-grupo">
+            <h3>Color</h3>
+            <div class="opciones-color" id="filtro-colores"></div>
+          </div>
 
-        <button class="limpiar-filtros" id="limpiar" type="button">Limpiar filtros</button>
+          <div class="filtro-grupo">
+            <h3>Precio</h3>
+            <form class="rango-precio" id="filtro-precio">
+              <input type="number" name="min" placeholder="Mín" min="0" inputmode="numeric" aria-label="Precio mínimo">
+              <input type="number" name="max" placeholder="Máx" min="0" inputmode="numeric" aria-label="Precio máximo">
+              <button class="boton boton-secundario" type="submit">Aplicar</button>
+            </form>
+          </div>
+
+          <button class="limpiar-filtros" id="limpiar" type="button">Limpiar filtros</button>
+        </div>
+
+        <div class="filtros-pie">
+          <button class="boton boton-ancho" type="button" id="ver-resultados">Ver productos</button>
+        </div>
       </aside>
 
-      <section>
+      <section aria-label="Productos">
         <div class="barra-resultados">
-          <button class="boton boton-secundario boton-filtros" id="boton-filtros" type="button">Filtros</button>
-          <span id="cantidad-resultados"></span>
-          <label>
+          <button class="boton boton-secundario boton-filtros" id="boton-filtros" type="button"
+                  aria-expanded="false" aria-controls="filtros">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+            Filtros
+          </button>
+          <span class="cantidad-resultados" id="cantidad-resultados" aria-live="polite"></span>
+          <label class="orden">
             <span class="oculto-visual">Ordenar por</span>
             <select id="orden">
               <option value="nuevos">Más nuevos</option>
@@ -54,10 +85,11 @@
           </label>
         </div>
 
-        <div class="grilla" id="grilla"></div>
+        <div class="grilla grilla-tienda" id="grilla"></div>
         <nav class="paginacion" id="paginacion" aria-label="Páginas"></nav>
       </section>
     </div>
+    <div class="fondo-filtros" id="fondo-filtros" hidden></div>
   </main>
 
   <footer id="footer"></footer>
