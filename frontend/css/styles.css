@@ -1463,14 +1463,19 @@ h1, h2,
 .hero-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(300px, 1.05fr) 260px;
-  gap: clamp(24px, 3vw, 48px);
+  /* filas 1 y 4 son aire: el texto y los botones quedan centrados en la columna */
+  grid-template-rows: 1fr auto auto 1fr;
+  column-gap: clamp(24px, 3vw, 48px);
+  row-gap: 0;
   align-items: end;
   min-height: clamp(600px, calc(100svh - var(--alto-header) - var(--alto-anuncio)), 780px);
 }
 
 .hero-texto {
-  align-self: center;
-  padding: 48px 0;
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+  padding: 48px 0 0;
 }
 
 .hero-texto h1 {
@@ -1492,9 +1497,18 @@ h1, h2,
   gap: 12px;
 }
 
+.hero-acciones {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: start;
+  padding-bottom: 48px;
+}
+
 /* Bailarina */
 
 .hero-figura {
+  grid-column: 2;
+  grid-row: 1 / -1;
   position: relative;
   align-self: stretch;
   min-height: 520px;
@@ -1565,6 +1579,8 @@ h1, h2,
 /* Prendas del look */
 
 .hero-prendas {
+  grid-column: 3;
+  grid-row: 1 / -1;
   align-self: center;
   padding: 48px 0;
   transition: opacity 0.25s ease, transform 0.25s ease;
@@ -2758,9 +2774,12 @@ h1, h2,
 @media (max-width: 1100px) {
   .hero-grid {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: center;
+    grid-template-rows: auto auto auto;
+    align-content: center;
+    align-items: start;
   }
 
+  /* Columna izquierda: texto, el look con sus flechas y al final los botones */
   .hero-texto {
     grid-column: 1;
     grid-row: 1;
@@ -2768,13 +2787,47 @@ h1, h2,
 
   .hero-figura {
     grid-column: 2;
-    grid-row: 1 / span 2;
+    grid-row: 1 / -1;
   }
 
   .hero-prendas {
     grid-column: 1;
     grid-row: 2;
-    padding-top: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 16px;
+    padding: 0 0 28px;
+  }
+
+  .hero-look-nombre {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0;
+  }
+
+  .hero-control {
+    grid-column: 2;
+    grid-row: 1;
+    gap: 12px;
+    margin: 0;
+  }
+
+  .hero-control .boton-flecha {
+    width: 42px;
+    height: 42px;
+  }
+
+  .hero-prendas .hero-lista {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 14px;
+  }
+
+  .hero-acciones {
+    grid-column: 1;
+    grid-row: 3;
+    padding-bottom: 48px;
   }
 
   .hero-lista {
@@ -2827,11 +2880,16 @@ h1, h2,
 
   .hero-texto {
     grid-row: 2;
-    padding: 32px 0 24px;
+    padding: 32px 0 0;
   }
 
   .hero-texto p {
     margin-bottom: 24px;
+  }
+
+  .hero-acciones {
+    grid-row: 4;
+    padding-bottom: 36px;
   }
 
   .hero-botones .boton {
@@ -2840,7 +2898,7 @@ h1, h2,
 
   .hero-prendas {
     grid-row: 3;
-    padding-bottom: 36px;
+    padding-bottom: 24px;
   }
 
   .hero-lista {
