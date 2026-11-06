@@ -330,3 +330,74 @@ body.admin {
 .dialogo-grande h3 {
   margin-top: 28px;
 }
+
+/* =====================================================
+   AJUSTES DE MARCA (Octavo Compás)
+   Solo colores y tipografía: no cambia el funcionamiento.
+===================================================== */
+
+body.admin {
+  background: var(--c-superficie);
+}
+
+.tarjeta-admin,
+.admin-header,
+.tabla,
+.barra-admin input,
+.barra-admin select {
+  background: var(--c-fondo);
+}
+
+.tarjeta-admin h1,
+.admin-main h2,
+.admin-main h3,
+dialog h2,
+dialog h3 {
+  font-family: var(--f-titulos);
+  font-weight: 500;
+}
+
+.tarjeta-admin h1 {
+  font-size: 2rem;
+  margin-bottom: 4px;
+}
+
+.admin-header > strong {
+  font-family: var(--f-titulos);
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.pestanas button {
+  border-radius: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+}
+
+.pestanas button.activo {
+  background: transparent;
+  border-bottom-color: var(--c-acento);
+}
+
+.admin-header a {
+  font-size: 0.85rem;
+}
+
+.boton-chico {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: 0.7rem;
+}
+
+.tabla th {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+.tabla tbody tr.clickeable:hover {
+  background: var(--c-superficie);
+}
