@@ -1217,8 +1217,7 @@ h1, h2,
 /* ---------- Comprá por disciplina (carrusel editorial) ---------- */
 
 .disc {
-  --disc-ancho: clamp(300px, 29vw, 430px);
-  --disc-gap: clamp(14px, 1.5vw, 22px);
+  --disc-ancho: clamp(250px, 23vw, 340px);
   /* Donde empieza el contenido (alineado con .contenedor) */
   --disc-inicio: max(var(--margen), calc((100vw - var(--ancho-max)) / 2 + var(--margen)));
   overflow: hidden;
@@ -1296,50 +1295,53 @@ h1, h2,
   color: var(--c-texto);
 }
 
-/* Pista deslizable */
+/* Anillo: las tarjetas giran en círculo pero siempre quedan derechas.
+   La profundidad se da con tamaño, altura y luz (js/inicio.js). */
 
 .disc-carrusel {
   position: relative;
+  height: calc(var(--disc-ancho) * (4 / 3 + 0.84) + 72px);
+  touch-action: pan-y;
 }
 
 .disc-pista {
-  display: flex;
-  gap: var(--disc-gap);
+  position: relative;
+  height: 100%;
   margin: 0;
-  padding: 0 0 4px var(--disc-inicio);
+  padding: 0;
   list-style: none;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scroll-padding-left: var(--disc-inicio);
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-}
-
-.disc-pista::-webkit-scrollbar {
-  display: none;
 }
 
 .disc-pista:focus-visible {
-  outline-offset: -2px;
-}
-
-/* Espacio final: deja que la última disciplina llegue al principio
-   (después de ella viene la tarjeta "A medida") */
-.disc-pista::after {
-  content: "";
-  flex: 0 0 max(0px, calc(100% - 2 * var(--disc-ancho) - 2 * var(--disc-gap)));
+  outline-offset: 6px;
 }
 
 .disc-pista.arrastrando {
-  scroll-snap-type: none;
-  scroll-behavior: auto;
   user-select: none;
+  cursor: grabbing;
 }
 
 .disc-slide {
-  flex: 0 0 var(--disc-ancho);
-  scroll-snap-align: start;
+  --bruma: 0;
+  position: absolute;
+  bottom: 56px; /* lugar para los accesos por prenda, debajo de la tarjeta */
+  left: 50%;
+  width: var(--disc-ancho);
+  margin-left: calc(var(--disc-ancho) / -2);
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+/* Velo que "aleja" las tarjetas de atrás */
+.disc-tarjeta::after,
+.disc-final-caja::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: var(--c-fondo);
+  opacity: var(--bruma);
+  pointer-events: none;
 }
 
 .disc-tarjeta {
@@ -1347,11 +1349,22 @@ h1, h2,
   display: block;
   color: #fff;
   overflow: hidden;
-  transition: opacity 0.5s ease;
+  box-shadow: 0 30px 60px -30px rgba(40, 14, 26, 0.45);
 }
 
-.disc-slide:not(.es-activa) .disc-tarjeta {
-  opacity: 0.82;
+/* Solo la del frente muestra el detalle */
+.disc-slide:not(.es-activa) .disc-desc,
+.disc-slide:not(.es-activa) .disc-pie,
+.disc-slide:not(.es-activa) .disc-chips,
+.disc-slide:not(.es-activa) .disc-final-caja > :not(.disc-final-isotipo):not(.disc-final-titulo):not(.sobretitulo) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.disc-desc,
+.disc-pie,
+.disc-chips {
+  transition: opacity 0.6s ease, visibility 0.6s ease;
 }
 
 .disc-foto {
@@ -1364,9 +1377,9 @@ h1, h2,
   -webkit-user-drag: none;
 }
 
-.disc-tarjeta:hover .disc-foto > img,
+.disc-slide.es-activa .disc-tarjeta:hover .disc-foto > img,
 .disc-tarjeta:focus-visible .disc-foto > img {
-  transform: scale(1.06);
+  transform: scale(1.05);
 }
 
 /* Texto sobre la foto: degradé para que se lea con cualquier imagen */
@@ -1488,8 +1501,13 @@ h1, h2,
 
 /* Accesos rápidos por tipo de prenda */
 .disc-chips {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 6px;
   margin: 14px 0 0;
 }
@@ -1549,7 +1567,7 @@ h1, h2,
   cursor: none;
 }
 
-.disc-pista.arrastrando + .disc-cursor {
+.disc-carrusel .disc-pista.arrastrando + .disc-cursor {
   transform: translate3d(var(--cx, 0), var(--cy, 0), 0) scale(0.85);
 }
 
@@ -1571,7 +1589,7 @@ h1, h2,
   position: absolute;
   top: 0;
   left: 0;
-  width: 20%;
+  width: calc(100% / 6);
   height: 100%;
   background: var(--c-texto);
   transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -1579,7 +1597,7 @@ h1, h2,
 
 .disc-tabs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1618,7 +1636,7 @@ h1, h2,
 
 @media (max-width: 1100px) {
   .disc {
-    --disc-ancho: clamp(260px, 42vw, 380px);
+    --disc-ancho: clamp(240px, 34vw, 300px);
   }
 
   .disc-tabs {
@@ -1635,8 +1653,20 @@ h1, h2,
 
 @media (max-width: 760px) {
   .disc {
-    --disc-ancho: 78vw;
-    --disc-gap: 12px;
+    --disc-ancho: 62vw;
+  }
+
+  .disc-carrusel {
+    height: calc(var(--disc-ancho) * (4 / 3 + 0.82) + 72px);
+  }
+
+  .disc-chips {
+    flex-wrap: nowrap;
+    gap: 4px;
+  }
+
+  .disc-chips a {
+    padding: 0 8px;
   }
 
   .disc-cabecera {
@@ -3555,11 +3585,6 @@ dialog::backdrop {
 }
 
 /* Tarjeta final del carrusel de disciplinas: confección a medida */
-.disc-final {
-  flex: 0 0 var(--disc-ancho);
-  scroll-snap-align: start;
-}
-
 .disc-final-caja {
   position: relative;
   display: flex;

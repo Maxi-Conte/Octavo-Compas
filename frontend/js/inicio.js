@@ -152,7 +152,12 @@ function iniciarHero() {
   LOOKS.slice(1).forEach((look) => look.productos.forEach(obtenerProducto));
 }
 
-/* ---------- Comprá por disciplina (carrusel) ---------- */
+/* ---------- Comprá por disciplina (anillo giratorio) ----------
+   Las tarjetas están ubicadas en un círculo visto desde arriba y adelante.
+   Al girar, se mueven por ese círculo pero SIEMPRE quedan derechas:
+   la profundidad se nota en el tamaño, la altura y una bruma del color del fondo.
+   Para que el anillo se vea lleno, hay una segunda vuelta de copias decorativas.
+   El giro es lento y con frenado suave (se acerca de a poco al destino). */
 
 function iniciarDisciplinas() {
   const pista = document.getElementById("disc-pista");
@@ -168,112 +173,186 @@ function iniciarDisciplinas() {
   const anuncio = document.getElementById("disc-anuncio");
   const total = slides.length;
   const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let actual = -1;
 
-  const paso = () => (slides[1] ? slides[1].offsetLeft - slides[0].offsetLeft : 1);
-  const indiceVisible = () => Math.min(total - 1, Math.max(0, Math.round(pista.scrollLeft / paso())));
+  /* Copias decorativas (no las recorren el teclado ni los lectores de pantalla) */
+  const copias = slides.map((s) => {
+    const c = s.cloneNode(true);
+    c.classList.add("disc-copia");
+    c.setAttribute("aria-hidden", "true");
+    c.removeAttribute("aria-label");
+    c.removeAttribute("aria-roledescription");
+    c.querySelectorAll("a").forEach((a) => (a.tabIndex = -1));
+    pista.appendChild(c);
+    return c;
+  });
+  const elementos = [...slides, ...copias];
+  const N = elementos.length;
 
-  function marcar(i, { anunciar = false } = {}) {
-    if (i === actual) return;
-    actual = i;
+  const SUAVIDAD = reducido ? 1 : 0.055; // cuánto se acerca al destino por cuadro (más bajo = más lento)
+  let posicion = 0;  // dónde está el anillo ahora (puede ser decimal)
+  let destino = 0;   // hacia dónde va (entero = una tarjeta al frente)
+  let animando = false;
+  let frenteActual = -1;
 
-    slides.forEach((s, n) => s.classList.toggle("es-activa", n === i));
+  const modulo = (n, m) => ((n % m) + m) % m;
+  /* Distancia más corta en el círculo, con signo */
+  const camino = (desde, hasta) => {
+    let d = modulo(hasta - desde, N);
+    if (d > N / 2) d -= N;
+    return d;
+  };
+
+  function medidas() {
+    const ancho = slides[0].offsetWidth;
+    const angosto = window.innerWidth < 760;
+    return {
+      radio: ancho * (angosto ? 0.92 : 1.6),       // qué tan abierto es el círculo
+      elevacion: ancho * (angosto ? 0.8 : 0.82)    // cuánto suben las de atrás
+    };
+  }
+  let m = medidas();
+
+  function dibujar() {
+    elementos.forEach((el, j) => {
+      const angulo = ((j - posicion) / N) * Math.PI * 2; // 0 = adelante, π = atrás
+      const x = Math.sin(angulo) * m.radio;
+      const profundidad = (Math.cos(angulo) + 1) / 2;    // 1 adelante, 0 atrás
+      const escala = 0.5 + 0.5 * profundidad;
+      const y = -(1 - profundidad) * m.elevacion;
+
+      el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${escala.toFixed(3)})`;
+      el.style.zIndex = String(Math.round(profundidad * 100));
+      el.style.setProperty("--bruma", (0.8 * Math.pow(1 - profundidad, 1.15)).toFixed(3));
+    });
+  }
+
+  function marcar({ anunciar = false } = {}) {
+    const frente = modulo(Math.round(destino), N);
+    const i = frente % total; // disciplina que está adelante
+    if (frente === frenteActual) return;
+    const cambioDisciplina = frenteActual === -1 || frenteActual % total !== i;
+    frenteActual = frente;
+
+    elementos.forEach((el, j) => el.classList.toggle("es-activa", j === frente));
+    slides.forEach((s, n) => {
+      s.setAttribute("aria-hidden", String(n !== i));
+      s.querySelectorAll("a").forEach((a) => (a.tabIndex = n === i ? 0 : -1));
+    });
+    if (!cambioDisciplina) return;
+
     tabs.forEach((t, n) => (n === i ? t.setAttribute("aria-current", "true") : t.removeAttribute("aria-current")));
-
     numero.textContent = dosDigitos(i + 1);
     numero.classList.remove("cambia");
-    void numero.offsetWidth; // reinicia la animación del número
+    void numero.offsetWidth;
     numero.classList.add("cambia");
-
     barra.style.transform = `translateX(${i * 100}%)`;
-    anterior.disabled = i === 0;
-    siguiente.disabled = i === total - 1;
 
     if (anunciar) {
-      const nombre = slides[i].querySelector(".disc-nombre").textContent;
+      const nombre = slides[i].querySelector(".disc-nombre, .disc-final-titulo").textContent;
       anuncio.textContent = `${nombre}, ${i + 1} de ${total}`;
     }
   }
 
-  /* Mientras se desplaza solo (flechas, pestañas) no cuenta los intermedios */
-  let bloqueoHasta = 0;
-
-  function ir(i, opciones = {}) {
-    const destino = Math.min(total - 1, Math.max(0, i));
-    bloqueoHasta = performance.now() + 800;
-    pista.scrollTo({
-      left: slides[destino].offsetLeft - slides[0].offsetLeft,
-      behavior: reducido ? "auto" : "smooth"
-    });
-    marcar(destino, opciones);
+  function bucle() {
+    const diferencia = destino - posicion;
+    if (Math.abs(diferencia) < 0.0008) {
+      posicion = destino;
+      dibujar();
+      animando = false;
+      return;
+    }
+    posicion += diferencia * SUAVIDAD;
+    dibujar();
+    requestAnimationFrame(bucle);
   }
 
-  /* Al deslizar: actualizar contador, barra y pestañas */
-  let pendiente = false;
-  pista.addEventListener(
-    "scroll",
-    () => {
-      if (pendiente || performance.now() < bloqueoHasta) return;
-      pendiente = true;
-      requestAnimationFrame(() => {
-        pendiente = false;
-        marcar(indiceVisible());
-      });
-    },
-    { passive: true }
-  );
+  function animar() {
+    if (animando) return;
+    animando = true;
+    requestAnimationFrame(bucle);
+  }
 
-  pista.addEventListener("scrollend", () => {
-    bloqueoHasta = 0;
-    marcar(indiceVisible());
-  });
+  /* Llevar al frente el elemento j (original o copia) por el camino más corto */
+  function irAElemento(j, opciones = {}) {
+    const base = Math.round(destino);
+    destino = base + camino(modulo(base, N), j);
+    marcar(opciones);
+    animar();
+  }
 
-  anterior.addEventListener("click", () => ir(actual - 1, { anunciar: true }));
-  siguiente.addEventListener("click", () => ir(actual + 1, { anunciar: true }));
-  tabs.forEach((t) => t.addEventListener("click", () => ir(Number(t.dataset.ir), { anunciar: true })));
+  /* Llevar al frente la disciplina i: elige la más cercana entre el original y su copia */
+  function irADisciplina(i, opciones = {}) {
+    const base = modulo(Math.round(destino), N);
+    const j = Math.abs(camino(base, i)) <= Math.abs(camino(base, i + total)) ? i : i + total;
+    irAElemento(j, opciones);
+  }
+
+  function paso(sentido) {
+    destino = Math.round(destino) + sentido;
+    marcar({ anunciar: true });
+    animar();
+  }
+
+  anterior.addEventListener("click", () => paso(-1));
+  siguiente.addEventListener("click", () => paso(1));
+  tabs.forEach((t) => t.addEventListener("click", () => irADisciplina(Number(t.dataset.ir), { anunciar: true })));
 
   pista.addEventListener("keydown", (e) => {
-    const teclas = { ArrowRight: actual + 1, ArrowLeft: actual - 1, Home: 0, End: total - 1 };
-    if (!(e.key in teclas) || e.target !== pista) return;
-    e.preventDefault();
-    ir(teclas[e.key], { anunciar: true });
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+      e.preventDefault();
+      paso(e.key === "ArrowRight" ? 1 : -1);
+    } else if (e.key === "Home" || e.key === "End") {
+      e.preventDefault();
+      irADisciplina(e.key === "Home" ? 0 : total - 1, { anunciar: true });
+    }
   });
 
-  /* Arrastrar con el mouse (en pantallas táctiles desliza el navegador) */
+  /* Tocar una tarjeta de costado la trae al frente (no abre el link) */
+  elementos.forEach((el, j) => {
+    el.addEventListener("click", (e) => {
+      if (el.classList.contains("es-activa")) return;
+      e.preventDefault();
+      irAElemento(j, { anunciar: true });
+    });
+  });
+
+  /* Arrastrar (mouse y dedo): el anillo sigue al gesto y al soltar se acomoda */
   let arrastre = null;
   let huboArrastre = false;
 
   pista.addEventListener("pointerdown", (e) => {
-    if (e.pointerType !== "mouse" || e.button !== 0) return;
-    arrastre = { x: e.clientX, scroll: pista.scrollLeft, inicio: actual };
+    if (e.button !== 0) return;
+    arrastre = { x: e.clientX, y: e.clientY, desde: destino, id: e.pointerId };
     huboArrastre = false;
   });
 
   window.addEventListener("pointermove", (e) => {
-    if (!arrastre) return;
+    if (!arrastre || e.pointerId !== arrastre.id) return;
     const dx = e.clientX - arrastre.x;
-    if (!huboArrastre && Math.abs(dx) > 5) {
+    const dy = e.clientY - arrastre.y;
+    if (!huboArrastre) {
+      /* En celular, si el gesto es vertical se deja scrollear la página */
+      if (Math.abs(dx) < 6 || Math.abs(dy) > Math.abs(dx)) return;
       huboArrastre = true;
       pista.classList.add("arrastrando");
     }
-    if (huboArrastre) pista.scrollLeft = arrastre.scroll - dx;
+    destino = arrastre.desde - dx / (slides[0].offsetWidth * 0.9);
+    animar();
   });
 
-  window.addEventListener("pointerup", () => {
-    if (!arrastre) return;
-    const desde = arrastre;
+  const soltar = (e) => {
+    if (!arrastre || (e && e.pointerId !== arrastre.id)) return;
     arrastre = null;
     if (!huboArrastre) return;
     pista.classList.remove("arrastrando");
-    /* Un arrastre corto alcanza para pasar a la siguiente */
-    const recorrido = (pista.scrollLeft - desde.scroll) / paso();
-    const destino = Math.abs(recorrido) > 0.15
-      ? desde.inicio + Math.sign(recorrido) * Math.max(1, Math.round(Math.abs(recorrido)))
-      : desde.inicio;
-    ir(destino);
-  });
+    destino = Math.round(destino);
+    marcar({ anunciar: true });
+    animar();
+  };
+  window.addEventListener("pointerup", soltar);
+  window.addEventListener("pointercancel", soltar);
 
-  /* Si se arrastró, el soltar no abre el link */
+  /* Si se arrastró, soltar no abre el link */
   pista.addEventListener("click", (e) => {
     if (!huboArrastre) return;
     e.preventDefault();
@@ -283,25 +362,30 @@ function iniciarDisciplinas() {
 
   pista.addEventListener("dragstart", (e) => e.preventDefault());
 
-  /* Cursor "Arrastrá / Ver" que sigue al mouse */
+  window.addEventListener("resize", () => {
+    m = medidas();
+    dibujar();
+  });
+
+  /* Cursor "Arrastrá / Ver / Traer" que sigue al mouse */
   const cursor = carrusel.querySelector(".disc-cursor");
   if (matchMedia("(hover: hover) and (pointer: fine)").matches && !reducido) {
     carrusel.classList.add("con-cursor");
     const texto = cursor.querySelector("span");
     let objetivo = null;
-    let posicion = null;
-    let animando = false;
+    let punto = null;
+    let siguiendo = false;
 
     const mover = () => {
       if (!objetivo) {
-        animando = false;
+        siguiendo = false;
         return;
       }
-      posicion = posicion || { ...objetivo };
-      posicion.x += (objetivo.x - posicion.x) * 0.22;
-      posicion.y += (objetivo.y - posicion.y) * 0.22;
-      cursor.style.setProperty("--cx", `${posicion.x}px`);
-      cursor.style.setProperty("--cy", `${posicion.y}px`);
+      punto = punto || { ...objetivo };
+      punto.x += (objetivo.x - punto.x) * 0.18;
+      punto.y += (objetivo.y - punto.y) * 0.18;
+      cursor.style.setProperty("--cx", `${punto.x}px`);
+      cursor.style.setProperty("--cy", `${punto.y}px`);
       requestAnimationFrame(mover);
     };
 
@@ -309,10 +393,13 @@ function iniciarDisciplinas() {
       if (e.pointerType !== "mouse") return;
       const caja = carrusel.getBoundingClientRect();
       objetivo = { x: e.clientX - caja.left, y: e.clientY - caja.top };
-      texto.textContent = e.target.closest(".disc-tarjeta") && !arrastre ? "Ver" : "Arrastrá";
-      cursor.classList.add("visible");
-      if (!animando) {
-        animando = true;
+      const el = e.target.closest(".disc-slide");
+      texto.textContent = arrastre ? "Arrastrá"
+        : el?.classList.contains("es-activa") ? "Ver"
+        : el ? "Traer" : "Arrastrá";
+      cursor.classList.toggle("visible", !e.target.closest(".disc-chips, .disc-final-caja a"));
+      if (!siguiendo) {
+        siguiendo = true;
         requestAnimationFrame(mover);
       }
     });
@@ -320,29 +407,26 @@ function iniciarDisciplinas() {
     carrusel.addEventListener("pointerleave", () => {
       cursor.classList.remove("visible");
       objetivo = null;
-      posicion = null;
-    });
-
-    /* Sobre los accesos por prenda vuelve la flecha normal */
-    carrusel.querySelectorAll(".disc-chips").forEach((c) => {
-      c.addEventListener("pointerenter", () => cursor.classList.remove("visible"));
+      punto = null;
     });
   }
 
-  /* Cantidad real de piezas de cada disciplina */
-  slides.forEach(async (slide) => {
-    const lugar = slide.querySelector("[data-cantidad]");
+  /* Cantidad real de piezas de cada disciplina (en el original y en su copia) */
+  slides.forEach(async (slide, i) => {
+    const lugares = [slide, copias[i]].map((s) => s.querySelector("[data-cantidad]")).filter(Boolean);
+    if (!lugares.length) return;
     try {
       const { total: cantidad } = await api(
         `/productos?categoria=${encodeURIComponent(slide.dataset.categoria)}&por_pagina=1`
       );
-      if (cantidad) lugar.textContent = `${cantidad} pieza${cantidad === 1 ? "" : "s"}`;
+      if (cantidad) lugares.forEach((l) => (l.textContent = `${cantidad} pieza${cantidad === 1 ? "" : "s"}`));
     } catch {
       /* Si falla, simplemente no se muestra */
     }
   });
 
-  marcar(0);
+  dibujar();
+  marcar();
 }
 
 /* ---------- Novedades ---------- */
