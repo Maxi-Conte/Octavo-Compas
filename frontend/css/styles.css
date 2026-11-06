@@ -3038,3 +3038,14 @@ html.cargando-sitio {
     animation: none;
   }
 }
+
+/* Bailarina 3D (js/bailarina-3d.js) */
+.carga-3d {
+  display: block;
+  width: clamp(220px, 34vw, 340px);
+  aspect-ratio: 3 / 4;
+}
+
+.pantalla-carga.con-3d .carga-bailarina {
+  display: none;
+}

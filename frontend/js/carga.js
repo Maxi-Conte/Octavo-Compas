@@ -7,7 +7,7 @@
 ===================================================== */
 
 (function () {
-  const MINIMO_MS = 1400; // tiempo mínimo, para que se vea la vuelta completa
+  const MINIMO_MS = 1900; // tiempo mínimo, para que se vea una pirueta completa
   const MAXIMO_MS = 5000; // por si alguna foto tarda: nunca bloquea más que esto
 
   try {
@@ -24,6 +24,7 @@
   pantalla.setAttribute("role", "status");
   pantalla.innerHTML = `
     <div class="carga-escena">
+      <canvas class="carga-3d" aria-hidden="true"></canvas>
       <svg class="carga-bailarina" viewBox="0 0 120 200" aria-hidden="true" focusable="false">
         <ellipse class="carga-sombra" cx="60" cy="186" rx="18" ry="3.2"/>
         <g class="carga-giro">
@@ -50,6 +51,21 @@
   document.documentElement.classList.add("cargando-sitio");
   document.documentElement.appendChild(pantalla);
 
+  /* Versión 3D (js/bailarina-3d.js). Si no hay WebGL, queda el dibujo SVG. */
+  let bailarina3D = null;
+  const lienzo = pantalla.querySelector(".carga-3d");
+  try {
+    if (typeof crearBailarina3D === "function") {
+      const quieta = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      bailarina3D = crearBailarina3D(lienzo, { estatica: quieta });
+    }
+  } catch {
+    bailarina3D = null;
+  }
+
+  if (bailarina3D) pantalla.classList.add("con-3d");
+  else lienzo.remove();
+
   let terminado = false;
 
   function cerrar() {
@@ -57,7 +73,10 @@
     terminado = true;
     pantalla.classList.add("saliendo");
     document.documentElement.classList.remove("cargando-sitio");
-    setTimeout(() => pantalla.remove(), 700);
+    setTimeout(() => {
+      bailarina3D?.detener();
+      pantalla.remove();
+    }, 700);
   }
 
   window.addEventListener("load", () => {
