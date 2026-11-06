@@ -2937,3 +2937,175 @@ dialog::backdrop {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---------- Telón de entrada (js/telon.js) ----------
+   Línea de tiempo: hilo 0–0,7 s · cortinas 0,8–1,6 s · logo 1,15 s ·
+   frase 1,45 s · línea 1,85–2,45 s · salida 2,55–3 s */
+
+.telon {
+  --bordo: #531D32;
+  --bordo-fondo: #3A1323;
+  --oro: #D4AF6A;
+  --oro-claro: #EAD3A0;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+  cursor: pointer;
+  background: radial-gradient(ellipse 60% 55% at 50% 45%, #6A2741 0%, var(--bordo-fondo) 70%);
+  animation: telon-salida 0.45s ease 2.55s forwards;
+}
+
+.telon.telon-fuera {
+  animation: telon-salida 0.4s ease forwards;
+}
+
+@keyframes telon-salida {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* Cortinas de terciopelo: pliegues verticales + brillo arriba + sombra abajo */
+.telon-cortina {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.5%;
+  z-index: 2;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, transparent 35%, rgba(0, 0, 0, 0.35) 100%),
+    repeating-linear-gradient(90deg,
+      rgba(0, 0, 0, 0.22) 0,
+      rgba(255, 255, 255, 0.045) 2.2vw,
+      rgba(0, 0, 0, 0.22) 4.4vw),
+    var(--bordo);
+  will-change: transform;
+  animation: 0.8s cubic-bezier(0.7, 0, 0.2, 1) 0.8s forwards;
+}
+
+.telon-izq {
+  left: 0;
+  border-right: 1px solid rgba(212, 175, 106, 0.35);
+  animation-name: telon-abre-izq;
+}
+
+.telon-der {
+  right: 0;
+  border-left: 1px solid rgba(212, 175, 106, 0.35);
+  animation-name: telon-abre-der;
+}
+
+@keyframes telon-abre-izq {
+  to { transform: translateX(-101%); }
+}
+
+@keyframes telon-abre-der {
+  to { transform: translateX(101%); }
+}
+
+/* Hilo dorado que dibuja el isotipo */
+.telon-hilo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  width: 76px;
+  height: 76px;
+  margin: -38px 0 0 -38px;
+  fill: none;
+  stroke: var(--oro);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  animation: telon-hilo-sale 0.4s ease 0.9s forwards;
+}
+
+.telon-hilo path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: telon-hilo-dibuja 0.7s cubic-bezier(0.55, 0, 0.3, 1) forwards;
+}
+
+.telon-hilo path + path {
+  animation-delay: 0.12s;
+}
+
+@keyframes telon-hilo-dibuja {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes telon-hilo-sale {
+  to { opacity: 0; transform: scale(0.85); }
+}
+
+/* Escenario: logo, frase y línea */
+.telon-escenario {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 18px;
+  padding: 24px;
+  text-align: center;
+}
+
+.telon-logo {
+  width: min(320px, 72vw);
+  height: auto;
+  opacity: 0;
+  transform: translateY(10px) scale(0.97);
+  animation: telon-aparece 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) 1.15s forwards;
+}
+
+.telon-frase {
+  margin: 0;
+  font-family: var(--f-titulos);
+  font-style: italic;
+  font-size: clamp(1.1rem, 2.4vw, 1.45rem);
+  letter-spacing: 0.02em;
+  color: var(--oro-claro);
+  opacity: 0;
+  transform: translateY(8px);
+  animation: telon-aparece 0.5s ease 1.45s forwards;
+}
+
+.telon-linea {
+  display: block;
+  width: min(220px, 50vw);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--oro) 20%, var(--oro) 80%, transparent);
+  transform: scaleX(0);
+  animation: telon-linea 0.6s cubic-bezier(0.65, 0, 0.35, 1) 1.85s forwards;
+}
+
+@keyframes telon-aparece {
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes telon-linea {
+  to { transform: scaleX(1); }
+}
+
+.telon-saltar {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  z-index: 4;
+  min-height: 44px;
+  padding: 0 16px;
+  background: none;
+  border: none;
+  color: var(--oro-claro);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.telon-saltar:hover {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
