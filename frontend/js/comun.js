@@ -299,6 +299,10 @@ function armarHeader() {
 
   header.innerHTML = `
     <div class="header-principal contenedor">
+      <a class="logo" href="/" aria-label="${esc(SITIO.nombreCompleto)}, ir al inicio">
+        <img src="/img/marca/logo.svg" alt="" width="210" height="45">
+      </a>
+
       <div class="header-izq">
         <button class="boton-icono boton-menu" type="button" aria-label="Abrir menú"
                 aria-expanded="false" aria-controls="nav-principal">${icono("menu")}</button>
@@ -313,10 +317,6 @@ function armarHeader() {
           </div>
         </nav>
       </div>
-
-      <a class="logo" href="/" aria-label="${esc(SITIO.nombreCompleto)}, ir al inicio">
-        <img src="/img/marca/logo.svg" alt="" width="210" height="45">
-      </a>
 
       <div class="header-der">
         <button class="boton-icono boton-buscar" type="button" aria-label="Buscar"

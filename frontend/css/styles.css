@@ -381,12 +381,18 @@ h1, h2,
   height: var(--alto-header);
 }
 
+/* Escritorio: logo a la izquierda, menú al centro, íconos a la derecha */
 .header-izq {
+  grid-column: 2;
+  grid-row: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .header-der {
+  grid-column: 3;
+  grid-row: 1;
   display: flex;
   justify-content: flex-end;
   gap: 4px;
@@ -394,6 +400,9 @@ h1, h2,
 }
 
 .logo {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
   display: block;
 }
 
@@ -714,6 +723,17 @@ h1, h2,
 /* ---------- Header y footer en tablet / celular ---------- */
 
 @media (max-width: 1024px) {
+  /* Tablet y celular: hamburguesa a la izquierda, logo al centro */
+  .header-izq {
+    grid-column: 1;
+    justify-content: flex-start;
+  }
+
+  .logo {
+    grid-column: 2;
+    justify-self: center;
+  }
+
   .boton-menu {
     display: inline-grid;
     margin-left: -10px;
