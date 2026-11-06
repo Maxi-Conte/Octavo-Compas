@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 64" width="330" height="64" role="img" aria-label="Octavo Compás Indumentaria">
+  <!-- LOGO PROVISORIO (versión para fondo oscuro): reemplazá este archivo por el logo original (mismo nombre). -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C2338F"/>
+      <stop offset="1" stop-color="#6E3FA8"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#g)" stroke-width="9" stroke-linecap="round">
+    <path d="M50 12 C36 4 14 8 11 26 C9 38 19 44 29 40"/>
+    <path d="M14 52 C28 60 50 56 53 38 C55 26 45 20 35 24"/>
+  </g>
+  <g fill="#FFFFFF" font-family="'Cormorant Garamond', Georgia, 'Times New Roman', serif">
+    <text x="76" y="34" font-size="22" font-weight="600" letter-spacing="2.2">OCTAVO COMPÁS</text>
+    <text x="77" y="51" font-family="Inter, Arial, sans-serif" font-size="9" letter-spacing="4.6" fill="#B9B0BE">INDUMENTARIA</text>
+  </g>
+</svg>

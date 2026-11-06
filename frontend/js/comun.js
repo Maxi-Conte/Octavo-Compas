@@ -131,98 +131,319 @@ function tarjetaProducto(p) {
     </a>`;
 }
 
+/* ---------- Datos de la marca ----------
+   Lo que no viene del .env (el WhatsApp sí: NEGOCIO_WHATSAPP). */
+
+const SITIO = {
+  nombre: "Octavo Compás",
+  nombreCompleto: "Octavo Compás Indumentaria",
+  instagramUsuario: "@octavo.compas.indumentaria",
+  instagram: "https://www.instagram.com/octavo.compas.indumentaria/",
+  email: "[EMAIL DE CONTACTO]",
+  ubicacion: "[CIUDAD, PROVINCIA]"
+};
+
+const ANUNCIOS = [
+  "Envíos a todo el país",
+  "Vestuarios a medida para academias y grupos",
+  "Hasta 12 cuotas"
+];
+
+/* Menú principal (los slugs coinciden con las categorías de la base) */
+const MENU = [
+  {
+    nombre: "Danza",
+    url: "/tienda.html?categoria=danza",
+    hijas: [
+      ["Ballet", "/tienda.html?categoria=ballet"],
+      ["Contemporáneo", "/tienda.html?categoria=contemporaneo"],
+      ["Folklore", "/tienda.html?categoria=folklore"],
+      ["Tango", "/tienda.html?categoria=tango"],
+      ["Ver todo danza", "/tienda.html?categoria=danza"]
+    ]
+  },
+  { nombre: "Fiesta y gala", url: "/tienda.html?categoria=fiesta-y-gala" },
+  { nombre: "Reinas 2026", url: "/tienda.html?categoria=reinas-2026" },
+  { nombre: "A medida", url: "/#a-medida" }
+];
+
+/* Íconos SVG de trazo fino (sin librerías) */
+const ICONOS = {
+  buscar: '<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>',
+  bolsa: '<path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  cerrar: '<path d="m6 6 12 12M18 6 6 18"/>',
+  flechaIzq: '<path d="M15 5l-7 7 7 7"/>',
+  flechaDer: '<path d="m9 5 7 7-7 7"/>',
+  abajo: '<path d="m6 9 6 6 6-6"/>',
+  mas: '<path d="M12 5v14M5 12h14"/>',
+  envio: '<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/>',
+  tarjeta: '<rect x="3" y="6" width="18" height="12" rx="1"/><path d="M3 10h18M7 14.5h4"/>',
+  aguja: '<path d="M19 5 8.5 15.5"/><path d="M16.5 4.5a1.8 1.8 0 0 1 3 3"/><path d="M8.5 15.5 5 19"/><path d="M4 9c3-3 8-4 11-2M10 20c3-1 6-3 7-7"/>',
+  whatsapp: '<path d="M4 20l1.3-4A8 8 0 1 1 8.4 19L4 20Z"/><path d="M9.3 8.6c.2 2.9 2.4 5.3 5.4 5.9l.9-1.3 1.7.9c-.3 1-1.2 1.6-2.2 1.6-3.7-.3-6.6-3.3-6.8-7 0-1 .7-1.8 1.6-2l.8 1.7-1.4 1Z"/>'
+};
+
+function icono(nombre, clase = "") {
+  return `<svg class="icono ${clase}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONOS[nombre]}</svg>`;
+}
+
+/* Link de WhatsApp con mensaje prearmado.
+   Si NEGOCIO_WHATSAPP está vacío en el .env, WhatsApp pide elegir el contacto. */
+async function linkWhatsApp(mensaje) {
+  const config = await obtenerConfig();
+  const numero = String(config.negocio?.whatsapp || "").replace(/\D/g, "");
+  return `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+}
+
+/* Completa todos los links que tengan data-whatsapp="mensaje" */
+async function activarLinksWhatsApp(raiz = document) {
+  const links = [...raiz.querySelectorAll("a[data-whatsapp]")];
+  for (const link of links) {
+    link.href = await linkWhatsApp(link.dataset.whatsapp);
+    link.target = "_blank";
+    link.rel = "noopener";
+  }
+}
+
 /* ---------- Header y footer ---------- */
 
-async function armarHeader() {
+function armarBarraAnuncios() {
+  const header = document.getElementById("header");
+  if (!header || document.querySelector(".barra-anuncio")) return;
+
+  const textos = ANUNCIOS.map((t) => `<span>${esc(t)}</span>`).join("");
+
+  header.insertAdjacentHTML(
+    "beforebegin",
+    `<div class="barra-anuncio">
+       <p class="oculto-visual">${esc(ANUNCIOS.join(" · "))}</p>
+       <div class="barra-anuncio-pista" aria-hidden="true">
+         <div class="barra-anuncio-grupo">${textos}${textos}</div>
+         <div class="barra-anuncio-grupo">${textos}${textos}</div>
+       </div>
+     </div>`
+  );
+}
+
+function armarHeader() {
   const header = document.getElementById("header");
   if (!header) return;
 
-  const [config, categorias] = await Promise.all([
-    obtenerConfig(),
-    api("/categorias").catch(() => [])
-  ]);
+  header.insertAdjacentHTML(
+    "beforebegin",
+    `<a class="saltar-contenido" href="#contenido">Saltar al contenido</a>`
+  );
+  armarBarraAnuncios();
 
-  const envio = config.envio || {};
-  const barra = envio.gratisDesde
-    ? `Envío gratis en compras desde ${pesos(envio.gratisDesde)} · Hasta 12 cuotas con Mercado Pago`
-    : "Hasta 12 cuotas con Mercado Pago";
+  const actual = location.pathname + location.search;
 
-  const menu = categorias
-    .map(
-      (c) => `
-      <li class="${c.hijas.length ? "con-submenu" : ""}">
-        <a href="/tienda.html?categoria=${encodeURIComponent(c.slug)}">${esc(c.nombre)}</a>
-        ${c.hijas.length
-          ? `<ul class="submenu">
-              <li><a href="/tienda.html?categoria=${encodeURIComponent(c.slug)}">Ver todo</a></li>
-              ${c.hijas.map((h) => `<li><a href="/tienda.html?categoria=${encodeURIComponent(h.slug)}">${esc(h.nombre)}</a></li>`).join("")}
-            </ul>`
-          : ""}
-      </li>`
-    )
-    .join("");
+  const items = MENU.map((item, i) => {
+    const activo = actual === item.url ? ' aria-current="page"' : "";
+
+    if (!item.hijas) {
+      return `<li><a class="nav-link" href="${item.url}"${activo}>${esc(item.nombre)}</a></li>`;
+    }
+
+    return `
+      <li class="con-submenu">
+        <div class="nav-fila">
+          <a class="nav-link" href="${item.url}"${activo}>${esc(item.nombre)}</a>
+          <button class="boton-submenu" type="button" aria-expanded="false" aria-controls="submenu-${i}"
+                  aria-label="Ver disciplinas de ${esc(item.nombre)}">${icono("abajo")}</button>
+        </div>
+        <ul class="submenu" id="submenu-${i}">
+          ${item.hijas.map(([nombre, url]) => `<li><a href="${url}">${esc(nombre)}</a></li>`).join("")}
+        </ul>
+      </li>`;
+  }).join("");
 
   header.innerHTML = `
-    <div class="barra-anuncio">${esc(barra)}</div>
     <div class="header-principal contenedor">
-      <button class="boton-icono boton-menu" aria-label="Abrir menú" aria-expanded="false">☰</button>
-      <a class="logo" href="/">${esc(config.negocio?.nombre || "TU MARCA")}</a>
-      <nav class="nav" aria-label="Categorías">
-        <ul>
-          ${menu}
-          <li><a href="/tienda.html?ofertas=1" class="link-ofertas">Ofertas</a></li>
-        </ul>
-      </nav>
-      <form class="buscador" action="/tienda.html" role="search">
-        <input type="search" name="buscar" placeholder="Buscar..." aria-label="Buscar productos"
-               value="${esc(parametro("buscar") || "")}">
-      </form>
-      <button class="boton-icono boton-carrito" aria-label="Abrir carrito">
-        🛍<span class="contador-carrito" hidden>0</span>
-      </button>
-    </div>`;
+      <div class="header-izq">
+        <button class="boton-icono boton-menu" type="button" aria-label="Abrir menú"
+                aria-expanded="false" aria-controls="nav-principal">${icono("menu")}</button>
+        <nav class="nav" id="nav-principal" aria-label="Principal">
+          <div class="nav-cabecera">
+            <img src="/img/marca/logo.svg" alt="" width="180" height="38">
+            <button class="boton-icono boton-cerrar-menu" type="button" aria-label="Cerrar menú">${icono("cerrar")}</button>
+          </div>
+          <ul class="nav-lista">${items}</ul>
+          <div class="nav-pie">
+            <a class="link-subrayado" data-whatsapp="Hola Octavo Compás, quería hacerles una consulta.">Escribinos por WhatsApp</a>
+          </div>
+        </nav>
+      </div>
 
+      <a class="logo" href="/" aria-label="${esc(SITIO.nombreCompleto)}, ir al inicio">
+        <img src="/img/marca/logo.svg" alt="" width="210" height="45">
+      </a>
+
+      <div class="header-der">
+        <button class="boton-icono boton-buscar" type="button" aria-label="Buscar"
+                aria-expanded="false" aria-controls="panel-busqueda">${icono("buscar")}</button>
+        <button class="boton-icono boton-carrito" type="button" aria-label="Abrir carrito">
+          ${icono("bolsa")}<span class="contador-carrito" hidden>0</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="panel-busqueda" id="panel-busqueda" hidden>
+      <form class="contenedor buscador" action="/tienda.html" role="search">
+        <label class="oculto-visual" for="campo-buscar">Buscar productos</label>
+        ${icono("buscar")}
+        <input id="campo-buscar" type="search" name="buscar" placeholder="¿Qué estás buscando?"
+               value="${esc(parametro("buscar") || "")}" autocomplete="off">
+        <button class="boton" type="submit">Buscar</button>
+      </form>
+    </div>
+    <div class="fondo-menu" hidden></div>`;
+
+  /* Menú en celular */
   const botonMenu = header.querySelector(".boton-menu");
+  const fondoMenu = header.querySelector(".fondo-menu");
+
+  const cerrarMenu = () => {
+    if (!header.classList.contains("menu-abierto")) return;
+    header.classList.remove("menu-abierto");
+    botonMenu.setAttribute("aria-expanded", "false");
+    fondoMenu.hidden = true;
+    document.body.classList.remove("sin-scroll");
+  };
+
   botonMenu.addEventListener("click", () => {
-    const abierto = header.classList.toggle("menu-abierto");
-    botonMenu.setAttribute("aria-expanded", String(abierto));
+    header.classList.add("menu-abierto");
+    botonMenu.setAttribute("aria-expanded", "true");
+    fondoMenu.hidden = false;
+    document.body.classList.add("sin-scroll");
+    header.querySelector(".boton-cerrar-menu").focus();
   });
+
+  header.querySelector(".boton-cerrar-menu").addEventListener("click", () => {
+    cerrarMenu();
+    botonMenu.focus();
+  });
+  fondoMenu.addEventListener("click", cerrarMenu);
+  header.querySelectorAll(".nav a").forEach((a) => a.addEventListener("click", cerrarMenu));
+
+  /* Submenú: se abre con hover en escritorio y con el botón (celular y teclado) */
+  header.querySelectorAll(".boton-submenu").forEach((boton) => {
+    boton.addEventListener("click", () => {
+      const abierto = boton.getAttribute("aria-expanded") === "true";
+      boton.setAttribute("aria-expanded", String(!abierto));
+      boton.closest(".con-submenu").classList.toggle("abierto", !abierto);
+    });
+  });
+
+  /* Buscador */
+  const botonBuscar = header.querySelector(".boton-buscar");
+  const panelBusqueda = header.querySelector(".panel-busqueda");
+
+  botonBuscar.addEventListener("click", () => {
+    const abrir = panelBusqueda.hidden;
+    panelBusqueda.hidden = !abrir;
+    botonBuscar.setAttribute("aria-expanded", String(abrir));
+    if (abrir) panelBusqueda.querySelector("input").focus();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    cerrarMenu();
+    if (!panelBusqueda.hidden) {
+      panelBusqueda.hidden = true;
+      botonBuscar.setAttribute("aria-expanded", "false");
+      botonBuscar.focus();
+    }
+    header.querySelectorAll(".con-submenu.abierto").forEach((li) => {
+      li.classList.remove("abierto");
+      li.querySelector(".boton-submenu").setAttribute("aria-expanded", "false");
+    });
+  });
+
+  /* Línea inferior cuando se hace scroll */
+  const marcarScroll = () => header.classList.toggle("con-scroll", window.scrollY > 8);
+  window.addEventListener("scroll", marcarScroll, { passive: true });
+  marcarScroll();
 
   header.querySelector(".boton-carrito").addEventListener("click", abrirCarrito);
 }
 
-async function armarFooter() {
+function armarFooter() {
   const footer = document.getElementById("footer");
   if (!footer) return;
 
-  const config = await obtenerConfig();
-  const negocio = config.negocio || {};
   const anio = new Date().getFullYear();
-
-  const whatsapp = negocio.whatsapp
-    ? `<a href="https://wa.me/${encodeURIComponent(negocio.whatsapp)}" target="_blank" rel="noopener">WhatsApp</a>`
-    : "";
-  const instagram = negocio.instagram && /^https:\/\//.test(negocio.instagram)
-    ? `<a href="${esc(negocio.instagram)}" target="_blank" rel="noopener">Instagram</a>`
-    : "";
+  const consulta = "Hola Octavo Compás, quería hacerles una consulta.";
 
   footer.innerHTML = `
     <div class="contenedor footer-grid">
-      <div>
-        <strong class="logo">${esc(negocio.nombre || "TU MARCA")}</strong>
-        <p>Ropa pensada para moverte.</p>
+      <div class="footer-marca">
+        <a href="/" class="footer-logo" aria-label="${esc(SITIO.nombreCompleto)}, ir al inicio">
+          <img src="/img/marca/logo-claro.svg" alt="" width="230" height="49" loading="lazy">
+        </a>
+        <p>Indumentaria de danza, vestuarios a medida y ropa de fiesta. Confeccionamos cada prenda para que brilles en escena.</p>
+
+        <form class="newsletter" id="form-newsletter" novalidate>
+          <label for="newsletter-email" class="footer-titulo">Novedades en tu mail</label>
+          <div class="newsletter-fila">
+            <input id="newsletter-email" type="email" name="email" placeholder="Tu email" autocomplete="email" required>
+            <button class="boton boton-claro" type="submit">Suscribirme</button>
+          </div>
+        </form>
       </div>
+
+      <nav aria-label="Tienda">
+        <h2 class="footer-titulo">Tienda</h2>
+        <ul>
+          <li><a href="/tienda.html?categoria=ballet">Ballet</a></li>
+          <li><a href="/tienda.html?categoria=contemporaneo">Contemporáneo</a></li>
+          <li><a href="/tienda.html?categoria=folklore">Folklore</a></li>
+          <li><a href="/tienda.html?categoria=tango">Tango</a></li>
+          <li><a href="/tienda.html?categoria=fiesta-y-gala">Fiesta y gala</a></li>
+          <li><a href="/tienda.html?categoria=reinas-2026">Reinas 2026</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Ayuda">
+        <h2 class="footer-titulo">Ayuda</h2>
+        <ul>
+          <li><a href="/ayuda.html#envios">Envíos</a></li>
+          <li><a href="/ayuda.html#cambios">Cambios y devoluciones</a></li>
+          <li><a href="/ayuda.html#pagos">Medios de pago</a></li>
+          <li><a href="/ayuda.html#talles">Guía de talles</a></li>
+          <li><a href="/#a-medida">Vestuarios a medida</a></li>
+          <li><a href="/arrepentimiento.html">Botón de arrepentimiento</a></li>
+        </ul>
+      </nav>
+
       <div>
-        <h4>Ayuda</h4>
-        <a href="/tienda.html">Tienda</a>
-        <a href="/tienda.html?ofertas=1">Ofertas</a>
-      </div>
-      <div>
-        <h4>Contacto</h4>
-        ${whatsapp}${instagram}
+        <h2 class="footer-titulo">Contacto</h2>
+        <ul>
+          <li><a data-whatsapp="${esc(consulta)}">WhatsApp</a></li>
+          <li><a href="${esc(SITIO.instagram)}" target="_blank" rel="noopener">${esc(SITIO.instagramUsuario)}</a></li>
+          <li><span>${esc(SITIO.email)}</span></li>
+          <li><span>${esc(SITIO.ubicacion)}</span></li>
+        </ul>
       </div>
     </div>
-    <p class="footer-legal">© ${anio} ${esc(negocio.nombre || "")} · Pagos procesados por Mercado Pago</p>`;
+
+    <div class="footer-legal">
+      <div class="contenedor">
+        <p>© ${anio} ${esc(SITIO.nombreCompleto)} · Pagos procesados por Mercado Pago</p>
+        <a class="boton-arrepentimiento" href="/arrepentimiento.html">Botón de arrepentimiento</a>
+      </div>
+    </div>`;
+
+  /* [SERVICIO DE NEWSLETTER]: todavía no hay dónde guardar los mails */
+  footer.querySelector("#form-newsletter").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const campo = e.target.email;
+    if (!campo.checkValidity()) {
+      aviso("Revisá el email.", "error");
+      campo.focus();
+      return;
+    }
+    aviso("Muy pronto vas a poder suscribirte. Mientras tanto, seguinos en Instagram.");
+  });
 }
 
 /* ---------- Carrito lateral ---------- */
@@ -369,7 +590,9 @@ window.tienda = { abrirCarrito, pintarCarrito, actualizarContador };
 /* ---------- Arranque ---------- */
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await Promise.all([armarHeader(), armarFooter()]);
+  armarHeader();
+  armarFooter();
+  activarLinksWhatsApp();
   crearPanelCarrito();
   api("/carrito").then(pintarCarrito).catch(() => {});
 });
