@@ -138,3 +138,21 @@ CREATE TABLE IF NOT EXISTS orden_items (
 );
 
 CREATE INDEX IF NOT EXISTS idx_orden_items_orden ON orden_items(orden_id);
+
+-- ---------- BOTÓN DE ARREPENTIMIENTO (Ley 24.240 / Res. 424/2020) ----------
+-- Cada solicitud recibe un código que se le informa al cliente.
+CREATE TABLE IF NOT EXISTS arrepentimientos (
+  id             SERIAL PRIMARY KEY,
+  codigo         VARCHAR(30)  NOT NULL UNIQUE,
+  nombre         VARCHAR(150) NOT NULL,
+  email          VARCHAR(255) NOT NULL,
+  numero_pedido  VARCHAR(40)  NOT NULL,
+  motivo         VARCHAR(500),
+  -- Se completa solo si el número de pedido y el email coinciden con una orden
+  orden_id       INTEGER REFERENCES ordenes(id) ON DELETE SET NULL,
+  estado         VARCHAR(20)  NOT NULL DEFAULT 'recibida'
+    CHECK (estado IN ('recibida', 'en_proceso', 'resuelta')),
+  creado_en      TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_arrepentimientos_creado ON arrepentimientos(creado_en DESC);

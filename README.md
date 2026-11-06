@@ -171,10 +171,24 @@ y los **slugs** de las 3 prendas (el slug es lo que aparece en `producto.html?p=
 - `frontend/js/comun.js` → `SITIO`: email de contacto y ubicación que se muestran en el footer.
 - Textos marcados entre corchetes (`[ASÍ]`) están pendientes de completar.
 
+### Botón de arrepentimiento
+
+`arrepentimiento.html` envía la solicitud a `POST /api/arrepentimiento`, que:
+
+1. Valida los datos y la guarda en la tabla `arrepentimientos` (creala con `npm run db:init`).
+2. Genera un código de identificación (`ARR-AAAAMMDD-XXXXXX`) y se lo muestra al cliente.
+3. Le manda la constancia por mail al cliente y un aviso a `MAIL_TIENDA`.
+   **Completá `MAIL_TIENDA` en el `.env`**: si está vacío, el aviso a la tienda no se envía.
+4. Si el número de pedido y el email coinciden con una orden, la vincula (`orden_id`).
+   La respuesta es igual en los dos casos, así nadie puede averiguar pedidos ajenos.
+
+Tiene un límite de 5 solicitudes por hora por IP. Por ahora las solicitudes se ven en
+la base y en los mails; todavía no hay una pestaña en el panel.
+
 ## 8. Próximos pasos sugeridos
 
 - [ ] Fotos reales y logo original (ver tabla de arriba)
-- [ ] Endpoint para el botón de arrepentimiento (guardar la solicitud y enviar constancia por mail)
+- [ ] Pestaña "Arrepentimientos" en el panel para verlas y marcarlas como resueltas
 - [ ] Servicio de newsletter
 - [ ] Subida de fotos directa desde el panel (Cloudinary)
 - [ ] Cupones de descuento

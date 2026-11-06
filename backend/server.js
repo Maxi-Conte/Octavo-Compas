@@ -61,6 +61,7 @@ function limite(ventanaMin, maximo, opciones = {}) {
 
 app.use("/api/admin/login", limite(15, 10, { skipSuccessfulRequests: true }));
 app.use("/api/checkout", limite(15, 20));
+app.use("/api/arrepentimiento", limite(60, 5));
 app.use("/api", limite(1, 300));
 
 /* ---------- API pública ---------- */
@@ -86,6 +87,7 @@ app.get("/api/health", async (req, res) => {
 app.use("/api", require("./routes/catalogo"));
 app.use("/api/carrito", require("./routes/carrito").router);
 app.use("/api", require("./routes/pagos"));
+app.use("/api", require("./routes/arrepentimiento"));
 
 /* ---------- API de administración ---------- */
 

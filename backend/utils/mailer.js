@@ -155,6 +155,45 @@ function mailCambioEstado(orden) {
   });
 }
 
+/* ---------- Botón de arrepentimiento ---------- */
+
+function fechaArgentina(fecha) {
+  return new Date(fecha).toLocaleString("es-AR", { timeZone: "America/Argentina/Buenos_Aires" });
+}
+
+function mailConstanciaArrepentimiento(s) {
+  return enviarMail({
+    para: s.email,
+    asunto: `Recibimos tu solicitud de arrepentimiento (${s.codigo})`,
+    html: plantilla(
+      "Solicitud de arrepentimiento recibida",
+      `<p>Hola ${escaparHTML(s.nombre)}, recibimos tu pedido de revocación de compra.</p>
+       <p>Código de identificación: <strong>${escaparHTML(s.codigo)}</strong><br>
+          Número de pedido: ${escaparHTML(s.numero_pedido)}<br>
+          Fecha: ${escaparHTML(fechaArgentina(s.creado_en))}</p>
+       <p>Guardá este mail como constancia. Te vamos a escribir para coordinar la devolución.</p>`
+    )
+  });
+}
+
+function mailAvisoArrepentimiento(s) {
+  const coincide = s.orden_id
+    ? `Coincide con el pedido #${s.orden_id}.`
+    : "No coincide con ningún pedido con ese email: verificalo con el cliente.";
+
+  return enviarMail({
+    para: config.mail.tienda,
+    asunto: `Botón de arrepentimiento: ${s.codigo}`,
+    html: plantilla(
+      `Nueva solicitud de arrepentimiento ${escaparHTML(s.codigo)}`,
+      `<p>${escaparHTML(s.nombre)} · ${escaparHTML(s.email)}</p>
+       <p>Número de pedido informado: <strong>${escaparHTML(s.numero_pedido)}</strong>. ${escaparHTML(coincide)}</p>
+       ${s.motivo ? `<p>Motivo: ${escaparHTML(s.motivo)}</p>` : ""}
+       <p>Fecha: ${escaparHTML(fechaArgentina(s.creado_en))}</p>`
+    )
+  });
+}
+
 /*
   Los mails nunca deben frenar ni romper una venta:
   si fallan, se registra el error y listo.
@@ -170,5 +209,7 @@ module.exports = {
   mailNuevaVenta,
   mailAlertaRevision,
   mailCambioEstado,
+  mailConstanciaArrepentimiento,
+  mailAvisoArrepentimiento,
   enviarSinEsperar
 };

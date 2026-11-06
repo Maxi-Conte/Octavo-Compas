@@ -54,15 +54,17 @@
           <textarea name="motivo" rows="4" maxlength="500"></textarea>
         </label>
 
+        <p class="texto-error" id="error-envio" role="alert"></p>
+
         <div class="form-acciones">
-          <button class="boton boton-destacado" type="submit" data-canal="whatsapp">Enviar por WhatsApp</button>
-          <button class="boton boton-secundario" type="submit" data-canal="email" id="enviar-email">Enviar por email</button>
+          <button class="boton boton-destacado" type="submit" id="enviar-solicitud">Enviar solicitud</button>
         </div>
 
-        <div class="constancia" id="constancia" role="status" hidden>
-          <p class="constancia-titulo">Tu código de solicitud</p>
+        <div class="constancia" id="constancia" role="status" tabindex="-1" hidden>
+          <p class="constancia-titulo">Recibimos tu solicitud</p>
           <p class="constancia-codigo" id="codigo-solicitud"></p>
-          <p>Guardalo: lo incluimos en tu mensaje y te lo vamos a confirmar por escrito.</p>
+          <p>Este es tu código de identificación. Te mandamos la constancia a <strong id="email-constancia"></strong>; si no la ves, revisá la carpeta de spam.</p>
+          <p class="constancia-extra"><a class="link-subrayado" id="whatsapp-constancia">Avisanos también por WhatsApp</a></p>
         </div>
       </form>
     </div>

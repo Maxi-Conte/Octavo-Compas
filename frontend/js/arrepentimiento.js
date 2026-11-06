@@ -1,17 +1,12 @@
 /* =====================================================
    BOTÓN DE ARREPENTIMIENTO
-   Por ahora arma un mensaje de WhatsApp o un email con los datos.
-   (Más adelante conviene guardarlo en el servidor: ver README.)
+   Envía la solicitud a POST /api/arrepentimiento, que la guarda,
+   genera el código de identificación y manda la constancia por mail.
 ===================================================== */
 
 const form = document.getElementById("form-arrepentimiento");
-
-/* Código de identificación de la solicitud: ARR-AAAAMMDD-XXXX */
-function generarCodigo() {
-  const fecha = new Date().toISOString().slice(0, 10).replaceAll("-", "");
-  const azar = crypto.getRandomValues(new Uint32Array(1))[0].toString(36).toUpperCase().slice(-4).padStart(4, "0");
-  return `ARR-${fecha}-${azar}`;
-}
+const botonEnviar = document.getElementById("enviar-solicitud");
+const errorEnvio = document.getElementById("error-envio");
 
 function mostrarError(campo, mensaje) {
   const error = document.getElementById(`error-${campo.name}`);
@@ -37,23 +32,23 @@ function validar() {
   return !primero;
 }
 
-function armarMensaje(codigo) {
-  const d = Object.fromEntries(new FormData(form));
-  return [
-    "Hola Octavo Compás, quiero ejercer el derecho de arrepentimiento de mi compra.",
-    "",
-    `Código de solicitud: ${codigo}`,
-    `Nombre: ${d.nombre.trim()}`,
-    `Email: ${d.email.trim()}`,
-    `Número de pedido: ${d.pedido.trim()}`,
-    d.motivo.trim() ? `Motivo: ${d.motivo.trim()}` : ""
-  ].filter((l, i, arr) => l !== "" || arr[i - 1] !== "").join("\n").trim();
-}
+async function mostrarConstancia(codigo, datos) {
+  document.getElementById("codigo-solicitud").textContent = codigo;
+  document.getElementById("email-constancia").textContent = datos.email;
 
-/* Si todavía no hay email de contacto cargado, solo queda WhatsApp */
-const emailNegocio = SITIO.email;
-const hayEmail = /^[^\s@\[\]]+@[^\s@\[\]]+\.[^\s@\[\]]+$/.test(emailNegocio);
-if (!hayEmail) document.getElementById("enviar-email").hidden = true;
+  const link = document.getElementById("whatsapp-constancia");
+  link.href = await linkWhatsApp(
+    `Hola Octavo Compás, hice una solicitud de arrepentimiento.\nCódigo: ${codigo}\nPedido: ${datos.pedido}`
+  );
+  link.target = "_blank";
+  link.rel = "noopener";
+
+  /* El formulario ya no hace falta: queda solo la constancia */
+  form.querySelectorAll(".campo, .form-acciones, .form-ayuda").forEach((el) => (el.hidden = true));
+  const constancia = document.getElementById("constancia");
+  constancia.hidden = false;
+  constancia.focus();
+}
 
 form.addEventListener("input", (e) => {
   if (e.target.getAttribute("aria-invalid") === "true") mostrarError(e.target, "");
@@ -61,18 +56,20 @@ form.addEventListener("input", (e) => {
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  errorEnvio.textContent = "";
   if (!validar()) return;
 
-  const codigo = generarCodigo();
-  const mensaje = armarMensaje(codigo);
+  const datos = Object.fromEntries(new FormData(form));
 
-  document.getElementById("codigo-solicitud").textContent = codigo;
-  document.getElementById("constancia").hidden = false;
+  botonEnviar.disabled = true;
+  botonEnviar.textContent = "Enviando...";
 
-  if (e.submitter?.dataset.canal === "email" && hayEmail) {
-    const asunto = `Botón de arrepentimiento - ${codigo}`;
-    location.href = `mailto:${emailNegocio}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(mensaje)}`;
-  } else {
-    window.open(await linkWhatsApp(mensaje), "_blank", "noopener");
+  try {
+    const { codigo } = await api("/arrepentimiento", { method: "POST", body: datos });
+    await mostrarConstancia(codigo, datos);
+  } catch (error) {
+    errorEnvio.textContent = error.message;
+    botonEnviar.disabled = false;
+    botonEnviar.textContent = "Enviar solicitud";
   }
 });
