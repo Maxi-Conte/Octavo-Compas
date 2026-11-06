@@ -215,6 +215,8 @@ const ICONOS = {
   flechaDer: '<path d="m9 5 7 7-7 7"/>',
   abajo: '<path d="m6 9 6 6 6-6"/>',
   mas: '<path d="M12 5v14M5 12h14"/>',
+  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  reloj: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
   envio: '<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/>',
   tarjeta: '<rect x="3" y="6" width="18" height="12" rx="1"/><path d="M3 10h18M7 14.5h4"/>',
   aguja: '<path d="M19 5 8.5 15.5"/><path d="M16.5 4.5a1.8 1.8 0 0 1 3 3"/><path d="M8.5 15.5 5 19"/><path d="M4 9c3-3 8-4 11-2M10 20c3-1 6-3 7-7"/>',
@@ -501,10 +503,10 @@ function crearPanelCarrito() {
   document.body.insertAdjacentHTML(
     "beforeend",
     `<div class="fondo-oscuro" hidden></div>
-     <aside class="panel-carrito" aria-label="Carrito" aria-hidden="true">
+     <aside class="panel-carrito" aria-label="Carrito" aria-hidden="true" inert>
        <div class="panel-cabecera">
          <h2>Tu carrito</h2>
-         <button class="boton-icono cerrar-carrito" aria-label="Cerrar">✕</button>
+         <button class="boton-icono cerrar-carrito" type="button" aria-label="Cerrar carrito">${icono("cerrar")}</button>
        </div>
        <div class="panel-cuerpo"></div>
        <div class="panel-pie"></div>
@@ -553,7 +555,7 @@ function pintarCarrito(carrito) {
   if (!cuerpo) return;
 
   if (carrito.items.length === 0) {
-    cuerpo.innerHTML = `<p class="vacio">Tu carrito está vacío.</p>`;
+    cuerpo.innerHTML = `<div class="carrito-vacio"><p>Tu carrito está vacío</p><span>Encontrá tu próxima prenda para la función.</span></div>`;
     pie.innerHTML = `<a class="boton boton-secundario" href="/tienda.html">Ver productos</a>`;
     return;
   }
@@ -562,7 +564,7 @@ function pintarCarrito(carrito) {
     .map(
       (i) => `
       <div class="item-carrito ${i.disponible ? "" : "no-disponible"}">
-        <img src="${esc(i.imagen || "")}" alt="">
+        <span class="foto item-foto" data-foto="">${i.imagen ? `<img src="${esc(i.imagen)}" alt="" width="160" height="200">` : ""}</span>
         <div>
           <a href="/producto.html?p=${encodeURIComponent(i.slug)}" class="item-nombre">${esc(i.nombre)}</a>
           <p class="item-detalle">${esc(i.color)} · Talle ${esc(i.talle)}</p>
@@ -570,12 +572,12 @@ function pintarCarrito(carrito) {
           ${i.stock_insuficiente ? `<p class="texto-error">Solo quedan ${i.maximo}</p>` : ""}
           <div class="item-acciones">
             <div class="cantidad">
-              <button data-accion="restar" data-id="${i.variante_id}" aria-label="Restar">−</button>
+              <button type="button" data-accion="restar" data-id="${i.variante_id}" aria-label="Restar una unidad de ${esc(i.nombre)}">−</button>
               <span>${i.cantidad}</span>
-              <button data-accion="sumar" data-id="${i.variante_id}" aria-label="Sumar"
+              <button type="button" data-accion="sumar" data-id="${i.variante_id}" aria-label="Sumar una unidad de ${esc(i.nombre)}"
                 ${i.cantidad >= i.maximo ? "disabled" : ""}>+</button>
             </div>
-            <button class="link-quitar" data-accion="quitar" data-id="${i.variante_id}">Quitar</button>
+            <button type="button" class="link-quitar" data-accion="quitar" data-id="${i.variante_id}" aria-label="Quitar ${esc(i.nombre)}">Quitar</button>
           </div>
         </div>
         <strong>${pesos(i.precio * i.cantidad)}</strong>
@@ -602,9 +604,12 @@ async function abrirCarrito() {
   crearPanelCarrito();
   document.querySelector(".fondo-oscuro").hidden = false;
   const panel = document.querySelector(".panel-carrito");
+  carritoFocoPrevio = document.activeElement;
   panel.classList.add("abierto");
   panel.setAttribute("aria-hidden", "false");
+  panel.inert = false;
   document.body.classList.add("sin-scroll");
+  panel.querySelector(".cerrar-carrito").focus();
 
   try {
     pintarCarrito(await api("/carrito"));
@@ -615,12 +620,16 @@ async function abrirCarrito() {
 
 function cerrarCarrito() {
   const panel = document.querySelector(".panel-carrito");
-  if (!panel) return;
+  if (!panel || !panel.classList.contains("abierto")) return;
   panel.classList.remove("abierto");
   panel.setAttribute("aria-hidden", "true");
+  panel.inert = true;
   document.querySelector(".fondo-oscuro").hidden = true;
   document.body.classList.remove("sin-scroll");
+  carritoFocoPrevio?.focus?.();
 }
+
+let carritoFocoPrevio = null;
 
 /* Para que otras páginas (producto) actualicen el carrito */
 window.tienda = { abrirCarrito, pintarCarrito, actualizarContador };

@@ -6,14 +6,14 @@
 ===================================================== */
 
 const MENSAJES = {
-  pendiente: { icono: "⏳", titulo: "Estamos esperando la confirmación del pago", texto: "Si pagaste en efectivo o con transferencia, puede tardar un rato. Te avisamos por email." },
-  rechazado: { icono: "✕", titulo: "El pago no se pudo completar", texto: "No se hizo ningún cobro. Podés volver a intentarlo con otro medio de pago." },
-  pagado: { icono: "✓", titulo: "¡Gracias por tu compra!", texto: "Tu pago fue aprobado. Te enviamos un email con el detalle." },
-  preparando: { icono: "📦", titulo: "Estamos preparando tu pedido", texto: "" },
-  enviado: { icono: "🚚", titulo: "Tu pedido está en camino", texto: "" },
-  listo_retiro: { icono: "🏬", titulo: "Tu pedido está listo para retirar", texto: "" },
-  entregado: { icono: "✓", titulo: "Pedido entregado", texto: "¡Gracias por elegirnos!" },
-  cancelado: { icono: "✕", titulo: "Pedido cancelado", texto: "Si tenés dudas, escribinos." }
+  pendiente: { icono: "reloj", titulo: "Estamos esperando la confirmación del pago", texto: "Si pagaste en efectivo o con transferencia, puede tardar un rato. Te avisamos por email." },
+  rechazado: { icono: "cerrar", titulo: "El pago no se pudo completar", texto: "No se hizo ningún cobro. Podés volver a intentarlo con otro medio de pago." },
+  pagado: { icono: "check", titulo: "¡Gracias por tu compra!", texto: "Tu pago fue aprobado. Te enviamos un email con el detalle." },
+  preparando: { icono: "aguja", titulo: "Estamos preparando tu pedido", texto: "" },
+  enviado: { icono: "envio", titulo: "Tu pedido está en camino", texto: "" },
+  listo_retiro: { icono: "bolsa", titulo: "Tu pedido está listo para retirar", texto: "" },
+  entregado: { icono: "check", titulo: "Pedido entregado", texto: "¡Gracias por elegirnos!" },
+  cancelado: { icono: "cerrar", titulo: "Pedido cancelado", texto: "Si tenés dudas, escribinos." }
 };
 
 const contenedor = document.getElementById("resultado");
@@ -27,7 +27,7 @@ function pintar(orden) {
     .join("");
 
   contenedor.innerHTML = `
-    <div class="icono">${m.icono}</div>
+    <div class="icono-resultado icono-${orden.estado === "rechazado" || orden.estado === "cancelado" ? "error" : "ok"}">${icono(m.icono)}</div>
     <h1>${esc(m.titulo)}</h1>
     <p>${esc(m.texto)}</p>
     <div class="detalle-pedido">
