@@ -401,3 +401,32 @@ dialog h3 {
 .tabla tbody tr.clickeable:hover {
   background: var(--c-superficie);
 }
+
+/* Pestaña Arrepentimientos */
+.contador-pestana {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  margin-left: 4px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--c-acento);
+  color: #fff;
+  font-size: 0.65rem;
+  letter-spacing: 0;
+}
+
+#lista-arrepentimientos select {
+  padding: 7px 10px;
+  border: 1px solid var(--c-borde);
+  background: var(--c-fondo);
+}
+
+#lista-arrepentimientos td small {
+  color: var(--c-texto-2);
+}
+
+#lista-arrepentimientos td small.texto-error {
+  color: var(--c-error);
+}

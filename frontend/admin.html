@@ -33,6 +33,7 @@
         <button type="button" data-pestana="productos" class="activo">Productos</button>
         <button type="button" data-pestana="pedidos">Pedidos</button>
         <button type="button" data-pestana="categorias">Categorías</button>
+        <button type="button" data-pestana="arrepentimientos">Arrepentimientos <span class="contador-pestana" id="contador-arrepentimientos" hidden></span></button>
       </nav>
       <a href="/" target="_blank" rel="noopener">Ver tienda ↗</a>
       <button type="button" class="boton boton-secundario boton-chico" id="salir">Salir</button>
@@ -86,6 +87,25 @@
         <table class="tabla">
           <thead><tr><th>Nombre</th><th>Dentro de</th><th>Orden</th><th>Productos</th><th>Estado</th><th></th></tr></thead>
           <tbody id="lista-categorias"></tbody>
+        </table>
+      </div>
+
+      <!-- ----- ARREPENTIMIENTOS ----- -->
+      <div data-vista="arrepentimientos" hidden>
+        <div class="barra-admin">
+          <select id="filtro-arrepentimientos" aria-label="Filtrar solicitudes">
+            <option value="pendientes">Sin resolver</option>
+            <option value="recibida">Recibidas</option>
+            <option value="en_proceso">En proceso</option>
+            <option value="resuelta">Resueltas</option>
+            <option value="todas">Todas</option>
+          </select>
+          <button type="button" class="boton boton-secundario boton-chico" id="recargar-arrepentimientos">Actualizar</button>
+        </div>
+        <p class="ayuda">Solicitudes del Botón de arrepentimiento. El cliente puede revocar la compra dentro de los 10 días corridos desde la entrega o la compra, lo que ocurra último.</p>
+        <table class="tabla">
+          <thead><tr><th>Código</th><th>Fecha</th><th>Cliente</th><th>Pedido</th><th>Motivo</th><th>Estado</th></tr></thead>
+          <tbody id="lista-arrepentimientos"></tbody>
         </table>
       </div>
     </main>

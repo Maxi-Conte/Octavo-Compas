@@ -74,6 +74,8 @@ function mostrarPanel() {
   $("vista-login").hidden = true;
   $("vista-panel").hidden = false;
   cargarCategorias().then(cargarProductos).catch((e) => aviso(e.message, "error"));
+  /* Solo para mostrar cuántas solicitudes de arrepentimiento faltan atender */
+  api("/admin/arrepentimientos?estado=recibida").then(pintarContadorArrepentimientos).catch(() => {});
 }
 
 $("form-login").addEventListener("submit", async (e) => {
@@ -106,6 +108,7 @@ document.querySelector(".pestanas").addEventListener("click", (e) => {
   if (boton.dataset.pestana === "productos") cargarProductos();
   if (boton.dataset.pestana === "pedidos") cargarPedidos();
   if (boton.dataset.pestana === "categorias") cargarCategorias();
+  if (boton.dataset.pestana === "arrepentimientos") cargarArrepentimientos();
 });
 
 /* =====================================================
@@ -597,6 +600,91 @@ async function abrirPedido(id) {
 
   if (!$("detalle-pedido").open) $("detalle-pedido").showModal();
 }
+
+/* =====================================================
+   BOTÓN DE ARREPENTIMIENTO
+===================================================== */
+
+const ESTADOS_ARREPENTIMIENTO = {
+  recibida: "Recibida",
+  en_proceso: "En proceso",
+  resuelta: "Resuelta"
+};
+
+/* Días corridos desde que llegó la solicitud */
+function diasDesde(valor) {
+  return Math.floor((Date.now() - new Date(valor).getTime()) / 86400000);
+}
+
+function pintarContadorArrepentimientos({ sin_atender }) {
+  const contador = $("contador-arrepentimientos");
+  contador.textContent = sin_atender;
+  contador.hidden = !sin_atender;
+}
+
+async function cargarArrepentimientos() {
+  const filtro = $("filtro-arrepentimientos").value;
+
+  try {
+    const datos = await api(`/admin/arrepentimientos?estado=${encodeURIComponent(filtro)}`);
+    pintarContadorArrepentimientos(datos);
+
+    $("lista-arrepentimientos").innerHTML = datos.solicitudes.length
+      ? datos.solicitudes
+          .map((s) => {
+            const dias = diasDesde(s.creado_en);
+            const opciones = Object.entries(ESTADOS_ARREPENTIMIENTO)
+              .map(([valor, texto]) => `<option value="${valor}" ${valor === s.estado ? "selected" : ""}>${texto}</option>`)
+              .join("");
+
+            return `
+        <tr class="${s.estado === "recibida" ? "fila-alerta" : ""}">
+          <td><strong>${esc(s.codigo)}</strong></td>
+          <td>${fecha(s.creado_en)}<br><small>hace ${dias} día${dias === 1 ? "" : "s"}</small></td>
+          <td>${esc(s.nombre)}<br><small><a href="mailto:${encodeURIComponent(s.email)}">${esc(s.email)}</a></small></td>
+          <td>
+            ${s.orden_id
+              ? `<button type="button" class="link-quitar" data-ver-pedido="${s.orden_id}">#${s.orden_id}</button><br><small>Coincide</small>`
+              : `${esc(s.numero_pedido)}<br><small class="texto-error">No coincide con el email</small>`}
+          </td>
+          <td>${s.motivo ? esc(s.motivo) : "<small>—</small>"}</td>
+          <td>
+            <select data-arrepentimiento="${s.id}" aria-label="Estado de la solicitud ${esc(s.codigo)}">${opciones}</select>
+          </td>
+        </tr>`;
+          })
+          .join("")
+      : `<tr><td colspan="6" class="vacio">No hay solicitudes.</td></tr>`;
+  } catch (error) {
+    aviso(error.message, "error");
+  }
+}
+
+$("filtro-arrepentimientos").addEventListener("change", cargarArrepentimientos);
+$("recargar-arrepentimientos").addEventListener("click", cargarArrepentimientos);
+
+$("lista-arrepentimientos").addEventListener("change", async (e) => {
+  const select = e.target.closest("[data-arrepentimiento]");
+  if (!select) return;
+
+  select.disabled = true;
+  try {
+    const r = await api(`/admin/arrepentimientos/${select.dataset.arrepentimiento}/estado`, {
+      method: "PATCH",
+      body: { estado: select.value }
+    });
+    aviso(`Solicitud marcada como "${r.estado_texto}".`);
+    cargarArrepentimientos();
+  } catch (error) {
+    aviso(error.message, "error");
+    select.disabled = false;
+  }
+});
+
+$("lista-arrepentimientos").addEventListener("click", (e) => {
+  const boton = e.target.closest("[data-ver-pedido]");
+  if (boton) abrirPedido(Number(boton.dataset.verPedido));
+});
 
 /* =====================================================
    ARRANQUE

@@ -182,13 +182,15 @@ y los **slugs** de las 3 prendas (el slug es lo que aparece en `producto.html?p=
 4. Si el número de pedido y el email coinciden con una orden, la vincula (`orden_id`).
    La respuesta es igual en los dos casos, así nadie puede averiguar pedidos ajenos.
 
-Tiene un límite de 5 solicitudes por hora por IP. Por ahora las solicitudes se ven en
-la base y en los mails; todavía no hay una pestaña en el panel.
+Tiene un límite de 5 solicitudes por hora por IP.
+
+En el panel, la pestaña **Arrepentimientos** lista las solicitudes (con un contador de las
+que faltan atender), muestra si coinciden con un pedido y permite pasarlas a
+"En proceso" o "Resuelta".
 
 ## 8. Próximos pasos sugeridos
 
 - [ ] Fotos reales y logo original (ver tabla de arriba)
-- [ ] Pestaña "Arrepentimientos" en el panel para verlas y marcarlas como resueltas
 - [ ] Servicio de newsletter
 - [ ] Subida de fotos directa desde el panel (Cloudinary)
 - [ ] Cupones de descuento

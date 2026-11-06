@@ -94,6 +94,7 @@ app.use("/api", require("./routes/arrepentimiento"));
 app.use("/api/admin", require("./routes/admin/sesion"));
 app.use("/api/admin", requiereAdmin, require("./routes/admin/catalogo"));
 app.use("/api/admin/pedidos", requiereAdmin, require("./routes/admin/pedidos"));
+app.use("/api/admin/arrepentimientos", requiereAdmin, require("./routes/admin/arrepentimientos"));
 
 /* Ruta de API inexistente */
 app.use("/api", (req, res) => res.status(404).json({ error: "Ruta no encontrada." }));
