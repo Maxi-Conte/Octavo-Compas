@@ -2937,3 +2937,104 @@ dialog::backdrop {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---------- Pantalla de carga (js/carga.js) ---------- */
+
+html.cargando-sitio {
+  overflow: hidden;
+}
+
+.pantalla-carga {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 18px;
+  background: #EFE9E3; /* blanco cálido, un poco más oscuro que el fondo del sitio */
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.pantalla-carga.saliendo {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.carga-escena {
+  perspective: 600px;
+}
+
+.carga-bailarina {
+  width: clamp(90px, 14vw, 130px);
+  height: auto;
+  overflow: visible;
+}
+
+.carga-cuerpo {
+  fill: var(--c-texto);
+}
+
+.carga-trazo {
+  fill: none;
+  stroke: var(--c-texto);
+  stroke-width: 3.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.carga-pierna {
+  stroke-width: 4.6;
+}
+
+.carga-tutu {
+  fill: var(--c-acento);
+}
+
+.carga-sombra {
+  fill: rgba(20, 18, 23, 0.12);
+  transform-origin: 60px 186px;
+  animation: carga-sombra 1.4s ease-in-out infinite;
+}
+
+/* La vuelta: se "achata" de costado y aparece de espaldas, como una pirueta */
+.carga-giro {
+  transform-origin: 60px 100px;
+  animation: carga-pirueta 1.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes carga-pirueta {
+  0%   { transform: scaleX(1); }
+  25%  { transform: scaleX(0.12); }
+  50%  { transform: scaleX(-1); }
+  75%  { transform: scaleX(0.12); }
+  100% { transform: scaleX(1); }
+}
+
+@keyframes carga-sombra {
+  0%, 50%, 100% { transform: scaleX(1); }
+  25%, 75%      { transform: scaleX(0.55); }
+}
+
+.carga-marca {
+  margin: 0;
+  font-family: var(--f-titulos);
+  font-size: 1.15rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--c-texto);
+  animation: carga-marca 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes carga-marca {
+  from { opacity: 0.55; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carga-giro,
+  .carga-sombra,
+  .carga-marca {
+    animation: none;
+  }
+}
