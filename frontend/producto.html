@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Producto</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/comun.js" defer></script>
+  <script src="/js/producto.js" defer></script>
+</head>
+<body>
+  <header id="header"></header>
+
+  <main class="contenedor">
+    <nav class="migas" id="migas" aria-label="Ubicación"><a href="/">Inicio</a></nav>
+
+    <div class="producto" id="producto">
+      <div class="galeria">
+        <div class="miniaturas" id="miniaturas"></div>
+        <div class="foto-principal cargando" id="foto-principal"></div>
+      </div>
+
+      <div class="producto-info">
+        <h1 id="nombre" class="cargando">&nbsp;</h1>
+        <div class="precio" id="precio"></div>
+        <p class="cuotas" id="cuotas"></p>
+
+        <div class="selector">
+          <div class="selector-titulo"><span>Color: <strong id="color-elegido"></strong></span></div>
+          <div class="opciones-color" id="colores"></div>
+        </div>
+
+        <div class="selector">
+          <div class="selector-titulo">
+            <span>Talle: <strong id="talle-elegido"></strong></span>
+            <button type="button" id="ver-guia">Guía de talles</button>
+          </div>
+          <div class="opciones-talle" id="talles"></div>
+          <p class="aviso-stock" id="aviso-stock" aria-live="polite"></p>
+        </div>
+
+        <div class="fila-compra">
+          <div class="cantidad">
+            <button type="button" id="menos" aria-label="Restar">−</button>
+            <span id="cantidad">1</span>
+            <button type="button" id="mas" aria-label="Sumar">+</button>
+          </div>
+          <button class="boton" id="agregar" type="button" disabled>Elegí un talle</button>
+        </div>
+
+        <div class="descripcion" id="descripcion"></div>
+      </div>
+    </div>
+
+    <section class="seccion" id="seccion-relacionados" hidden>
+      <div class="seccion-titulo"><h2>También te puede gustar</h2></div>
+      <div class="grilla" id="relacionados"></div>
+    </section>
+  </main>
+
+  <dialog id="guia-talles">
+    <h3>Guía de talles</h3>
+    <table class="tabla-talles">
+      <thead><tr><th>Talle</th><th>Busto / Pecho</th><th>Cintura</th><th>Cadera</th></tr></thead>
+      <tbody>
+        <tr><td>XS</td><td>80-84</td><td>62-66</td><td>86-90</td></tr>
+        <tr><td>S</td><td>85-89</td><td>67-71</td><td>91-95</td></tr>
+        <tr><td>M</td><td>90-94</td><td>72-76</td><td>96-100</td></tr>
+        <tr><td>L</td><td>95-100</td><td>77-82</td><td>101-106</td></tr>
+        <tr><td>XL</td><td>101-106</td><td>83-88</td><td>107-112</td></tr>
+      </tbody>
+    </table>
+    <p class="cuotas">Medidas en cm. Reemplazá esta tabla por la de tu marca.</p>
+    <button class="boton boton-secundario" id="cerrar-guia" type="button">Cerrar</button>
+  </dialog>
+
+  <footer id="footer"></footer>
+</body>
+</html>

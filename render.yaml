@@ -1,0 +1,60 @@
+# =====================================================
+# Publicación en Render con "Blueprint"
+# OJO: se usan planes PAGOS a propósito.
+# En el plan gratis la base de datos se BORRA a los 30 días
+# y el servidor se apaga si nadie entra por 15 minutos.
+# Revisá los precios actuales en https://render.com/pricing
+# =====================================================
+
+databases:
+  - name: tienda-db
+    databaseName: tienda_ropa
+    plan: basic-256mb   # si Render no reconoce el plan, elegilo a mano en el panel
+
+services:
+  - type: web
+    name: tienda-ropa
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run db:init
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tienda-db
+          property: connectionString
+      - key: ADMIN_SESSION_SECRET
+        generateValue: true
+
+      # Se cargan a mano en el panel de Render
+      - key: FRONTEND_URL
+        sync: false
+      - key: ADMIN_USER
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: MP_ACCESS_TOKEN
+        sync: false
+      - key: MP_WEBHOOK_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: MAIL_TIENDA
+        sync: false
+      - key: ENVIO_COSTO
+        sync: false
+      - key: ENVIO_GRATIS_DESDE
+        sync: false
+      - key: RETIRO_DIRECCION
+        sync: false
+      - key: NEGOCIO_NOMBRE
+        sync: false
+      - key: NEGOCIO_WHATSAPP
+        sync: false
+      - key: NEGOCIO_INSTAGRAM_URL
+        sync: false

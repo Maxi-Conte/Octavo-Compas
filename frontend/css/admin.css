@@ -1,0 +1,332 @@
+/* =====================================================
+   PANEL DE ADMINISTRACIÓN
+===================================================== */
+
+body.admin {
+  background: var(--color-fondo-2);
+  font-size: 0.92rem;
+}
+
+.login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.tarjeta-admin {
+  background: #fff;
+  padding: 32px;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  width: min(380px, 100%);
+  display: grid;
+  gap: 14px;
+}
+
+.tarjeta-admin h1 {
+  font-size: 1.3rem;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: #fff;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--color-borde);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-wrap: wrap;
+}
+
+.admin-header a {
+  margin-left: auto;
+  text-decoration: underline;
+}
+
+.pestanas {
+  display: flex;
+  gap: 4px;
+}
+
+.pestanas button {
+  background: none;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radio);
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-suave);
+}
+
+.pestanas button.activo {
+  background: var(--color-fondo-2);
+  color: var(--color-texto);
+}
+
+.admin-main {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.barra-admin {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.barra-admin input,
+.barra-admin select,
+.campo input,
+.campo select,
+.campo textarea {
+  padding: 9px 12px;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: #fff;
+}
+
+.barra-admin input[type="search"] {
+  flex: 1;
+  min-width: 200px;
+}
+
+.boton-chico {
+  padding: 9px 16px;
+  font-size: 0.85rem;
+}
+
+.input-corto {
+  width: 90px;
+}
+
+.tabla {
+  width: 100%;
+  background: #fff;
+  border-collapse: collapse;
+  border-radius: var(--radio);
+  overflow: hidden;
+}
+
+.tabla th {
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-suave);
+  padding: 12px;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.tabla td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-borde);
+  vertical-align: middle;
+}
+
+.tabla tbody tr.clickeable {
+  cursor: pointer;
+}
+
+.tabla tbody tr.clickeable:hover {
+  background: #fafaf9;
+}
+
+.tabla img {
+  width: 44px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--color-fondo-2);
+}
+
+.tabla input {
+  padding: 6px 8px;
+  border: 1px solid var(--color-borde);
+  border-radius: 4px;
+  width: 100%;
+  max-width: 120px;
+}
+
+.estado {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--color-fondo-2);
+}
+
+.estado-pagado { background: #fef3c7; }
+.estado-preparando { background: #e0f2fe; }
+.estado-enviado,
+.estado-listo_retiro { background: #ede9fe; }
+.estado-entregado { background: #dcfce7; }
+.estado-cancelado,
+.estado-rechazado { background: #fee2e2; }
+.estado-inactivo { background: #eee; color: var(--color-suave); }
+
+.fila-alerta {
+  background: #fff7ed;
+}
+
+.dialogo-grande {
+  max-width: 820px;
+  width: calc(100% - 32px);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.dialogo-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.dialogo-cabecera h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.dialogo-pie {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.dialogo-pie .boton:only-child,
+.dialogo-pie #guardar-producto {
+  margin-left: auto;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ayuda {
+  color: var(--color-suave);
+  font-size: 0.85rem;
+  margin-top: 0;
+}
+
+.fila-imagen,
+.fila-color {
+  display: grid;
+  grid-template-columns: 50px 1fr 140px auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.fila-color {
+  grid-template-columns: 1fr 48px auto;
+}
+
+.fila-imagen img {
+  width: 50px;
+  height: 62px;
+  object-fit: cover;
+  background: var(--color-fondo-2);
+  border-radius: 4px;
+}
+
+.fila-imagen input,
+.fila-color input {
+  padding: 8px;
+  border: 1px solid var(--color-borde);
+  border-radius: 4px;
+}
+
+.fila-color input[type="color"] {
+  padding: 2px;
+  height: 38px;
+}
+
+#seccion-variantes {
+  border-top: 1px solid var(--color-borde);
+  margin-top: 24px;
+  padding-top: 8px;
+}
+
+.generador {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 120px;
+  gap: 12px;
+  align-items: end;
+  background: var(--color-fondo-2);
+  padding: 16px;
+  border-radius: var(--radio);
+  margin-bottom: 16px;
+}
+
+.tabla-variantes .punto-color {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.datos-pedido {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.datos-pedido div {
+  background: var(--color-fondo-2);
+  padding: 14px;
+  border-radius: var(--radio);
+}
+
+.alerta-revision {
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  padding: 12px 14px;
+  border-radius: var(--radio);
+  margin-bottom: 16px;
+}
+
+.acciones-pedido {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: end;
+  margin-top: 16px;
+}
+
+@media (max-width: 760px) {
+  .admin-main {
+    padding: 12px;
+  }
+
+  .tabla {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .generador,
+  .datos-pedido {
+    grid-template-columns: 1fr;
+  }
+
+  .fila-imagen {
+    grid-template-columns: 50px 1fr;
+  }
+}
+
+.generador .boton {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.dialogo-grande h3 {
+  margin-top: 28px;
+}

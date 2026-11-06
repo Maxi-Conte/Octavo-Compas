@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/comun.js" defer></script>
+  <script src="/js/tienda.js" defer></script>
+</head>
+<body>
+  <header id="header"></header>
+
+  <main class="contenedor">
+    <nav class="migas" id="migas" aria-label="Ubicación"><a href="/">Inicio</a> / Tienda</nav>
+    <h1 id="titulo">Tienda</h1>
+
+    <div class="tienda">
+      <aside class="filtros" id="filtros" aria-label="Filtros">
+        <h3>Categorías</h3>
+        <ul id="filtro-categorias"></ul>
+
+        <h3>Talle</h3>
+        <div class="opciones-talle" id="filtro-talles"></div>
+
+        <h3>Color</h3>
+        <div class="opciones-color" id="filtro-colores"></div>
+
+        <h3>Precio</h3>
+        <form class="rango-precio" id="filtro-precio">
+          <input type="number" name="min" placeholder="Mín" min="0" aria-label="Precio mínimo">
+          <input type="number" name="max" placeholder="Máx" min="0" aria-label="Precio máximo">
+          <button class="chip" type="submit">OK</button>
+        </form>
+
+        <button class="limpiar-filtros" id="limpiar" type="button">Limpiar filtros</button>
+      </aside>
+
+      <section>
+        <div class="barra-resultados">
+          <button class="boton boton-secundario boton-filtros" id="boton-filtros" type="button">Filtros</button>
+          <span id="cantidad-resultados"></span>
+          <label>
+            <span class="oculto-visual">Ordenar por</span>
+            <select id="orden">
+              <option value="nuevos">Más nuevos</option>
+              <option value="precio_asc">Menor precio</option>
+              <option value="precio_desc">Mayor precio</option>
+              <option value="nombre">Nombre</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grilla" id="grilla"></div>
+        <nav class="paginacion" id="paginacion" aria-label="Páginas"></nav>
+      </section>
+    </div>
+  </main>
+
+  <footer id="footer"></footer>
+</body>
+</html>

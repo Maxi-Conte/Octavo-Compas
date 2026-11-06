@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de administración</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <script src="/js/admin.js" defer></script>
+</head>
+<body class="admin">
+
+  <!-- ===== LOGIN ===== -->
+  <section id="vista-login" class="login" hidden>
+    <form id="form-login" class="tarjeta-admin">
+      <h1>Panel de administración</h1>
+      <label class="campo">Usuario <input name="usuario" autocomplete="username" required></label>
+      <label class="campo">Contraseña <input name="password" type="password" autocomplete="current-password" required></label>
+      <p class="texto-error" id="error-login" role="alert"></p>
+      <button class="boton boton-ancho" type="submit">Ingresar</button>
+    </form>
+  </section>
+
+  <!-- ===== PANEL ===== -->
+  <section id="vista-panel" hidden>
+    <header class="admin-header">
+      <strong>Panel</strong>
+      <nav class="pestanas" role="tablist">
+        <button type="button" data-pestana="productos" class="activo">Productos</button>
+        <button type="button" data-pestana="pedidos">Pedidos</button>
+        <button type="button" data-pestana="categorias">Categorías</button>
+      </nav>
+      <a href="/" target="_blank" rel="noopener">Ver tienda ↗</a>
+      <button type="button" class="boton boton-secundario boton-chico" id="salir">Salir</button>
+    </header>
+
+    <main class="admin-main">
+
+      <!-- ----- PRODUCTOS ----- -->
+      <div data-vista="productos">
+        <div class="barra-admin">
+          <input type="search" id="buscar-producto" placeholder="Buscar producto...">
+          <button type="button" class="boton boton-chico" id="nuevo-producto">+ Nuevo producto</button>
+        </div>
+        <table class="tabla">
+          <thead><tr><th></th><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th></tr></thead>
+          <tbody id="lista-productos"></tbody>
+        </table>
+      </div>
+
+      <!-- ----- PEDIDOS ----- -->
+      <div data-vista="pedidos" hidden>
+        <div class="barra-admin">
+          <select id="filtro-pedidos">
+            <option value="">Para gestionar</option>
+            <option value="revision">⚠️ Requieren revisión</option>
+            <option value="pagado">Pagados (a preparar)</option>
+            <option value="preparando">Preparando</option>
+            <option value="enviado">Enviados</option>
+            <option value="listo_retiro">Listos para retirar</option>
+            <option value="entregado">Entregados</option>
+            <option value="cancelado">Cancelados</option>
+            <option value="pendiente">Pago pendiente</option>
+            <option value="todos">Todos</option>
+          </select>
+          <button type="button" class="boton boton-secundario boton-chico" id="recargar-pedidos">Actualizar</button>
+        </div>
+        <table class="tabla">
+          <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Entrega</th><th>Unid.</th><th>Total</th><th>Estado</th></tr></thead>
+          <tbody id="lista-pedidos"></tbody>
+        </table>
+      </div>
+
+      <!-- ----- CATEGORÍAS ----- -->
+      <div data-vista="categorias" hidden>
+        <form id="form-categoria" class="barra-admin">
+          <input name="nombre" placeholder="Nombre de la categoría" required>
+          <select name="padre_id" id="select-padre"><option value="">(Categoría principal)</option></select>
+          <input name="orden" type="number" min="0" placeholder="Orden" class="input-corto">
+          <button class="boton boton-chico" type="submit">Agregar</button>
+        </form>
+        <table class="tabla">
+          <thead><tr><th>Nombre</th><th>Dentro de</th><th>Orden</th><th>Productos</th><th>Estado</th><th></th></tr></thead>
+          <tbody id="lista-categorias"></tbody>
+        </table>
+      </div>
+    </main>
+  </section>
+
+  <!-- ===== EDITOR DE PRODUCTO ===== -->
+  <dialog id="editor" class="dialogo-grande">
+    <form id="form-producto" method="dialog">
+      <div class="dialogo-cabecera">
+        <h2 id="titulo-editor">Nuevo producto</h2>
+        <button type="button" class="boton-icono" data-cerrar aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="campos">
+        <label class="campo completo">Nombre <input name="nombre" required></label>
+        <label class="campo">Categoría <select name="categoria_id" id="select-categoria"></select></label>
+        <label class="campo">Marca <input name="marca"></label>
+        <label class="campo">Precio <input name="precio" type="number" min="1" step="0.01" required></label>
+        <label class="campo">Precio de oferta (opcional) <input name="precio_oferta" type="number" min="1" step="0.01"></label>
+        <label class="campo completo">Descripción <textarea name="descripcion" rows="4"></textarea></label>
+        <label class="check"><input type="checkbox" name="destacado"> Destacado en el inicio</label>
+        <label class="check"><input type="checkbox" name="activo" checked> Visible en la tienda</label>
+      </div>
+
+      <h3>Fotos</h3>
+      <p class="ayuda">Pegá la URL de cada foto (ej: de Cloudinary). Si indicás el color, se muestra al elegir ese color.</p>
+      <div id="lista-imagenes"></div>
+      <button type="button" class="boton boton-secundario boton-chico" id="agregar-imagen">+ Agregar foto</button>
+
+      <p class="texto-error" id="error-producto" role="alert"></p>
+      <div class="dialogo-pie">
+        <button type="button" class="boton boton-secundario" id="borrar-producto" hidden>Borrar producto</button>
+        <button type="submit" class="boton" id="guardar-producto">Guardar producto</button>
+      </div>
+    </form>
+
+    <!-- Variantes: solo cuando el producto ya existe -->
+    <section id="seccion-variantes" hidden>
+      <h3>Talles, colores y stock</h3>
+      <form id="form-generar" class="generador">
+        <label class="campo">Talles (separados por coma)
+          <input name="talles" placeholder="XS, S, M, L, XL">
+        </label>
+        <div class="campo">Colores
+          <div id="colores-generar"></div>
+          <button type="button" class="link-quitar" id="agregar-color">+ otro color</button>
+        </div>
+        <label class="campo">Stock inicial <input name="stock" type="number" min="0" value="0" class="input-corto"></label>
+        <button type="submit" class="boton boton-chico">Crear combinaciones</button>
+      </form>
+
+      <table class="tabla tabla-variantes">
+        <thead><tr><th>Color</th><th>Talle</th><th>SKU</th><th>Stock</th><th>Activa</th><th></th></tr></thead>
+        <tbody id="lista-variantes"></tbody>
+      </table>
+    </section>
+  </dialog>
+
+  <!-- ===== DETALLE DE PEDIDO ===== -->
+  <dialog id="detalle-pedido" class="dialogo-grande">
+    <div class="dialogo-cabecera">
+      <h2 id="titulo-pedido"></h2>
+      <button type="button" class="boton-icono" data-cerrar aria-label="Cerrar">✕</button>
+    </div>
+    <div id="contenido-pedido"></div>
+  </dialog>
+
+  <div class="aviso" role="status"></div>
+</body>
+</html>

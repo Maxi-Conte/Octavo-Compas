@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finalizar compra</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/comun.js" defer></script>
+  <script src="/js/checkout.js" defer></script>
+</head>
+<body>
+  <header id="header"></header>
+
+  <main class="contenedor">
+    <div class="checkout">
+      <form id="form-checkout" novalidate>
+        <h1>Finalizar compra</h1>
+
+        <fieldset>
+          <legend>Tus datos</legend>
+          <div class="campos">
+            <label class="campo completo">Nombre y apellido
+              <input name="nombre" autocomplete="name" required minlength="3">
+            </label>
+            <label class="campo">Email
+              <input name="email" type="email" autocomplete="email" required>
+            </label>
+            <label class="campo">Teléfono (con código de área)
+              <input name="telefono" type="tel" autocomplete="tel" required placeholder="261 1234567">
+            </label>
+            <label class="campo">DNI o CUIT
+              <input name="dni" inputmode="numeric" required placeholder="Solo números">
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Entrega</legend>
+          <label class="opcion-entrega">
+            <input type="radio" name="metodo_entrega" value="envio" checked>
+            <span>Envío a domicilio</span>
+            <strong id="precio-envio"></strong>
+          </label>
+          <label class="opcion-entrega" id="opcion-retiro" hidden>
+            <input type="radio" name="metodo_entrega" value="retiro">
+            <span>Retiro en local <small id="direccion-retiro"></small></span>
+            <strong>Gratis</strong>
+          </label>
+
+          <div class="campos" id="campos-envio">
+            <label class="campo completo">Dirección (calle, número, piso)
+              <input name="direccion" autocomplete="street-address">
+            </label>
+            <label class="campo">Ciudad
+              <input name="ciudad" autocomplete="address-level2">
+            </label>
+            <label class="campo">Provincia
+              <select name="provincia" autocomplete="address-level1">
+                <option value="">Elegí...</option>
+              </select>
+            </label>
+            <label class="campo">Código postal
+              <input name="codigo_postal" autocomplete="postal-code" placeholder="5500">
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Notas (opcional)</legend>
+          <label class="campo completo">
+            <span class="oculto-visual">Notas</span>
+            <textarea name="notas" rows="2" maxlength="500" placeholder="Ej: tocar timbre B"></textarea>
+          </label>
+        </fieldset>
+
+        <p class="texto-error" id="error-checkout" role="alert"></p>
+        <button class="boton boton-ancho" id="boton-pagar" type="submit">Ir a pagar con Mercado Pago</button>
+      </form>
+
+      <aside class="resumen" aria-label="Resumen del pedido">
+        <h2>Tu pedido</h2>
+        <div id="resumen-items"></div>
+        <div class="fila-resumen"><span>Subtotal</span><span id="resumen-subtotal"></span></div>
+        <div class="fila-resumen"><span>Envío</span><span id="resumen-envio"></span></div>
+        <div class="fila-resumen total"><span>Total</span><span id="resumen-total"></span></div>
+      </aside>
+    </div>
+  </main>
+
+  <footer id="footer"></footer>
+</body>
+</html>
