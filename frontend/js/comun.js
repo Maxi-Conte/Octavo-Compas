@@ -13,15 +13,28 @@ function marcarFotoFaltante(img) {
   if (img.closest(".foto")) img.classList.add("foto-faltante");
 }
 
+/* Cuando la foto existe, se saca la etiqueta (importa en los PNG sin fondo) */
+function marcarFotoCargada(img) {
+  if (img.matches(".foto > img:not(.foto-hover)")) img.parentElement.classList.add("foto-ok");
+}
+
 document.addEventListener(
   "error",
   (e) => e.target.tagName === "IMG" && marcarFotoFaltante(e.target),
   true
 );
 
+document.addEventListener(
+  "load",
+  (e) => e.target.tagName === "IMG" && marcarFotoCargada(e.target),
+  true
+);
+
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".foto > img").forEach((img) => {
-    if (img.complete && img.naturalWidth === 0) marcarFotoFaltante(img);
+    if (!img.complete) return;
+    if (img.naturalWidth === 0) marcarFotoFaltante(img);
+    else marcarFotoCargada(img);
   });
 });
 
@@ -102,33 +115,58 @@ function obtenerConfig() {
 
 /* ---------- Tarjeta de producto (catálogo, inicio, relacionados) ---------- */
 
-function tarjetaProducto(p) {
+/* Solo aceptamos colores #rgb / #rrggbb dentro de style="" */
+function colorSeguro(hex) {
+  return /^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(hex || "") ? hex : "#cccccc";
+}
+
+/* Tipo de prenda a partir del nombre: "Malla clásica de breteles" -> "Malla" */
+function tipoDePrenda(nombre) {
+  return String(nombre || "").trim().split(/\s+/)[0] || "";
+}
+
+/*
+  opciones.etiqueta: texto chico arriba del nombre ("Nuevo", "Ballet"...).
+  Si no se pasa, se usa el tipo de prenda.
+*/
+function tarjetaProducto(p, opciones = {}) {
   const conOferta = p.precio_oferta !== null;
   const descuento = conOferta ? Math.round((1 - p.precio_oferta / p.precio) * 100) : 0;
+  const etiqueta = opciones.etiqueta || tipoDePrenda(p.nombre);
 
-  const colores = p.colores
-    .slice(0, 5)
-    .map((c) => `<span class="punto-color" style="background:${esc(c.hex)}" title="${esc(c.nombre)}"></span>`)
+  const colores = p.colores.slice(0, 5);
+  const puntos = colores
+    .map((c) => `<span class="punto-color" style="background:${colorSeguro(c.hex)}"></span>`)
     .join("");
+  const extra = p.colores.length > 5 ? `<span class="colores-mas">+${p.colores.length - 5}</span>` : "";
+  const nombresColores = p.colores.map((c) => c.nombre).join(", ");
 
   return `
-    <a class="tarjeta" href="/producto.html?p=${encodeURIComponent(p.slug)}">
-      <div class="tarjeta-foto">
-        ${p.imagen ? `<img src="${esc(p.imagen)}" alt="${esc(p.nombre)}" loading="lazy">` : ""}
-        ${p.imagen_hover ? `<img class="foto-hover" src="${esc(p.imagen_hover)}" alt="" loading="lazy">` : ""}
-        ${conOferta ? `<span class="etiqueta etiqueta-oferta">-${descuento}%</span>` : ""}
-        ${p.agotado ? `<span class="etiqueta etiqueta-agotado">Sin stock</span>` : ""}
-      </div>
-      <div class="tarjeta-info">
-        <h3>${esc(p.nombre)}</h3>
-        <div class="precio">
-          ${conOferta
-            ? `<span class="precio-actual">${pesos(p.precio_oferta)}</span><s>${pesos(p.precio)}</s>`
-            : `<span class="precio-actual">${pesos(p.precio)}</span>`}
+    <article class="tarjeta">
+      <a class="tarjeta-link" href="/producto.html?p=${encodeURIComponent(p.slug)}">
+        <div class="tarjeta-foto foto" data-foto="Foto del producto · 4:5">
+          ${p.imagen ? `<img src="${esc(p.imagen)}" alt="${esc(p.nombre)}" loading="lazy" width="800" height="1000">` : ""}
+          ${p.imagen_hover ? `<img class="foto-hover" src="${esc(p.imagen_hover)}" alt="" loading="lazy" width="800" height="1000">` : ""}
+          ${conOferta ? `<span class="etiqueta etiqueta-oferta">-${descuento}%</span>` : ""}
+          ${p.agotado ? `<span class="etiqueta etiqueta-agotado">Sin stock</span>` : ""}
         </div>
-        <div class="tarjeta-colores">${colores}</div>
-      </div>
-    </a>`;
+        <div class="tarjeta-info">
+          ${etiqueta ? `<span class="tarjeta-etiqueta">${esc(etiqueta)}</span>` : ""}
+          <h3 class="tarjeta-nombre">${esc(p.nombre)}</h3>
+          <p class="precio">
+            ${conOferta
+              ? `<span class="precio-actual">${pesos(p.precio_oferta)}</span><s><span class="oculto-visual">Antes </span>${pesos(p.precio)}</s>`
+              : `<span class="precio-actual">${pesos(p.precio)}</span>`}
+          </p>
+          ${colores.length
+            ? `<p class="tarjeta-colores" title="${esc(nombresColores)}">
+                 <span class="oculto-visual">Colores: ${esc(nombresColores)}</span>
+                 <span aria-hidden="true" class="tarjeta-puntos">${puntos}${extra}</span>
+               </p>`
+            : ""}
+        </div>
+      </a>
+    </article>`;
 }
 
 /* ---------- Datos de la marca ----------

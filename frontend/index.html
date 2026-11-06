@@ -3,12 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tienda de ropa</title>
-  <meta name="description" content="Ropa para moverte: remeras, buzos, pantalones y más. Envíos a todo el país.">
+  <title>Octavo Compás Indumentaria | Ropa de danza, vestuarios a medida y gala</title>
+  <meta name="description" content="Indumentaria de danza para ballet, contemporáneo, folklore y tango, vestuarios a medida para academias y grupos, y vestidos de fiesta y gala. Envíos a todo el país.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Octavo Compás Indumentaria">
+  <meta property="og:title" content="Octavo Compás Indumentaria">
+  <meta property="og:description" content="Vestimos tu próxima función: ropa de danza, vestuarios a medida y vestidos de gala.">
+  <meta property="og:image" content="/img/secciones/reinas.jpg">
+  <meta property="og:locale" content="es_AR">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="/img/marca/isotipo.svg" type="image/svg+xml">
   <script src="/js/comun.js" defer></script>
   <script src="/js/inicio.js" defer></script>
 </head>
@@ -16,43 +23,194 @@
   <header id="header"></header>
 
   <main id="contenido">
-    <section class="hero">
-      <div class="contenedor">
-        <div class="hero-contenido">
-          <h1>Nueva temporada</h1>
-          <p>Prendas cómodas, pensadas para el día a día. Envíos a todo el país y hasta 12 cuotas.</p>
-          <a class="boton" href="/tienda.html">Ver colección</a>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" aria-labelledby="hero-titulo">
+      <p class="hero-palabra" aria-hidden="true">En escena</p>
+
+      <div class="contenedor hero-grid">
+        <div class="hero-texto">
+          <span class="sobretitulo">Colección 2026</span>
+          <h1 id="hero-titulo">Vestimos tu próxima función</h1>
+          <p>Ropa de danza, vestuarios a medida y vestidos de gala, confeccionados con oficio para que solo pienses en bailar.</p>
+          <div class="hero-botones">
+            <a class="boton" href="/tienda.html">Ver colección</a>
+            <a class="boton boton-secundario" data-whatsapp="Hola Octavo Compás, quiero pedir un vestuario.">Pedí tu vestuario</a>
+          </div>
+        </div>
+
+        <div class="hero-figura" id="hero-figura">
+          <!-- Las bailarinas se cargan desde LOOKS en js/inicio.js -->
+        </div>
+
+        <div class="hero-prendas" aria-label="Prendas del look">
+          <p class="hero-look-nombre" id="hero-look-nombre" aria-live="polite"></p>
+          <ul class="hero-lista" id="hero-prendas"></ul>
+          <div class="hero-control">
+            <button class="boton-flecha" type="button" id="look-anterior" aria-label="Look anterior">
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+            </button>
+            <span class="hero-contador" id="hero-contador">01 / 03</span>
+            <button class="boton-flecha boton-flecha-llena" type="button" id="look-siguiente" aria-label="Look siguiente">
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="seccion contenedor">
-      <div class="seccion-titulo"><h2>Categorías</h2></div>
-      <div class="categorias-destacadas" id="categorias-inicio"></div>
+    <!-- ===== BENEFICIOS ===== -->
+    <section class="contenedor" aria-label="Beneficios">
+      <ul class="beneficios">
+        <li>
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg>
+          <div><strong>Envíos a todo el país</strong><span id="texto-envio">Llegamos a cada escenario</span></div>
+        </li>
+        <li>
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1"/><path d="M3 10h18M7 14.5h4"/></svg>
+          <div><strong>Hasta 12 cuotas</strong><span>Pagás con Mercado Pago</span></div>
+        </li>
+        <li>
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5 8.5 15.5"/><path d="M16.5 4.5a1.8 1.8 0 0 1 3 3"/><path d="M8.5 15.5 5 19"/><path d="M4 9c3-3 8-4 11-2M10 20c3-1 6-3 7-7"/></svg>
+          <div><strong>Vestuarios a medida</strong><span>Para academias, grupos y solistas</span></div>
+        </li>
+      </ul>
     </section>
 
-    <section class="seccion contenedor">
-      <div class="seccion-titulo">
-        <h2>Destacados</h2>
-        <a href="/tienda.html">Ver todo</a>
+    <!-- ===== COMPRÁ POR DISCIPLINA ===== -->
+    <section class="seccion" aria-labelledby="titulo-disciplinas">
+      <div class="contenedor">
+        <div class="seccion-cabecera">
+          <h2 id="titulo-disciplinas">Comprá por disciplina</h2>
+        </div>
       </div>
-      <div class="grilla" id="destacados"></div>
+      <ul class="disciplinas contenedor">
+        <li>
+          <a class="disciplina" href="/tienda.html?categoria=ballet">
+            <span class="foto" data-foto="Foto ballet · 3:4"><img src="/img/disciplinas/ballet.jpg" alt="" loading="lazy" width="600" height="800"></span>
+            <span class="disciplina-nombre">Ballet</span>
+          </a>
+        </li>
+        <li>
+          <a class="disciplina" href="/tienda.html?categoria=contemporaneo">
+            <span class="foto" data-foto="Foto contemporáneo · 3:4"><img src="/img/disciplinas/contemporaneo.jpg" alt="" loading="lazy" width="600" height="800"></span>
+            <span class="disciplina-nombre">Contemporáneo</span>
+          </a>
+        </li>
+        <li>
+          <a class="disciplina" href="/tienda.html?categoria=folklore">
+            <span class="foto" data-foto="Foto folklore · 3:4"><img src="/img/disciplinas/folklore.jpg" alt="" loading="lazy" width="600" height="800"></span>
+            <span class="disciplina-nombre">Folklore</span>
+          </a>
+        </li>
+        <li>
+          <a class="disciplina" href="/tienda.html?categoria=tango">
+            <span class="foto" data-foto="Foto tango · 3:4"><img src="/img/disciplinas/tango.jpg" alt="" loading="lazy" width="600" height="800"></span>
+            <span class="disciplina-nombre">Tango</span>
+          </a>
+        </li>
+        <li>
+          <a class="disciplina" href="/tienda.html?categoria=fiesta-y-gala">
+            <span class="foto" data-foto="Foto fiesta y gala · 3:4"><img src="/img/disciplinas/gala.jpg" alt="" loading="lazy" width="600" height="800"></span>
+            <span class="disciplina-nombre">Fiesta y gala</span>
+          </a>
+        </li>
+      </ul>
     </section>
 
-    <section class="contenedor">
-      <div class="beneficios" id="beneficios">
-        <div><strong>Envíos a todo el país</strong><span id="texto-envio">Rápidos y seguros</span></div>
-        <div><strong>Hasta 12 cuotas</strong><span>Pagá con Mercado Pago</span></div>
-        <div><strong>Cambios fáciles</strong><span>30 días para cambiar tu talle</span></div>
+    <!-- ===== NOVEDADES ===== -->
+    <section class="seccion seccion-novedades" aria-labelledby="titulo-novedades">
+      <div class="contenedor">
+        <div class="seccion-cabecera">
+          <h2 id="titulo-novedades">Novedades</h2>
+          <p>Lo último que salió del taller</p>
+        </div>
+        <div class="grilla" id="novedades"></div>
+        <div class="seccion-pie">
+          <a class="link-subrayado" href="/tienda.html">Ver todo</a>
+        </div>
       </div>
     </section>
 
-    <section class="seccion contenedor">
-      <div class="seccion-titulo">
-        <h2>Ofertas</h2>
-        <a href="/tienda.html?ofertas=1">Ver todas</a>
+    <!-- ===== VESTUARIOS A MEDIDA ===== -->
+    <section class="a-medida" id="a-medida" aria-labelledby="titulo-a-medida">
+      <div class="contenedor a-medida-grid">
+        <div class="foto a-medida-foto" data-foto="Foto vestuario de grupo · 4:5">
+          <img src="/img/secciones/a-medida.jpg" alt="Grupo de bailarinas en escena con vestuario confeccionado por Octavo Compás" loading="lazy" width="1000" height="1250">
+        </div>
+
+        <div class="a-medida-texto">
+          <span class="sobretitulo">Vestuarios a medida</span>
+          <h2 id="titulo-a-medida">Diseñamos el vestuario de tu academia</h2>
+          <p>Confeccionamos vestuarios para academias, grupos y solistas: desde una muestra de fin de año hasta un certamen. Vos nos contás la idea; nosotros la llevamos a escena.</p>
+
+          <ol class="pasos">
+            <li>
+              <span class="paso-numero" aria-hidden="true">01</span>
+              <div>
+                <h3>Contanos tu idea</h3>
+                <p>La coreografía, la música o una foto de referencia. Te asesoramos con telas y colores.</p>
+              </div>
+            </li>
+            <li>
+              <span class="paso-numero" aria-hidden="true">02</span>
+              <div>
+                <h3>Diseño y medidas</h3>
+                <p>Armamos el boceto y el presupuesto, y tomamos las medidas de cada bailarín.</p>
+              </div>
+            </li>
+            <li>
+              <span class="paso-numero" aria-hidden="true">03</span>
+              <div>
+                <h3>Confección y entrega</h3>
+                <p>Lo confeccionamos en nuestro taller y te lo entregamos a tiempo para la función.</p>
+              </div>
+            </li>
+          </ol>
+
+          <a class="boton boton-claro" data-whatsapp="Hola Octavo Compás, quiero pedir un presupuesto de vestuario a medida.&#10;Disciplina: &#10;Cantidad de bailarines: &#10;Fecha de la función: ">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.4 19L4 20Z"/><path d="M9.3 8.6c.2 2.9 2.4 5.3 5.4 5.9l.9-1.3 1.7.9c-.3 1-1.2 1.6-2.2 1.6-3.7-.3-6.6-3.3-6.8-7 0-1 .7-1.8 1.6-2l.8 1.7-1.4 1Z"/></svg>
+            Pedí tu presupuesto por WhatsApp
+          </a>
+        </div>
       </div>
-      <div class="grilla" id="ofertas"></div>
+    </section>
+
+    <!-- ===== REINAS 2026 ===== -->
+    <section class="seccion reinas" aria-labelledby="titulo-reinas">
+      <div class="contenedor reinas-grid">
+        <div class="foto reinas-foto" data-foto="Foto Reinas 2026 · 4:5">
+          <img src="/img/secciones/reinas.jpg" alt="Vestido de gala bordado con pedrería de la colección Reinas 2026" loading="lazy" width="1000" height="1250">
+        </div>
+        <div class="reinas-texto">
+          <span class="sobretitulo">Colección especial</span>
+          <h2 id="titulo-reinas">Reinas <em>2026</em></h2>
+          <p>Vestidos de gala con bordados y pedrería, hechos a medida para la noche más importante. Cada diseño es único y se confecciona sobre tus medidas.</p>
+          <div class="hero-botones">
+            <a class="boton" href="/tienda.html?categoria=reinas-2026">Ver la colección</a>
+            <a class="boton boton-secundario" data-whatsapp="Hola Octavo Compás, quiero consultar por un vestido de la colección Reinas 2026.">Consultá por tu vestido</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== EN ESCENA ===== -->
+    <section class="seccion escena" aria-labelledby="titulo-escena">
+      <div class="contenedor">
+        <div class="seccion-cabecera">
+          <h2 id="titulo-escena">En escena</h2>
+          <p><a class="link-instagram" href="https://www.instagram.com/octavo.compas.indumentaria/" target="_blank" rel="noopener">@octavo.compas.indumentaria</a></p>
+        </div>
+        <ul class="escena-grilla">
+          <li><a class="foto" data-foto="Foto Instagram 1 · 1:1" href="https://www.instagram.com/octavo.compas.indumentaria/" target="_blank" rel="noopener" aria-label="Ver en Instagram (foto 1)"><img src="/img/secciones/escena-1.jpg" alt="" loading="lazy" width="600" height="600"></a></li>
+          <li><a class="foto" data-foto="Foto Instagram 2 · 1:1" href="https://www.instagram.com/octavo.compas.indumentaria/" target="_blank" rel="noopener" aria-label="Ver en Instagram (foto 2)"><img src="/img/secciones/escena-2.jpg" alt="" loading="lazy" width="600" height="600"></a></li>
+          <li><a class="foto" data-foto="Foto Instagram 3 · 1:1" href="https://www.instagram.com/octavo.compas.indumentaria/" target="_blank" rel="noopener" aria-label="Ver en Instagram (foto 3)"><img src="/img/secciones/escena-3.jpg" alt="" loading="lazy" width="600" height="600"></a></li>
+          <li><a class="foto" data-foto="Foto Instagram 4 · 1:1" href="https://www.instagram.com/octavo.compas.indumentaria/" target="_blank" rel="noopener" aria-label="Ver en Instagram (foto 4)"><img src="/img/secciones/escena-4.jpg" alt="" loading="lazy" width="600" height="600"></a></li>
+        </ul>
+        <div class="seccion-pie">
+          <a class="boton boton-secundario" href="https://www.instagram.com/octavo.compas.indumentaria/" target="_blank" rel="noopener">Seguinos en Instagram</a>
+        </div>
+      </div>
     </section>
   </main>
 
