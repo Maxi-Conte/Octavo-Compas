@@ -188,7 +188,8 @@ function iniciarDisciplinas() {
   const elementos = [...slides, ...copias];
   const N = elementos.length;
 
-  const SUAVIDAD = reducido ? 1 : 0.055; // cuánto se acerca al destino por cuadro (más bajo = más lento)
+  const SUAVIDAD = reducido ? 1 : 0.055;          // al soltar: se acomoda lento (más bajo = más lento)
+  const SUAVIDAD_ARRASTRE = reducido ? 1 : 0.35;  // mientras se arrastra: sigue al dedo casi en el acto
   let posicion = 0;  // dónde está el anillo ahora (puede ser decimal)
   let destino = 0;   // hacia dónde va (entero = una tarjeta al frente)
   let animando = false;
@@ -271,7 +272,7 @@ function iniciarDisciplinas() {
       animando = false;
       return;
     }
-    posicion += diferencia * SUAVIDAD;
+    posicion += diferencia * (arrastre && huboArrastre ? SUAVIDAD_ARRASTRE : SUAVIDAD);
     dibujar();
     requestAnimationFrame(bucle);
   }
@@ -330,9 +331,19 @@ function iniciarDisciplinas() {
   let arrastre = null;
   let huboArrastre = false;
 
+  /* Cuántos píxeles de gesto equivalen a pasar una tarjeta (con el dedo, menos) */
+  const pixelesPorTarjeta = (tipo) => slides[0].offsetWidth * (tipo === "mouse" ? 0.7 : 0.45);
+
   pista.addEventListener("pointerdown", (e) => {
     if (e.button !== 0) return;
-    arrastre = { x: e.clientX, y: e.clientY, desde: destino, id: e.pointerId };
+    arrastre = {
+      x: e.clientX,
+      y: e.clientY,
+      desde: Math.round(destino),
+      id: e.pointerId,
+      paso: pixelesPorTarjeta(e.pointerType),
+      huella: [{ x: e.clientX, t: performance.now() }] // para medir la velocidad al soltar
+    };
     huboArrastre = false;
   });
 
@@ -346,16 +357,39 @@ function iniciarDisciplinas() {
       huboArrastre = true;
       pista.classList.add("arrastrando");
     }
-    destino = arrastre.desde - dx / (slides[0].offsetWidth * 0.9);
+    destino = arrastre.desde - dx / arrastre.paso;
+    arrastre.huella.push({ x: e.clientX, t: performance.now() });
+    if (arrastre.huella.length > 6) arrastre.huella.shift();
     animar();
   });
 
   const soltar = (e) => {
     if (!arrastre || (e && e.pointerId !== arrastre.id)) return;
+    const gesto = arrastre;
     arrastre = null;
     if (!huboArrastre) return;
     pista.classList.remove("arrastrando");
-    destino = Math.round(destino);
+
+    /* Velocidad de los últimos ~100 ms del gesto (px por ms; + = hacia la derecha) */
+    const ahora = performance.now();
+    const recientes = gesto.huella.filter((h) => ahora - h.t < 120);
+    const primero = recientes[0] || gesto.huella[0];
+    const ultimo = gesto.huella[gesto.huella.length - 1];
+    const velocidad = (ultimo.x - primero.x) / Math.max(16, ultimo.t - primero.t);
+
+    const recorrido = destino - gesto.desde; // en tarjetas (puede ser decimal)
+    let saltos;
+    if (Math.abs(velocidad) > 0.3) {
+      /* Deslizamiento rápido: avanza al menos una; si es muy rápido, una más */
+      saltos = -Math.sign(velocidad) * (Math.max(1, Math.round(Math.abs(recorrido))) + (Math.abs(velocidad) > 1 ? 1 : 0));
+    } else if (Math.abs(recorrido) > 0.18) {
+      /* Lento pero decidido: con poco recorrido ya pasa a la siguiente */
+      saltos = Math.sign(recorrido) * Math.max(1, Math.round(Math.abs(recorrido)));
+    } else {
+      saltos = 0;
+    }
+
+    destino = gesto.desde + saltos;
     marcar({ anunciar: true });
     animar();
   };
