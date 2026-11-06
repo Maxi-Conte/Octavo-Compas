@@ -3,11 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Producto</title>
+  <title>Producto | Octavo Compás Indumentaria</title>
+  <meta name="description" content="Indumentaria de danza y vestidos de gala de Octavo Compás. Elegí color y talle, o pedila a medida.">
+  <meta property="og:type" content="product">
+  <meta property="og:site_name" content="Octavo Compás Indumentaria">
+  <meta property="og:title" content="Octavo Compás Indumentaria">
+  <meta property="og:description" content="Indumentaria de danza, vestuarios a medida y vestidos de gala.">
+  <meta property="og:image" content="/img/secciones/reinas.jpg">
+  <meta property="og:locale" content="es_AR">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="/img/marca/isotipo.svg" type="image/svg+xml">
   <script src="/js/comun.js" defer></script>
   <script src="/js/producto.js" defer></script>
 </head>
@@ -15,66 +23,102 @@
   <header id="header"></header>
 
   <main id="contenido" class="contenedor">
-    <nav class="migas" id="migas" aria-label="Ubicación"><a href="/">Inicio</a></nav>
+    <nav class="migas migas-producto" id="migas" aria-label="Ubicación"><a href="/">Inicio</a></nav>
 
     <div class="producto" id="producto">
       <div class="galeria">
-        <div class="miniaturas" id="miniaturas"></div>
-        <div class="foto-principal cargando" id="foto-principal"></div>
+        <div class="foto-principal foto cargando" id="foto-principal" data-foto="Foto del producto · 4:5"></div>
+        <div class="miniaturas" id="miniaturas" aria-label="Fotos del producto"></div>
       </div>
 
       <div class="producto-info">
+        <span class="sobretitulo" id="etiqueta-producto"></span>
         <h1 id="nombre" class="cargando">&nbsp;</h1>
-        <div class="precio" id="precio"></div>
+        <p class="precio precio-producto" id="precio"></p>
         <p class="cuotas" id="cuotas"></p>
 
         <div class="selector">
           <div class="selector-titulo"><span>Color: <strong id="color-elegido"></strong></span></div>
-          <div class="opciones-color" id="colores"></div>
+          <div class="opciones-color" id="colores" role="group" aria-label="Color"></div>
         </div>
 
         <div class="selector">
           <div class="selector-titulo">
             <span>Talle: <strong id="talle-elegido"></strong></span>
-            <button type="button" id="ver-guia">Guía de talles</button>
+            <button type="button" class="link-guia" id="ver-guia">Guía de talles</button>
           </div>
-          <div class="opciones-talle" id="talles"></div>
+          <div class="opciones-talle" id="talles" role="group" aria-label="Talle"></div>
           <p class="aviso-stock" id="aviso-stock" aria-live="polite"></p>
         </div>
 
         <div class="fila-compra">
-          <div class="cantidad">
-            <button type="button" id="menos" aria-label="Restar">−</button>
-            <span id="cantidad">1</span>
-            <button type="button" id="mas" aria-label="Sumar">+</button>
+          <div class="cantidad" role="group" aria-label="Cantidad">
+            <button type="button" id="menos" aria-label="Restar una unidad">−</button>
+            <span id="cantidad" aria-live="polite">1</span>
+            <button type="button" id="mas" aria-label="Sumar una unidad">+</button>
           </div>
           <button class="boton" id="agregar" type="button" disabled>Elegí un talle</button>
         </div>
 
-        <div class="descripcion" id="descripcion"></div>
+        <div class="bloque-medida">
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5 8.5 15.5"/><path d="M16.5 4.5a1.8 1.8 0 0 1 3 3"/><path d="M8.5 15.5 5 19"/><path d="M4 9c3-3 8-4 11-2M10 20c3-1 6-3 7-7"/></svg>
+          <div>
+            <p class="bloque-medida-titulo">¿No encontrás tu talle o querés otro color?</p>
+            <p>Lo confeccionamos a medida para vos o para todo tu grupo.</p>
+            <a class="link-subrayado" id="link-medida" data-whatsapp="Hola Octavo Compás, quiero consultar por una prenda a medida.">Consultanos por WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="acordeones">
+          <details open>
+            <summary>Descripción</summary>
+            <div class="acordeon-cuerpo descripcion" id="descripcion"></div>
+          </details>
+          <details>
+            <summary>Envíos</summary>
+            <div class="acordeon-cuerpo">
+              <p>Enviamos a todo el país. El costo se calcula en el checkout según tu dirección. <span id="texto-envio-gratis"></span></p>
+              <p>Las prendas en stock se despachan en [PLAZO DE DESPACHO]. Las prendas a medida tienen su propio plazo de confección, que te confirmamos al hacer el pedido.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Cambios</summary>
+            <div class="acordeon-cuerpo">
+              <p>Podés cambiar talle o color dentro de los [DÍAS PARA CAMBIOS] días de recibida la compra, con la prenda sin uso y con su etiqueta. Las prendas confeccionadas a medida no tienen cambio.</p>
+              <p>Si te arrepentiste de la compra, usá el <a href="/arrepentimiento.html">Botón de arrepentimiento</a>.</p>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
 
-    <section class="seccion" id="seccion-relacionados" hidden>
-      <div class="seccion-titulo"><h2>También te puede gustar</h2></div>
+    <section class="seccion seccion-relacionados" id="seccion-relacionados" aria-labelledby="titulo-relacionados" hidden>
+      <div class="seccion-cabecera">
+        <h2 id="titulo-relacionados">También te puede gustar</h2>
+      </div>
       <div class="grilla" id="relacionados"></div>
     </section>
   </main>
 
-  <dialog id="guia-talles">
-    <h3>Guía de talles</h3>
+  <dialog id="guia-talles" aria-labelledby="titulo-guia">
+    <div class="dialogo-cabecera">
+      <h2 id="titulo-guia">Guía de talles</h2>
+      <button class="boton-icono" id="cerrar-guia" type="button" aria-label="Cerrar guía de talles">
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
     <table class="tabla-talles">
-      <thead><tr><th>Talle</th><th>Busto / Pecho</th><th>Cintura</th><th>Cadera</th></tr></thead>
+      <caption class="oculto-visual">Medidas del cuerpo por talle, en centímetros</caption>
+      <thead><tr><th scope="col">Talle</th><th scope="col">Busto</th><th scope="col">Cintura</th><th scope="col">Cadera</th></tr></thead>
       <tbody>
-        <tr><td>XS</td><td>80-84</td><td>62-66</td><td>86-90</td></tr>
-        <tr><td>S</td><td>85-89</td><td>67-71</td><td>91-95</td></tr>
-        <tr><td>M</td><td>90-94</td><td>72-76</td><td>96-100</td></tr>
-        <tr><td>L</td><td>95-100</td><td>77-82</td><td>101-106</td></tr>
-        <tr><td>XL</td><td>101-106</td><td>83-88</td><td>107-112</td></tr>
+        <tr><th scope="row">XS</th><td>80-84</td><td>62-66</td><td>86-90</td></tr>
+        <tr><th scope="row">S</th><td>85-89</td><td>67-71</td><td>91-95</td></tr>
+        <tr><th scope="row">M</th><td>90-94</td><td>72-76</td><td>96-100</td></tr>
+        <tr><th scope="row">L</th><td>95-100</td><td>77-82</td><td>101-106</td></tr>
+        <tr><th scope="row">XL</th><td>101-106</td><td>83-88</td><td>107-112</td></tr>
       </tbody>
     </table>
-    <p class="cuotas">Medidas en cm. Reemplazá esta tabla por la de tu marca.</p>
-    <button class="boton boton-secundario" id="cerrar-guia" type="button">Cerrar</button>
+    <p class="nota-guia">Medidas en cm. [TABLA DE TALLES DE OCTAVO COMPÁS, INCLUIDOS LOS TALLES DE NENAS 6 A 14]. Si estás entre dos talles o necesitás otra medida, lo hacemos a medida.</p>
   </dialog>
 
   <footer id="footer"></footer>

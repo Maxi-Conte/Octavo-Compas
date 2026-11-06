@@ -2007,107 +2007,157 @@ h1, h2,
 
 /* ---------- Producto ---------- */
 
+.migas-producto {
+  padding-top: 28px;
+  margin-bottom: 24px;
+}
+
 .producto {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 48px;
-  padding-bottom: 64px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 80px);
+  padding-bottom: clamp(48px, 7vw, 96px);
 }
 
 .galeria {
   display: grid;
-  grid-template-columns: 76px 1fr;
-  gap: 12px;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 14px;
   align-self: start;
   position: sticky;
-  top: 110px;
-}
-
-.miniaturas {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.miniaturas button {
-  padding: 0;
-  border: 1px solid transparent;
-  background: var(--color-fondo-2);
-  cursor: pointer;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.miniaturas button.activo {
-  border-color: var(--color-marca);
+  top: calc(var(--alto-header) + 20px);
 }
 
 .foto-principal {
-  background: var(--color-fondo-2);
+  grid-column: 2;
+  grid-row: 1;
   aspect-ratio: 4 / 5;
-  border-radius: var(--radio);
-  overflow: hidden;
 }
 
-.foto-principal img {
+.miniaturas {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.miniaturas button {
+  aspect-ratio: 4 / 5;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  padding: 0;
+  border: 1px solid transparent;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s, border-color 0.2s;
+}
+
+.miniaturas button::before {
+  content: none;
+}
+
+.miniaturas button:hover,
+.miniaturas button.activo {
+  opacity: 1;
+}
+
+.miniaturas button.activo {
+  border-color: var(--c-texto);
+}
+
+.producto-info {
+  padding-top: 8px;
 }
 
 .producto-info h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: clamp(2.2rem, 3.6vw, 3.1rem);
+  line-height: 1.05;
+  margin-bottom: 18px;
 }
 
-.producto-info .precio {
-  font-size: 1.4rem;
-  margin-bottom: 4px;
+.producto-info h1.cargando {
+  width: 70%;
+}
+
+.precio-producto {
+  font-size: 1.35rem;
+  margin-bottom: 6px;
 }
 
 .cuotas {
-  color: var(--color-suave);
-  font-size: 0.9rem;
-  margin-bottom: 24px;
+  color: var(--c-texto-2);
+  font-size: 0.88rem;
+  margin: 0 0 32px;
 }
 
 .selector {
-  margin-bottom: 22px;
+  padding: 22px 0 0;
+  border-top: 1px solid var(--c-borde);
+  margin-bottom: 24px;
 }
 
 .selector-titulo {
   display: flex;
   justify-content: space-between;
-  font-size: 0.9rem;
-  margin-bottom: 10px;
+  align-items: center;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
 }
 
-.selector-titulo button {
+.selector-titulo strong {
+  font-weight: 600;
+}
+
+.link-guia {
+  min-height: 32px;
   background: none;
   border: none;
-  text-decoration: underline;
-  cursor: pointer;
   padding: 0;
-  font-size: 0.85rem;
+  cursor: pointer;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.link-guia:hover {
+  color: var(--c-acento);
+}
+
+.chip-talle {
+  min-width: 52px;
+  min-height: 48px;
 }
 
 .chip:disabled {
-  color: #b5b5b5;
+  color: #9A929F;
+  background: repeating-linear-gradient(135deg, transparent 0 6px, rgba(20, 18, 23, 0.04) 6px 7px);
   text-decoration: line-through;
   cursor: not-allowed;
 }
 
+.chip:disabled:hover {
+  border-color: var(--c-borde);
+}
+
+.muestra-color.sin-stock {
+  opacity: 0.4;
+}
+
 .aviso-stock {
-  color: var(--color-acento);
-  font-size: 0.85rem;
+  color: var(--c-acento);
+  font-size: 0.82rem;
   min-height: 1.3em;
-  margin: 8px 0 0;
+  margin: 10px 0 0;
 }
 
 .fila-compra {
   display: flex;
   gap: 12px;
-  margin: 20px 0 28px;
+  margin: 8px 0 28px;
 }
 
 .fila-compra .boton {
@@ -2117,14 +2167,13 @@ h1, h2,
 .cantidad {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio);
+  border: 1px solid var(--c-borde);
 }
 
 .cantidad button {
-  width: 36px;
+  width: 44px;
   height: 100%;
-  min-height: 36px;
+  min-height: 44px;
   border: none;
   background: none;
   cursor: pointer;
@@ -2138,14 +2187,131 @@ h1, h2,
 .cantidad span {
   min-width: 28px;
   text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bloque "lo confeccionamos a medida" */
+
+.bloque-medida {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+  background: var(--c-superficie);
+  border-left: 2px solid var(--c-acento);
+}
+
+.bloque-medida > svg {
+  width: 30px;
+  height: 30px;
+  color: var(--c-acento);
+}
+
+.bloque-medida p {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  color: var(--c-texto-2);
+}
+
+.bloque-medida .bloque-medida-titulo {
+  font-family: var(--f-titulos);
+  font-size: 1.35rem;
+  line-height: 1.2;
+  color: var(--c-texto);
+  margin-bottom: 6px;
+}
+
+/* Acordeones */
+
+.acordeones {
+  border-top: 1px solid var(--c-borde);
+}
+
+.acordeones details {
+  border-bottom: 1px solid var(--c-borde);
+}
+
+.acordeones summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 56px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.acordeones summary::-webkit-details-marker {
+  display: none;
+}
+
+.acordeones summary::after {
+  content: "+";
+  font-size: 1.2rem;
+  font-weight: 400;
+  transition: transform var(--transicion);
+}
+
+.acordeones details[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.acordeon-cuerpo {
+  padding: 0 0 22px;
+  color: var(--c-texto-2);
+  font-size: 0.92rem;
+}
+
+.acordeon-cuerpo p {
+  margin: 0 0 10px;
+}
+
+.acordeon-cuerpo a {
+  color: var(--c-texto);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .descripcion {
-  border-top: 1px solid var(--color-borde);
-  padding-top: 20px;
-  color: #333;
   white-space: pre-line;
 }
+
+.seccion-relacionados {
+  border-top: 1px solid var(--c-borde);
+}
+
+@media (max-width: 900px) {
+  .producto {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .galeria {
+    position: static;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .foto-principal {
+    grid-column: 1;
+  }
+
+  .miniaturas {
+    grid-column: 1;
+    grid-row: 2;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .miniaturas button {
+    width: 64px;
+    flex-shrink: 0;
+  }
+}
+
 
 /* ---------- Carrito lateral ---------- */
 
@@ -2449,31 +2615,67 @@ legend {
 }
 
 
-/* ---------- Guía de talles ---------- */
+/* ---------- Guía de talles (modal) ---------- */
 
 dialog {
   border: none;
-  border-radius: var(--radio);
-  padding: 28px;
-  max-width: 520px;
-  width: calc(100% - 40px);
+  border-radius: 0;
+  padding: 32px;
+  max-width: 560px;
+  width: calc(100% - 32px);
+  background: var(--c-fondo);
+  color: var(--c-texto);
   box-shadow: var(--sombra);
 }
 
 dialog::backdrop {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(20, 18, 23, 0.5);
+}
+
+.dialogo-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.dialogo-cabecera h2 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.dialogo-cabecera .boton-icono {
+  margin-right: -10px;
 }
 
 .tabla-talles {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
 .tabla-talles th,
 .tabla-talles td {
-  padding: 8px;
-  border-bottom: 1px solid var(--color-borde);
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--c-borde);
   text-align: center;
+  font-weight: 400;
+}
+
+.tabla-talles thead th {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.tabla-talles tbody th {
+  font-weight: 600;
+}
+
+.nota-guia {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--c-texto-2);
 }
