@@ -1300,7 +1300,8 @@ h1, h2,
 
 .disc-carrusel {
   position: relative;
-  height: calc(var(--disc-ancho) * (4 / 3 + 0.84) + 72px);
+  /* alto = fila de atrás (elevación + media tarjeta) + accesos por prenda */
+  height: calc(var(--disc-ancho) * 1.52 + 76px);
   touch-action: pan-y;
 }
 
@@ -1370,6 +1371,21 @@ h1, h2,
 .disc-foto {
   display: block;
   aspect-ratio: 3 / 4;
+}
+
+.disc-foto::before {
+  place-items: start center;
+  padding-top: 32%;
+}
+
+.disc-slide:not(.es-activa) .disc-foto::before {
+  opacity: 0;
+}
+
+/* El texto se ve en la del frente y sus vecinas; las de más atrás quedan limpias */
+.disc-slide:not(.es-activa):not(.es-vecina) .disc-capa,
+.disc-slide:not(.es-activa):not(.es-vecina) .disc-final-caja > :not(.disc-final-isotipo) {
+  opacity: 0;
 }
 
 .disc-foto > img {
@@ -1636,7 +1652,13 @@ h1, h2,
 
 @media (max-width: 1100px) {
   .disc {
-    --disc-ancho: clamp(240px, 34vw, 300px);
+    --disc-ancho: clamp(250px, 36vw, 320px);
+  }
+
+  /* Se superponen más: solo la del frente muestra texto */
+  .disc-slide:not(.es-activa) .disc-capa,
+  .disc-slide:not(.es-activa) .disc-final-caja > :not(.disc-final-isotipo) {
+    opacity: 0;
   }
 
   .disc-tabs {
@@ -1657,7 +1679,7 @@ h1, h2,
   }
 
   .disc-carrusel {
-    height: calc(var(--disc-ancho) * (4 / 3 + 0.82) + 72px);
+    height: calc(var(--disc-ancho) * 1.5 + 76px);
   }
 
   .disc-chips {

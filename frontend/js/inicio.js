@@ -233,7 +233,10 @@ function iniciarDisciplinas() {
     const cambioDisciplina = frenteActual === -1 || frenteActual % total !== i;
     frenteActual = frente;
 
-    elementos.forEach((el, j) => el.classList.toggle("es-activa", j === frente));
+    elementos.forEach((el, j) => {
+      el.classList.toggle("es-activa", j === frente);
+      el.classList.toggle("es-vecina", Math.abs(camino(frente, j)) === 1);
+    });
     slides.forEach((s, n) => {
       s.setAttribute("aria-hidden", String(n !== i));
       s.querySelectorAll("a").forEach((a) => (a.tabIndex = n === i ? 0 : -1));
