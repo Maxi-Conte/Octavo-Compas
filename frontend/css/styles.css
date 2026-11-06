@@ -1528,6 +1528,36 @@ h1, h2,
   object-position: bottom center;
 }
 
+/* Foto con fondo: va enmarcada, con un filete interior y un acercamiento lento al aparecer */
+.foto-marco {
+  height: calc(100% - 48px);
+  box-shadow: 0 40px 70px -40px rgba(20, 18, 23, 0.45);
+}
+
+.foto-marco::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+
+.hero-look.activo .foto-marco > img {
+  animation: hero-acerca 7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes hero-acerca {
+  from {
+    transform: scale(1.07);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-look.activo .foto-marco > img {
+    animation: none;
+  }
+}
+
 .foto.foto-ok::before {
   display: none;
 }
@@ -2789,6 +2819,10 @@ h1, h2,
 
   .hero-look {
     inset: 32px 10% 0;
+  }
+
+  .foto-marco {
+    height: 100%;
   }
 
   .hero-texto {

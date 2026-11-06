@@ -1,2 +1,3 @@
-Bailarinas recortadas para el hero: look-1.png, look-2.png, look-3.png
-PNG sin fondo, 1200 x 1600 (3:4), figura apoyada en el borde de abajo.
+Fotos del hero: look-1.jpg (ballet), look-2.jpg (folklore), look-3.jpg (gala).
+Foto vertical (ideal 3:4, 1500 x 2000). Va enmarcada; el encuadre se ajusta en js/inicio.js (LOOKS).
+Tambien acepta PNG recortado sin fondo: poner recorte: true en ese look.

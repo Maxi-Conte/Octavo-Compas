@@ -7,7 +7,9 @@
 /*
   LOOKS DEL HERO
   Para cambiar un look:
-    - imagen: PNG de la bailarina recortada, sin fondo (ver README).
+    - imagen: foto vertical (JPG) o PNG recortado sin fondo (ver README).
+    - recorte: true si la imagen es un PNG sin fondo; si no, va como foto enmarcada.
+    - encuadre: qué parte de la foto queda a la vista cuando se recorta ("50% 30%" = centro, arriba).
     - nombre: lo que se lee arriba de las prendas.
     - alt: descripción de la foto para lectores de pantalla.
     - productos: slugs de los productos (los ves en la URL: producto.html?p=ESTE-SLUG).
@@ -16,20 +18,23 @@
 const LOOKS = [
   {
     nombre: "Look ballet",
-    imagen: "/img/hero/look-1.png",
-    alt: "Bailarina de ballet con malla clásica y falda de gasa",
+    imagen: "/img/hero/look-1.jpg",
+    encuadre: "50% 62%",
+    alt: "Grupo de alumnas de ballet con mallas negras y medias rosas posando en el salón",
     productos: ["malla-clasica-de-breteles", "falda-de-gasa-con-lazo", "tutu-plato-de-ensayo"]
   },
   {
     nombre: "Look folklore",
-    imagen: "/img/hero/look-2.png",
-    alt: "Bailarina de folklore con pollera de volados y camisa paisana",
+    imagen: "/img/hero/look-2.jpg",
+    encuadre: "52% 50%",
+    alt: "Bailarina de folklore de espaldas, con pollera negra y bordó de volados, chaleco bordado y flores en el pelo",
     productos: ["pollera-de-folklore-de-tres-volados", "camisa-paisana-con-puntilla", "chaleco-de-gaucho-bordado"]
   },
   {
     nombre: "Look gala",
-    imagen: "/img/hero/look-3.png",
-    alt: "Modelo con vestido de gala bordado de la colección Reinas 2026",
+    imagen: "/img/hero/look-3.jpg",
+    encuadre: "50% 30%",
+    alt: "Modelo con vestido de gala champagne con encaje dorado y tajo",
     productos: ["vestido-de-gala-bordado-reina", "capa-de-tul-bordada", "vestido-largo-de-saten"]
   }
 ];
@@ -60,8 +65,9 @@ function armarFigurasHero() {
   figura.innerHTML = LOOKS.map(
     (look, i) => `
       <div class="hero-look ${i === 0 ? "activo" : ""}" aria-hidden="${i === 0 ? "false" : "true"}">
-        <div class="foto foto-recorte" data-foto="Look ${i + 1} · bailarina recortada (PNG sin fondo)">
+        <div class="foto ${look.recorte ? "foto-recorte" : "foto-marco"}" data-foto="Look ${i + 1} · foto vertical 3:4">
           <img src="${esc(look.imagen)}" alt="${esc(look.alt)}"
+               ${look.encuadre && /^[\d.]+% [\d.]+%$/.test(look.encuadre) ? `style="object-position: ${look.encuadre}"` : ""}
                ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} width="900" height="1200">
         </div>
       </div>`

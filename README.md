@@ -151,7 +151,7 @@ es normal).
 | `img/marca/logo.svg` | Header | horizontal, ~330 × 64 | SVG (o PNG con fondo transparente) |
 | `img/marca/logo-claro.svg` | Footer (fondo oscuro) | igual que el anterior, en blanco | SVG / PNG transparente |
 | `img/marca/isotipo.svg` | Ícono de la pestaña | cuadrado | SVG |
-| `img/hero/look-1.png` … `look-3.png` | Hero de la home (bailarina) | 1200 × 1600 (3:4), figura apoyada abajo | **PNG sin fondo** |
+| `img/hero/look-1.jpg` … `look-3.jpg` | Hero de la home (ballet, folklore, gala) | 1500 × 2000 (3:4), vertical | JPG enmarcado (o PNG sin fondo con `recorte: true`) |
 | `img/disciplinas/ballet.jpg`, `contemporaneo.jpg`, `folklore.jpg`, `tango.jpg`, `gala.jpg` | Comprá por disciplina | 900 × 1200 (3:4) | JPG, < 250 KB |
 | `img/secciones/a-medida.jpg` | Vestuarios a medida | 1200 × 1500 (4:5) | JPG, < 300 KB |
 | `img/secciones/reinas.jpg` | Reinas 2026 (y vista previa al compartir) | 1200 × 1500 (4:5) | JPG, < 300 KB |
