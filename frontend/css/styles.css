@@ -1353,19 +1353,34 @@ h1, h2,
   box-shadow: 0 30px 60px -30px rgba(40, 14, 26, 0.45);
 }
 
-/* Solo la del frente muestra el detalle */
-.disc-slide:not(.es-activa) .disc-desc,
-.disc-slide:not(.es-activa) .disc-pie,
-.disc-slide:not(.es-activa) .disc-chips,
-.disc-slide:not(.es-activa) .disc-final-caja > :not(.disc-final-isotipo):not(.disc-final-titulo):not(.sobretitulo) {
-  opacity: 0;
-  visibility: hidden;
+/* El texto acompaña la posición REAL de cada tarjeta en el anillo (js/inicio.js):
+   se desvanece a medida que la tarjeta se aleja del frente y aparece mientras llega.
+   --texto:   nombre y número (frente; en escritorio también las vecinas)
+   --detalle: descripción, piezas, "Explorar" y accesos por prenda (solo el frente) */
+.disc-slide {
+  --texto: 0;
+  --detalle: 0;
+}
+
+.disc-capa,
+.disc-final-caja > .sobretitulo,
+.disc-final-titulo {
+  opacity: var(--texto);
 }
 
 .disc-desc,
 .disc-pie,
-.disc-chips {
-  transition: opacity 0.6s ease, visibility 0.6s ease;
+.disc-chips,
+.disc-final-caja > p,
+.disc-final-caja > .boton,
+.disc-final-caja > .link-subrayado {
+  opacity: var(--detalle);
+}
+
+/* Lo que no está al frente no se puede tocar (tocar la tarjeta la trae) */
+.disc-slide:not(.es-activa) .disc-chips,
+.disc-slide:not(.es-activa) .disc-final-caja a {
+  pointer-events: none;
 }
 
 .disc-foto {
@@ -1376,16 +1391,7 @@ h1, h2,
 .disc-foto::before {
   place-items: start center;
   padding-top: 32%;
-}
-
-.disc-slide:not(.es-activa) .disc-foto::before {
-  opacity: 0;
-}
-
-/* El texto se ve en la del frente y sus vecinas; las de más atrás quedan limpias */
-.disc-slide:not(.es-activa):not(.es-vecina) .disc-capa,
-.disc-slide:not(.es-activa):not(.es-vecina) .disc-final-caja > :not(.disc-final-isotipo) {
-  opacity: 0;
+  opacity: var(--detalle);
 }
 
 .disc-foto > img {
@@ -1489,30 +1495,6 @@ h1, h2,
 
 .disc-tarjeta:hover .disc-cta svg {
   transform: translateX(6px);
-}
-
-/* En escritorio, la descripción aparece al pasar el mouse o en la activa */
-@media (hover: hover) and (pointer: fine) {
-  .disc-desc,
-  .disc-pie {
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
-  }
-
-  .disc-slide.es-activa .disc-desc,
-  .disc-slide.es-activa .disc-pie,
-  .disc-tarjeta:hover .disc-desc,
-  .disc-tarjeta:hover .disc-pie,
-  .disc-tarjeta:focus-visible .disc-desc,
-  .disc-tarjeta:focus-visible .disc-pie {
-    opacity: 1;
-    transform: none;
-  }
-
-  .disc-pie {
-    transition-delay: 0.06s;
-  }
 }
 
 /* Accesos rápidos por tipo de prenda */
@@ -1653,12 +1635,6 @@ h1, h2,
 @media (max-width: 1100px) {
   .disc {
     --disc-ancho: clamp(250px, 36vw, 320px);
-  }
-
-  /* Se superponen más: solo la del frente muestra texto */
-  .disc-slide:not(.es-activa) .disc-capa,
-  .disc-slide:not(.es-activa) .disc-final-caja > :not(.disc-final-isotipo) {
-    opacity: 0;
   }
 
   .disc-tabs {

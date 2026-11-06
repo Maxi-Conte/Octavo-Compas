@@ -207,10 +207,17 @@ function iniciarDisciplinas() {
     const angosto = window.innerWidth < 760;
     return {
       radio: ancho * (angosto ? 0.92 : 1.6),       // qué tan abierto es el círculo
-      elevacion: ancho * (angosto ? 0.8 : 0.82)    // cuánto suben las de atrás
+      elevacion: ancho * (angosto ? 0.8 : 0.82),   // cuánto suben las de atrás
+      soloFrente: window.innerWidth <= 1100        // en tablet y celular, las vecinas sin texto
     };
   }
   let m = medidas();
+
+  /* Rampa suave entre dos valores (0 antes de a, 1 después de b) */
+  const rampa = (v, a, b) => {
+    const s = Math.min(1, Math.max(0, (v - a) / (b - a)));
+    return s * s * (3 - 2 * s);
+  };
 
   function dibujar() {
     elementos.forEach((el, j) => {
@@ -223,6 +230,9 @@ function iniciarDisciplinas() {
       el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${escala.toFixed(3)})`;
       el.style.zIndex = String(Math.round(profundidad * 100));
       el.style.setProperty("--bruma", (0.8 * Math.pow(1 - profundidad, 1.15)).toFixed(3));
+      /* El texto se va con la tarjeta: se desvanece mientras se aleja del frente */
+      el.style.setProperty("--detalle", rampa(profundidad, 0.95, 0.995).toFixed(3));
+      el.style.setProperty("--texto", (m.soloFrente ? rampa(profundidad, 0.945, 0.99) : rampa(profundidad, 0.78, 0.9)).toFixed(3));
     });
   }
 
@@ -233,10 +243,7 @@ function iniciarDisciplinas() {
     const cambioDisciplina = frenteActual === -1 || frenteActual % total !== i;
     frenteActual = frente;
 
-    elementos.forEach((el, j) => {
-      el.classList.toggle("es-activa", j === frente);
-      el.classList.toggle("es-vecina", Math.abs(camino(frente, j)) === 1);
-    });
+    elementos.forEach((el, j) => el.classList.toggle("es-activa", j === frente));
     slides.forEach((s, n) => {
       s.setAttribute("aria-hidden", String(n !== i));
       s.querySelectorAll("a").forEach((a) => (a.tabIndex = n === i ? 0 : -1));
