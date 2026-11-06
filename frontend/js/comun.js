@@ -220,7 +220,13 @@ const ICONOS = {
   envio: '<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/>',
   tarjeta: '<rect x="3" y="6" width="18" height="12" rx="1"/><path d="M3 10h18M7 14.5h4"/>',
   aguja: '<path d="M19 5 8.5 15.5"/><path d="M16.5 4.5a1.8 1.8 0 0 1 3 3"/><path d="M8.5 15.5 5 19"/><path d="M4 9c3-3 8-4 11-2M10 20c3-1 6-3 7-7"/>',
-  whatsapp: '<path d="M4 20l1.3-4A8 8 0 1 1 8.4 19L4 20Z"/><path d="M9.3 8.6c.2 2.9 2.4 5.3 5.4 5.9l.9-1.3 1.7.9c-.3 1-1.2 1.6-2.2 1.6-3.7-.3-6.6-3.3-6.8-7 0-1 .7-1.8 1.6-2l.8 1.7-1.4 1Z"/>'
+  whatsapp: '<path d="M4 20l1.3-4A8 8 0 1 1 8.4 19L4 20Z"/><path d="M9.3 8.6c.2 2.9 2.4 5.3 5.4 5.9l.9-1.3 1.7.9c-.3 1-1.2 1.6-2.2 1.6-3.7-.3-6.6-3.3-6.8-7 0-1 .7-1.8 1.6-2l.8 1.7-1.4 1Z"/>',
+  instagram: '<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".6"/>',
+  email: '<rect x="3" y="5.5" width="18" height="13" rx="1"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/>',
+  ubicacion: '<path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/>',
+  escudo: '<path d="M12 3.5 5 6v5.5c0 4.3 3 7.6 7 9 4-1.4 7-4.7 7-9V6l-7-2.5Z"/><path d="m9 12 2.2 2.2L15.5 10"/>',
+  arriba: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+  diagonal: '<path d="M7 17 17 7M9 7h8v8"/>'
 };
 
 function icono(nombre, clase = "") {
@@ -413,71 +419,142 @@ function armarFooter() {
 
   const anio = new Date().getFullYear();
   const consulta = "Hola Octavo Compás, quería hacerles una consulta.";
+  const pedido = "Hola Octavo Compás, quiero pedir un presupuesto de vestuario a medida.";
+
+  /* Columna de links: en celular es un acordeón, en escritorio está siempre abierta */
+  const columna = (titulo, contenido) => `
+    <details class="pie-col" open>
+      <summary><h2 class="pie-titulo">${titulo}</h2>${icono("abajo", "pie-col-flecha")}</summary>
+      ${contenido}
+    </details>`;
 
   footer.innerHTML = `
-    <div class="contenedor footer-grid">
-      <div class="footer-marca">
-        <a href="/" class="footer-logo" aria-label="${esc(SITIO.nombreCompleto)}, ir al inicio">
-          <img src="/img/marca/logo-claro.svg" alt="" width="230" height="49" loading="lazy">
-        </a>
-        <p>Indumentaria de danza, vestuarios a medida y ropa de fiesta. Confeccionamos cada prenda para que brilles en escena.</p>
-
-        <form class="newsletter" id="form-newsletter" novalidate>
-          <label for="newsletter-email" class="footer-titulo">Novedades en tu mail</label>
-          <div class="newsletter-fila">
-            <input id="newsletter-email" type="email" name="email" placeholder="Tu email" autocomplete="email" required>
-            <button class="boton boton-claro" type="submit">Suscribirme</button>
-          </div>
-        </form>
-      </div>
-
-      <nav aria-label="Tienda">
-        <h2 class="footer-titulo">Tienda</h2>
-        <ul>
-          <li><a href="/tienda.html?categoria=ballet">Ballet</a></li>
-          <li><a href="/tienda.html?categoria=contemporaneo">Contemporáneo</a></li>
-          <li><a href="/tienda.html?categoria=folklore">Folklore</a></li>
-          <li><a href="/tienda.html?categoria=tango">Tango</a></li>
-          <li><a href="/tienda.html?categoria=fiesta-y-gala">Fiesta y gala</a></li>
-          <li><a href="/tienda.html?categoria=reinas-2026">Reinas 2026</a></li>
-        </ul>
-      </nav>
-
-      <nav aria-label="Ayuda">
-        <h2 class="footer-titulo">Ayuda</h2>
-        <ul>
-          <li><a href="/ayuda.html#envios">Envíos</a></li>
-          <li><a href="/ayuda.html#cambios">Cambios y devoluciones</a></li>
-          <li><a href="/ayuda.html#pagos">Medios de pago</a></li>
-          <li><a href="/ayuda.html#talles">Guía de talles</a></li>
-          <li><a href="/#a-medida">Vestuarios a medida</a></li>
-          <li><a href="/arrepentimiento.html">Botón de arrepentimiento</a></li>
-        </ul>
-      </nav>
-
-      <div>
-        <h2 class="footer-titulo">Contacto</h2>
-        <ul>
-          <li><a data-whatsapp="${esc(consulta)}">WhatsApp</a></li>
-          <li><a href="${esc(SITIO.instagram)}" target="_blank" rel="noopener">${esc(SITIO.instagramUsuario)}</a></li>
-          <li><span>${esc(SITIO.email)}</span></li>
-          <li><span>${esc(SITIO.ubicacion)}</span></li>
-        </ul>
+    <!-- Banda de cierre -->
+    <div class="pie-cta">
+      <div class="contenedor pie-cta-interior">
+        <div>
+          <span class="pie-sobretitulo">Vestuarios a medida</span>
+          <p class="pie-cta-titulo">¿Tenés una función en puerta? <em>Hagamos tu vestuario.</em></p>
+        </div>
+        <div class="pie-cta-acciones">
+          <a class="boton boton-claro" data-whatsapp="${esc(pedido)}">${icono("whatsapp")}Pedí tu presupuesto</a>
+          <a class="pie-link-flecha" href="/#a-medida">Cómo trabajamos ${icono("diagonal")}</a>
+        </div>
       </div>
     </div>
 
-    <div class="footer-legal">
-      <div class="contenedor">
-        <p>© ${anio} ${esc(SITIO.nombreCompleto)} · Pagos procesados por Mercado Pago</p>
-        <a class="boton-arrepentimiento" href="/arrepentimiento.html">Botón de arrepentimiento</a>
+    <div class="contenedor pie-grid">
+      <div class="pie-marca">
+        <a href="/" class="pie-logo" aria-label="${esc(SITIO.nombreCompleto)}, ir al inicio">
+          <img src="/img/marca/logo-claro.svg" alt="" width="250" height="49" loading="lazy">
+        </a>
+        <p>Indumentaria de danza, vestuarios a medida y ropa de fiesta. Cada prenda sale de nuestro taller pensada para moverse, brillar y durar.</p>
+        <ul class="pie-redes" aria-label="Redes y contacto">
+          <li><a href="${esc(SITIO.instagram)}" target="_blank" rel="noopener" aria-label="Instagram ${esc(SITIO.instagramUsuario)}">${icono("instagram")}</a></li>
+          <li><a data-whatsapp="${esc(consulta)}" aria-label="WhatsApp">${icono("whatsapp")}</a></li>
+          <li><a href="/ayuda.html" aria-label="Ayuda y contacto">${icono("email")}</a></li>
+        </ul>
+      </div>
+
+      <nav class="pie-navs" aria-label="Pie de página">
+        ${columna("Tienda", `
+          <ul>
+            <li><a href="/tienda.html?categoria=ballet">Ballet</a></li>
+            <li><a href="/tienda.html?categoria=contemporaneo">Contemporáneo</a></li>
+            <li><a href="/tienda.html?categoria=folklore">Folklore</a></li>
+            <li><a href="/tienda.html?categoria=tango">Tango</a></li>
+            <li><a href="/tienda.html?categoria=fiesta-y-gala">Fiesta y gala</a></li>
+            <li><a href="/tienda.html?categoria=reinas-2026">Reinas 2026</a></li>
+          </ul>`)}
+        ${columna("Ayuda", `
+          <ul>
+            <li><a href="/ayuda.html#envios">Envíos</a></li>
+            <li><a href="/ayuda.html#cambios">Cambios y devoluciones</a></li>
+            <li><a href="/ayuda.html#pagos">Medios de pago</a></li>
+            <li><a href="/ayuda.html#talles">Guía de talles</a></li>
+            <li><a href="/#a-medida">Vestuarios a medida</a></li>
+            <li><a href="/arrepentimiento.html">Botón de arrepentimiento</a></li>
+          </ul>`)}
+        ${columna("Contacto", `
+          <ul class="pie-contacto">
+            <li>${icono("whatsapp")}<a data-whatsapp="${esc(consulta)}">WhatsApp</a></li>
+            <li>${icono("instagram")}<a href="${esc(SITIO.instagram)}" target="_blank" rel="noopener">${esc(SITIO.instagramUsuario).replaceAll(".", ".<wbr>")}</a></li>
+            <li>${icono("email")}<span>${esc(SITIO.email)}</span></li>
+            <li>${icono("ubicacion")}<span>${esc(SITIO.ubicacion)}</span></li>
+          </ul>`)}
+      </nav>
+
+      <form class="pie-news" id="form-newsletter" novalidate>
+        <h2 class="pie-titulo">Novedades del taller</h2>
+        <p>Lanzamientos, colecciones nuevas y fechas de toma de medidas. Sin spam.</p>
+        <div class="pie-news-campo">
+          <label class="oculto-visual" for="newsletter-email">Tu email</label>
+          <input id="newsletter-email" type="email" name="email" placeholder="Tu email" autocomplete="email" required>
+          <button type="submit" aria-label="Suscribirme">${icono("flechaDer")}</button>
+        </div>
+        <p class="pie-news-nota">Te podés dar de baja cuando quieras.</p>
+      </form>
+    </div>
+
+    <div class="contenedor">
+      <ul class="pie-garantias">
+        <li>${icono("envio")}<span><strong>Envíos a todo el país</strong>Seguimiento de tu pedido</span></li>
+        <li>${icono("tarjeta")}<span><strong>Hasta 12 cuotas</strong>Con Mercado Pago</span></li>
+        <li>${icono("escudo")}<span><strong>Compra protegida</strong>Pago seguro y cifrado</span></li>
+        <li>${icono("aguja")}<span><strong>Confección propia</strong>Hecho en nuestro taller</span></li>
+      </ul>
+
+      <div class="pie-pagos">
+        <div>
+          <h2 class="pie-titulo">Medios de pago</h2>
+          <ul class="pie-medios">
+            <li>Mercado Pago</li><li>Visa</li><li>Mastercard</li><li>American Express</li>
+            <li>Naranja X</li><li>Débito</li><li>Efectivo</li>
+          </ul>
+        </div>
+        <!-- [DATA FISCAL]: reemplazar por el QR de ARCA con su link -->
+        <div class="pie-fiscal" role="img" aria-label="Espacio para el QR de data fiscal">[QR DATA<br>FISCAL]</div>
+      </div>
+    </div>
+
+    <p class="pie-firma" aria-hidden="true">Octavo Compás</p>
+
+    <div class="pie-legal">
+      <div class="contenedor pie-legal-interior">
+        <p>© ${anio} ${esc(SITIO.nombreCompleto)} · [RAZÓN SOCIAL · CUIT]</p>
+        <ul class="pie-legal-links">
+          <li><a href="/ayuda.html">Ayuda</a></li>
+          <li><a href="https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario" target="_blank" rel="noopener">Defensa del consumidor ${icono("diagonal")}</a></li>
+          <li><a class="boton-arrepentimiento" href="/arrepentimiento.html">Botón de arrepentimiento</a></li>
+        </ul>
+        <button class="pie-arriba" type="button">Volver arriba ${icono("arriba")}</button>
       </div>
     </div>`;
+
+  /* Acordeones: abiertos en escritorio, cerrados en celular */
+  const celular = window.matchMedia("(max-width: 760px)");
+  const ajustarColumnas = () => {
+    footer.querySelectorAll(".pie-col").forEach((d) => (d.open = !celular.matches));
+  };
+  ajustarColumnas();
+  celular.addEventListener("change", ajustarColumnas);
+  footer.querySelectorAll(".pie-col summary").forEach((s) => {
+    s.addEventListener("click", (e) => {
+      if (!celular.matches) e.preventDefault(); // en escritorio no se cierran
+    });
+  });
+
+  footer.querySelector(".pie-arriba").addEventListener("click", () => {
+    const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reducido ? "auto" : "smooth" });
+    document.querySelector(".logo")?.focus({ preventScroll: true });
+  });
 
   /* [SERVICIO DE NEWSLETTER]: todavía no hay dónde guardar los mails */
   footer.querySelector("#form-newsletter").addEventListener("submit", (e) => {
     e.preventDefault();
     const campo = e.target.email;
-    if (!campo.checkValidity()) {
+    if (!campo.checkValidity() || !campo.value.trim()) {
       aviso("Revisá el email.", "error");
       campo.focus();
       return;
