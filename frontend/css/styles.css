@@ -1536,7 +1536,7 @@ h1, h2,
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 5;
+  z-index: 200; /* por encima de todas las tarjetas del anillo (0 a 100) */
   display: grid;
   place-items: center;
   width: 96px;
