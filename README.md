@@ -127,9 +127,55 @@ cada una con su propio stock.
 
 ---
 
-## 7. Próximos pasos sugeridos
+## 7. Octavo Compás: fotos, logo y textos
 
-- [ ] Branding: logo, colores (`:root` en `styles.css`) y fotos reales
+### Catálogo de ejemplo
+
+```powershell
+npm run db:seed:danza                    # agrega categorías y 15 productos de danza/gala
+npm run db:seed:danza -- --ocultar-demo  # además oculta los productos genéricos del seed original
+```
+
+No borra nada. Los productos usan imágenes provisorias de `frontend/img/productos-demo/`;
+las fotos reales se cargan desde el panel.
+
+### Fotos del sitio
+
+Cada foto tiene un nombre fijo. **Si guardás un archivo con ese nombre en esa carpeta,
+aparece solo**, sin tocar código. Mientras no exista, se ve una caja de color suave
+con una etiqueta que dice qué foto va (y el navegador muestra un 404 de ese archivo:
+es normal).
+
+| Archivo | Dónde se ve | Medida recomendada | Formato |
+|---|---|---|---|
+| `img/marca/logo.svg` | Header | horizontal, ~330 × 64 | SVG (o PNG con fondo transparente) |
+| `img/marca/logo-claro.svg` | Footer (fondo oscuro) | igual que el anterior, en blanco | SVG / PNG transparente |
+| `img/marca/isotipo.svg` | Ícono de la pestaña | cuadrado | SVG |
+| `img/hero/look-1.png` … `look-3.png` | Hero de la home (bailarina) | 1200 × 1600 (3:4), figura apoyada abajo | **PNG sin fondo** |
+| `img/disciplinas/ballet.jpg`, `contemporaneo.jpg`, `folklore.jpg`, `tango.jpg`, `gala.jpg` | Comprá por disciplina | 900 × 1200 (3:4) | JPG, < 250 KB |
+| `img/secciones/a-medida.jpg` | Vestuarios a medida | 1200 × 1500 (4:5) | JPG, < 300 KB |
+| `img/secciones/reinas.jpg` | Reinas 2026 (y vista previa al compartir) | 1200 × 1500 (4:5) | JPG, < 300 KB |
+| `img/secciones/escena-1.jpg` … `escena-4.jpg` | En escena (Instagram) | 800 × 800 (1:1) | JPG, < 150 KB |
+| Fotos de productos (desde el panel) | Tienda y ficha | 1200 × 1500 (4:5); la 2.ª foto se ve al pasar el mouse | JPG / WebP |
+
+Si cambiás un logo `.svg` por un `.png`, actualizá la ruta en `frontend/js/comun.js` (`armarHeader` / `armarFooter`).
+
+### Looks del hero
+
+En `frontend/js/inicio.js`, el array `LOOKS` define cada look: imagen, nombre, texto alternativo
+y los **slugs** de las 3 prendas (el slug es lo que aparece en `producto.html?p=ESTE-SLUG`).
+
+### Datos del negocio
+
+- `.env`: `NEGOCIO_WHATSAPP` (solo números, con código de país: `549261...`) y `NEGOCIO_INSTAGRAM_URL`.
+- `frontend/js/comun.js` → `SITIO`: email de contacto y ubicación que se muestran en el footer.
+- Textos marcados entre corchetes (`[ASÍ]`) están pendientes de completar.
+
+## 8. Próximos pasos sugeridos
+
+- [ ] Fotos reales y logo original (ver tabla de arriba)
+- [ ] Endpoint para el botón de arrepentimiento (guardar la solicitud y enviar constancia por mail)
+- [ ] Servicio de newsletter
 - [ ] Subida de fotos directa desde el panel (Cloudinary)
 - [ ] Cupones de descuento
 - [ ] Cálculo de envío por código postal (Andreani / Correo Argentino)

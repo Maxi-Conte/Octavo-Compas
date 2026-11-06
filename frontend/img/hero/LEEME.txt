@@ -1,0 +1,2 @@
+Bailarinas recortadas para el hero: look-1.png, look-2.png, look-3.png
+PNG sin fondo, 1200 x 1600 (3:4), figura apoyada en el borde de abajo.

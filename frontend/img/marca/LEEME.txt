@@ -1,0 +1,2 @@
+logo.svg (header), logo-claro.svg (footer, fondo oscuro), isotipo.svg (favicon).
+Los actuales son PROVISORIOS: reemplazalos por el logo original con el mismo nombre.

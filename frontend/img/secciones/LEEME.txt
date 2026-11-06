@@ -1,0 +1,2 @@
+a-medida.jpg y reinas.jpg: JPG 1200 x 1500 (4:5).
+escena-1.jpg a escena-4.jpg: JPG cuadrado 800 x 800.
