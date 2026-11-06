@@ -15,19 +15,30 @@
 ===================================================== */
 
 (function () {
-  const DURACION_MS = 3950; // tiene que coincidir con la animación de salida en styles.css
+  /* Tienen que coincidir con la animación de salida en styles.css */
+  const DURACION_COMPLETA_MS = 3950; // primera vez en la visita
+  const DURACION_RAPIDA_MS = 1350;   // al refrescar la página
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+  let rapido = false;
   try {
-    if (sessionStorage.getItem("oc-telon-visto")) return;
+    if (sessionStorage.getItem("oc-telon-visto")) {
+      /* Ya lo vio: solo se repite (en versión rápida) si refrescó la página,
+         no al pasar de una página a otra */
+      const navegacion = performance.getEntriesByType("navigation")[0];
+      if (navegacion?.type !== "reload") return;
+      rapido = true;
+    }
     sessionStorage.setItem("oc-telon-visto", "1");
   } catch {
     return; /* sin sessionStorage no podemos evitar que se repita: mejor no mostrarlo */
   }
 
+  const DURACION_MS = rapido ? DURACION_RAPIDA_MS : DURACION_COMPLETA_MS;
+
   const telon = document.createElement("div");
-  telon.className = "telon";
+  telon.className = rapido ? "telon telon-rapido" : "telon";
   telon.setAttribute("role", "presentation");
   telon.innerHTML = `
     <div class="telon-escenario">
