@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+<rect width="800" height="1000" fill="#c0babf"/>
+<rect x="40" y="40" width="720" height="920" fill="none" stroke="#141217" stroke-opacity=".12"/>
+<g fill="#4a4450" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif">
+<text x="400" y="384" font-family="Arial, sans-serif" font-size="18" letter-spacing="4">FOTO DE PRODUCTO</text>
+<text x="400" y="474" font-size="44">Falda de gasa con</text><text x="400" y="526" font-size="44">lazo</text>
+<text x="400" y="608" font-family="Arial, sans-serif" font-size="18" letter-spacing="4">NEGRO</text>
+</g></svg>

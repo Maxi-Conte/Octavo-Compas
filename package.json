@@ -8,7 +8,8 @@
     "dev": "node --watch backend/server.js",
     "db:init": "node backend/db/init.js",
     "db:seed": "node backend/db/seed.js",
-    "db:setup": "node backend/db/init.js && node backend/db/seed.js"
+    "db:setup": "node backend/db/init.js && node backend/db/seed.js",
+    "db:seed:danza": "node backend/db/seed-danza.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",
