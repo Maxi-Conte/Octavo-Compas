@@ -31,10 +31,20 @@ const LOGOS = {
   "/img/marca/isotipo.svg": svgComoDato(path.join(FRONT, "img/marca/isotipo.svg"))
 };
 
-/* Fotos de secciones que todavía no existen: así se ve la caja con su etiqueta */
+/* Fotos de secciones: si el archivo existe va incrustado;
+   si todavía no existe, queda la caja con su etiqueta */
+const TIPOS_FOTO = { ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp" };
+
+function fotoComoDato(ruta) {
+  const archivo = path.join(FRONT, ruta);
+  const tipo = TIPOS_FOTO[path.extname(archivo).toLowerCase()];
+  if (!tipo || !fs.existsSync(archivo)) return "data:,";
+  return `data:${tipo};base64,${fs.readFileSync(archivo).toString("base64")}`;
+}
+
 function adaptarRutas(texto) {
   for (const [ruta, dato] of Object.entries(LOGOS)) texto = texto.split(ruta).join(dato);
-  return texto.replace(/\/img\/(hero|disciplinas|secciones)\/[\w.-]+/g, "data:,");
+  return texto.replace(/\/img\/(hero|disciplinas|secciones)\/[\w.-]+/g, fotoComoDato);
 }
 
 /* ---------- Datos del catálogo ---------- */
