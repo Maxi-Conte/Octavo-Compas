@@ -78,45 +78,132 @@
       </ul>
     </section>
 
-    <!-- ===== COMPRÁ POR DISCIPLINA ===== -->
-    <section class="seccion" aria-labelledby="titulo-disciplinas">
-      <div class="contenedor">
-        <div class="seccion-cabecera">
+    <!-- ===== COMPRÁ POR DISCIPLINA (carrusel editorial, js/inicio.js) ===== -->
+    <section class="seccion disc" id="disciplinas" aria-labelledby="titulo-disciplinas" aria-roledescription="carrusel">
+      <div class="contenedor disc-cabecera">
+        <div class="disc-titulos">
+          <span class="sobretitulo">Disciplinas</span>
           <h2 id="titulo-disciplinas">Comprá por disciplina</h2>
+          <p class="disc-intro">Cada estilo tiene su manera de moverse. Elegí el tuyo y encontrá la prenda pensada para ese escenario.</p>
+        </div>
+        <div class="disc-controles">
+          <p class="disc-contador" aria-hidden="true">
+            <span class="disc-actual" id="disc-actual">01</span>
+            <span class="disc-total">/ 05</span>
+          </p>
+          <div class="disc-flechas">
+            <button class="boton-flecha" type="button" id="disc-anterior" aria-controls="disc-pista" aria-label="Disciplina anterior">
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+            </button>
+            <button class="boton-flecha boton-flecha-llena" type="button" id="disc-siguiente" aria-controls="disc-pista" aria-label="Disciplina siguiente">
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+            </button>
+          </div>
         </div>
       </div>
-      <ul class="disciplinas contenedor">
-        <li>
-          <a class="disciplina" href="/tienda.html?categoria=ballet">
-            <span class="foto" data-foto="Foto ballet · 3:4"><img src="/img/disciplinas/ballet.jpg" alt="" loading="lazy" width="600" height="800"></span>
-            <span class="disciplina-nombre">Ballet</span>
-          </a>
-        </li>
-        <li>
-          <a class="disciplina" href="/tienda.html?categoria=contemporaneo">
-            <span class="foto" data-foto="Foto contemporáneo · 3:4"><img src="/img/disciplinas/contemporaneo.jpg" alt="" loading="lazy" width="600" height="800"></span>
-            <span class="disciplina-nombre">Contemporáneo</span>
-          </a>
-        </li>
-        <li>
-          <a class="disciplina" href="/tienda.html?categoria=folklore">
-            <span class="foto" data-foto="Foto folklore · 3:4"><img src="/img/disciplinas/folklore.jpg" alt="" loading="lazy" width="600" height="800"></span>
-            <span class="disciplina-nombre">Folklore</span>
-          </a>
-        </li>
-        <li>
-          <a class="disciplina" href="/tienda.html?categoria=tango">
-            <span class="foto" data-foto="Foto tango · 3:4"><img src="/img/disciplinas/tango.jpg" alt="" loading="lazy" width="600" height="800"></span>
-            <span class="disciplina-nombre">Tango</span>
-          </a>
-        </li>
-        <li>
-          <a class="disciplina" href="/tienda.html?categoria=fiesta-y-gala">
-            <span class="foto" data-foto="Foto fiesta y gala · 3:4"><img src="/img/disciplinas/gala.jpg" alt="" loading="lazy" width="600" height="800"></span>
-            <span class="disciplina-nombre">Fiesta y gala</span>
-          </a>
-        </li>
-      </ul>
+
+      <div class="disc-carrusel">
+        <ul class="disc-pista" id="disc-pista" tabindex="0" aria-label="Disciplinas. Usá las flechas del teclado o deslizá para ver más.">
+          <li class="disc-slide" data-categoria="ballet" aria-roledescription="diapositiva" aria-label="1 de 5: Ballet">
+            <a class="disc-tarjeta" href="/tienda.html?categoria=ballet">
+              <span class="foto disc-foto" data-foto="Foto ballet · 3:4"><img src="/img/disciplinas/ballet.jpg" alt="" loading="lazy" width="900" height="1200"></span>
+              <span class="disc-capa">
+                <span class="disc-num">01</span>
+                <span class="disc-nombre">Ballet</span>
+                <span class="disc-desc">Mallas, faldas y tutús para clase, examen y función.</span>
+                <span class="disc-pie">
+                  <span class="disc-cantidad" data-cantidad></span>
+                  <span class="disc-cta">Explorar <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                </span>
+              </span>
+            </a>
+            <p class="disc-chips"><a href="/tienda.html?categoria=ballet&amp;buscar=Malla">Mallas</a><a href="/tienda.html?categoria=ballet&amp;buscar=Falda">Faldas</a><a href="/tienda.html?categoria=ballet&amp;buscar=Tut%C3%BA">Tutús</a></p>
+          </li>
+          <li class="disc-slide" data-categoria="contemporaneo" aria-roledescription="diapositiva" aria-label="2 de 5: Contemporáneo">
+            <a class="disc-tarjeta" href="/tienda.html?categoria=contemporaneo">
+              <span class="foto disc-foto" data-foto="Foto contemporáneo · 3:4"><img src="/img/disciplinas/contemporaneo.jpg" alt="" loading="lazy" width="900" height="1200"></span>
+              <span class="disc-capa">
+                <span class="disc-num">02</span>
+                <span class="disc-nombre">Contemporáneo</span>
+                <span class="disc-desc">Prendas fluidas que acompañan el trabajo de piso y el movimiento libre.</span>
+                <span class="disc-pie">
+                  <span class="disc-cantidad" data-cantidad></span>
+                  <span class="disc-cta">Explorar <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                </span>
+              </span>
+            </a>
+            <p class="disc-chips"><a href="/tienda.html?categoria=contemporaneo&amp;buscar=Malla">Mallas</a><a href="/tienda.html?categoria=contemporaneo&amp;buscar=Palazzo">Palazzos</a><a href="/tienda.html?categoria=contemporaneo&amp;buscar=Top">Tops</a></p>
+          </li>
+          <li class="disc-slide" data-categoria="folklore" aria-roledescription="diapositiva" aria-label="3 de 5: Folklore">
+            <a class="disc-tarjeta" href="/tienda.html?categoria=folklore">
+              <span class="foto disc-foto" data-foto="Foto folklore · 3:4"><img src="/img/disciplinas/folklore.jpg" alt="" loading="lazy" width="900" height="1200"></span>
+              <span class="disc-capa">
+                <span class="disc-num">03</span>
+                <span class="disc-nombre">Folklore</span>
+                <span class="disc-desc">Polleras de vuelo, camisas y chalecos con terminación de taller.</span>
+                <span class="disc-pie">
+                  <span class="disc-cantidad" data-cantidad></span>
+                  <span class="disc-cta">Explorar <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                </span>
+              </span>
+            </a>
+            <p class="disc-chips"><a href="/tienda.html?categoria=folklore&amp;buscar=Pollera">Polleras</a><a href="/tienda.html?categoria=folklore&amp;buscar=Camisa">Camisas</a><a href="/tienda.html?categoria=folklore&amp;buscar=Chaleco">Chalecos</a></p>
+          </li>
+          <li class="disc-slide" data-categoria="tango" aria-roledescription="diapositiva" aria-label="4 de 5: Tango">
+            <a class="disc-tarjeta" href="/tienda.html?categoria=tango">
+              <span class="foto disc-foto" data-foto="Foto tango · 3:4"><img src="/img/disciplinas/tango.jpg" alt="" loading="lazy" width="900" height="1200"></span>
+              <span class="disc-capa">
+                <span class="disc-num">04</span>
+                <span class="disc-nombre">Tango</span>
+                <span class="disc-desc">Vestidos y faldas con caída, pensados para cada giro.</span>
+                <span class="disc-pie">
+                  <span class="disc-cantidad" data-cantidad></span>
+                  <span class="disc-cta">Explorar <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                </span>
+              </span>
+            </a>
+            <p class="disc-chips"><a href="/tienda.html?categoria=tango&amp;buscar=Vestido">Vestidos</a><a href="/tienda.html?categoria=tango&amp;buscar=Falda">Faldas</a></p>
+          </li>
+          <li class="disc-slide" data-categoria="fiesta-y-gala" aria-roledescription="diapositiva" aria-label="5 de 5: Fiesta y gala">
+            <a class="disc-tarjeta" href="/tienda.html?categoria=fiesta-y-gala">
+              <span class="foto disc-foto" data-foto="Foto fiesta y gala · 3:4"><img src="/img/disciplinas/gala.jpg" alt="" loading="lazy" width="900" height="1200"></span>
+              <span class="disc-capa">
+                <span class="disc-num">05</span>
+                <span class="disc-nombre">Fiesta y gala</span>
+                <span class="disc-desc">Vestidos para la noche más importante, también confeccionados a medida.</span>
+                <span class="disc-pie">
+                  <span class="disc-cantidad" data-cantidad></span>
+                  <span class="disc-cta">Explorar <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                </span>
+              </span>
+            </a>
+            <p class="disc-chips"><a href="/tienda.html?categoria=fiesta-y-gala&amp;buscar=Vestido">Vestidos</a><a href="/tienda.html?categoria=reinas-2026">Reinas 2026</a><a href="/#a-medida">A medida</a></p>
+          </li>
+          <li class="disc-final">
+            <div class="disc-final-caja">
+              <svg class="disc-final-isotipo" viewBox="0 0 64 64" aria-hidden="true"><path d="M50 12 C36 4 14 8 11 26 C9 38 19 44 29 40"/><path d="M14 52 C28 60 50 56 53 38 C55 26 45 20 35 24"/></svg>
+              <span class="sobretitulo">A medida</span>
+              <h3 class="disc-final-titulo">¿Tu disciplina no está?</h3>
+              <p>Árabe, jazz, flamenco, patín o lo que imagines: diseñamos y confeccionamos el vestuario para vos o para todo tu grupo.</p>
+              <a class="boton boton-claro" data-whatsapp="Hola Octavo Compás, quiero un vestuario a medida para mi disciplina.">Contanos tu idea</a>
+              <a class="link-subrayado" href="/#a-medida">Cómo trabajamos</a>
+            </div>
+          </li>
+        </ul>
+        <div class="disc-cursor" aria-hidden="true"><span>Arrastrá</span></div>
+      </div>
+
+      <div class="contenedor disc-nav">
+        <div class="disc-progreso" aria-hidden="true"><span id="disc-barra"></span></div>
+        <ul class="disc-tabs" aria-label="Ir a una disciplina">
+          <li><button type="button" data-ir="0" aria-controls="disc-pista" aria-current="true">Ballet</button></li>
+          <li><button type="button" data-ir="1" aria-controls="disc-pista">Contemporáneo</button></li>
+          <li><button type="button" data-ir="2" aria-controls="disc-pista">Folklore</button></li>
+          <li><button type="button" data-ir="3" aria-controls="disc-pista">Tango</button></li>
+          <li><button type="button" data-ir="4" aria-controls="disc-pista">Fiesta y gala</button></li>
+        </ul>
+      </div>
+      <p class="oculto-visual" id="disc-anuncio" aria-live="polite"></p>
     </section>
 
     <!-- ===== NOVEDADES ===== -->

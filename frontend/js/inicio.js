@@ -152,6 +152,199 @@ function iniciarHero() {
   LOOKS.slice(1).forEach((look) => look.productos.forEach(obtenerProducto));
 }
 
+/* ---------- Comprá por disciplina (carrusel) ---------- */
+
+function iniciarDisciplinas() {
+  const pista = document.getElementById("disc-pista");
+  if (!pista) return;
+
+  const carrusel = pista.closest(".disc-carrusel");
+  const slides = [...pista.querySelectorAll(".disc-slide")];
+  const tabs = [...document.querySelectorAll(".disc-tabs [data-ir]")];
+  const anterior = document.getElementById("disc-anterior");
+  const siguiente = document.getElementById("disc-siguiente");
+  const numero = document.getElementById("disc-actual");
+  const barra = document.getElementById("disc-barra");
+  const anuncio = document.getElementById("disc-anuncio");
+  const total = slides.length;
+  const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let actual = -1;
+
+  const paso = () => (slides[1] ? slides[1].offsetLeft - slides[0].offsetLeft : 1);
+  const indiceVisible = () => Math.min(total - 1, Math.max(0, Math.round(pista.scrollLeft / paso())));
+
+  function marcar(i, { anunciar = false } = {}) {
+    if (i === actual) return;
+    actual = i;
+
+    slides.forEach((s, n) => s.classList.toggle("es-activa", n === i));
+    tabs.forEach((t, n) => (n === i ? t.setAttribute("aria-current", "true") : t.removeAttribute("aria-current")));
+
+    numero.textContent = dosDigitos(i + 1);
+    numero.classList.remove("cambia");
+    void numero.offsetWidth; // reinicia la animación del número
+    numero.classList.add("cambia");
+
+    barra.style.transform = `translateX(${i * 100}%)`;
+    anterior.disabled = i === 0;
+    siguiente.disabled = i === total - 1;
+
+    if (anunciar) {
+      const nombre = slides[i].querySelector(".disc-nombre").textContent;
+      anuncio.textContent = `${nombre}, ${i + 1} de ${total}`;
+    }
+  }
+
+  /* Mientras se desplaza solo (flechas, pestañas) no cuenta los intermedios */
+  let bloqueoHasta = 0;
+
+  function ir(i, opciones = {}) {
+    const destino = Math.min(total - 1, Math.max(0, i));
+    bloqueoHasta = performance.now() + 800;
+    pista.scrollTo({
+      left: slides[destino].offsetLeft - slides[0].offsetLeft,
+      behavior: reducido ? "auto" : "smooth"
+    });
+    marcar(destino, opciones);
+  }
+
+  /* Al deslizar: actualizar contador, barra y pestañas */
+  let pendiente = false;
+  pista.addEventListener(
+    "scroll",
+    () => {
+      if (pendiente || performance.now() < bloqueoHasta) return;
+      pendiente = true;
+      requestAnimationFrame(() => {
+        pendiente = false;
+        marcar(indiceVisible());
+      });
+    },
+    { passive: true }
+  );
+
+  pista.addEventListener("scrollend", () => {
+    bloqueoHasta = 0;
+    marcar(indiceVisible());
+  });
+
+  anterior.addEventListener("click", () => ir(actual - 1, { anunciar: true }));
+  siguiente.addEventListener("click", () => ir(actual + 1, { anunciar: true }));
+  tabs.forEach((t) => t.addEventListener("click", () => ir(Number(t.dataset.ir), { anunciar: true })));
+
+  pista.addEventListener("keydown", (e) => {
+    const teclas = { ArrowRight: actual + 1, ArrowLeft: actual - 1, Home: 0, End: total - 1 };
+    if (!(e.key in teclas) || e.target !== pista) return;
+    e.preventDefault();
+    ir(teclas[e.key], { anunciar: true });
+  });
+
+  /* Arrastrar con el mouse (en pantallas táctiles desliza el navegador) */
+  let arrastre = null;
+  let huboArrastre = false;
+
+  pista.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    arrastre = { x: e.clientX, scroll: pista.scrollLeft, inicio: actual };
+    huboArrastre = false;
+  });
+
+  window.addEventListener("pointermove", (e) => {
+    if (!arrastre) return;
+    const dx = e.clientX - arrastre.x;
+    if (!huboArrastre && Math.abs(dx) > 5) {
+      huboArrastre = true;
+      pista.classList.add("arrastrando");
+    }
+    if (huboArrastre) pista.scrollLeft = arrastre.scroll - dx;
+  });
+
+  window.addEventListener("pointerup", () => {
+    if (!arrastre) return;
+    const desde = arrastre;
+    arrastre = null;
+    if (!huboArrastre) return;
+    pista.classList.remove("arrastrando");
+    /* Un arrastre corto alcanza para pasar a la siguiente */
+    const recorrido = (pista.scrollLeft - desde.scroll) / paso();
+    const destino = Math.abs(recorrido) > 0.15
+      ? desde.inicio + Math.sign(recorrido) * Math.max(1, Math.round(Math.abs(recorrido)))
+      : desde.inicio;
+    ir(destino);
+  });
+
+  /* Si se arrastró, el soltar no abre el link */
+  pista.addEventListener("click", (e) => {
+    if (!huboArrastre) return;
+    e.preventDefault();
+    e.stopPropagation();
+    huboArrastre = false;
+  }, true);
+
+  pista.addEventListener("dragstart", (e) => e.preventDefault());
+
+  /* Cursor "Arrastrá / Ver" que sigue al mouse */
+  const cursor = carrusel.querySelector(".disc-cursor");
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches && !reducido) {
+    carrusel.classList.add("con-cursor");
+    const texto = cursor.querySelector("span");
+    let objetivo = null;
+    let posicion = null;
+    let animando = false;
+
+    const mover = () => {
+      if (!objetivo) {
+        animando = false;
+        return;
+      }
+      posicion = posicion || { ...objetivo };
+      posicion.x += (objetivo.x - posicion.x) * 0.22;
+      posicion.y += (objetivo.y - posicion.y) * 0.22;
+      cursor.style.setProperty("--cx", `${posicion.x}px`);
+      cursor.style.setProperty("--cy", `${posicion.y}px`);
+      requestAnimationFrame(mover);
+    };
+
+    carrusel.addEventListener("pointermove", (e) => {
+      if (e.pointerType !== "mouse") return;
+      const caja = carrusel.getBoundingClientRect();
+      objetivo = { x: e.clientX - caja.left, y: e.clientY - caja.top };
+      texto.textContent = e.target.closest(".disc-tarjeta") && !arrastre ? "Ver" : "Arrastrá";
+      cursor.classList.add("visible");
+      if (!animando) {
+        animando = true;
+        requestAnimationFrame(mover);
+      }
+    });
+
+    carrusel.addEventListener("pointerleave", () => {
+      cursor.classList.remove("visible");
+      objetivo = null;
+      posicion = null;
+    });
+
+    /* Sobre los accesos por prenda vuelve la flecha normal */
+    carrusel.querySelectorAll(".disc-chips").forEach((c) => {
+      c.addEventListener("pointerenter", () => cursor.classList.remove("visible"));
+    });
+  }
+
+  /* Cantidad real de piezas de cada disciplina */
+  slides.forEach(async (slide) => {
+    const lugar = slide.querySelector("[data-cantidad]");
+    try {
+      const { total: cantidad } = await api(
+        `/productos?categoria=${encodeURIComponent(slide.dataset.categoria)}&por_pagina=1`
+      );
+      if (cantidad) lugar.textContent = `${cantidad} pieza${cantidad === 1 ? "" : "s"}`;
+    } catch {
+      /* Si falla, simplemente no se muestra */
+    }
+  });
+
+  marcar(0);
+}
+
 /* ---------- Novedades ---------- */
 
 function esqueletos(cantidad) {
@@ -182,5 +375,6 @@ async function textoEnvio() {
 }
 
 iniciarHero();
+iniciarDisciplinas();
 cargarNovedades();
 textoEnvio();
