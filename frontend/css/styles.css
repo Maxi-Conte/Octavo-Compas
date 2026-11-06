@@ -1657,8 +1657,8 @@ h1, h2,
 /* ---------- Tienda (catálogo con filtros) ---------- */
 
 .migas {
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
   color: var(--c-texto-2);
   margin: 0 0 18px;
 }
@@ -2134,7 +2134,7 @@ h1, h2,
 
 .chip:disabled {
   color: #9A929F;
-  background: repeating-linear-gradient(135deg, transparent 0 6px, rgba(20, 18, 23, 0.04) 6px 7px);
+  background: var(--c-superficie);
   text-decoration: line-through;
   cursor: not-allowed;
 }
@@ -2787,7 +2787,7 @@ dialog::backdrop {
 }
 
 .tabla-talles thead th {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;

@@ -1,0 +1,77 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-11-06T13:32:16.591Z",
+        "reason": "Brief del usuario: textos, menú y botones en Inter"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "frontend/*.html"
+        ],
+        "createdAt": "2026-11-06T13:32:24.001Z",
+        "reason": "Brief del usuario pide barra de anuncios que se desplaza suave; respeta prefers-reduced-motion"
+      },
+      {
+        "rule": "hero-eyebrow-chip",
+        "value": "*",
+        "files": [
+          "frontend/index.html"
+        ],
+        "createdAt": "2026-11-06T13:32:24.339Z",
+        "reason": "Brief del usuario pide etiqueta COLECCIÓN 2026 sobre el título del hero"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "frontend/index.html"
+        ],
+        "createdAt": "2026-11-06T13:32:24.678Z",
+        "reason": "Palabra gigante EN ESCENA: decorativa, aria-hidden, el brief la pide tenue; el resto del texto se verificó AA"
+      },
+      {
+        "rule": "italic-serif-display",
+        "value": "*",
+        "files": [
+          "frontend/index.html"
+        ],
+        "createdAt": "2026-11-06T13:32:25.018Z",
+        "reason": "Claude: solo 2026 en itálica dentro del h2 de Reinas (no es el hero), registro editorial"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "frontend/index.html"
+        ],
+        "createdAt": "2026-11-06T13:32:25.351Z",
+        "reason": "Claude: secciones a sangre con .contenedor que da el margen; cabeceras y acordeones centran el texto en alturas de 56-72px"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "frontend/tienda.html"
+        ],
+        "createdAt": "2026-11-06T13:32:25.689Z",
+        "reason": "Claude: secciones a sangre con .contenedor que da el margen; cabeceras y acordeones centran el texto en alturas de 56-72px"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "frontend/producto.html"
+        ],
+        "createdAt": "2026-11-06T13:32:26.031Z",
+        "reason": "Claude: secciones a sangre con .contenedor que da el margen; cabeceras y acordeones centran el texto en alturas de 56-72px"
+      }
+    ]
+  }
+}
