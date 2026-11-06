@@ -7,7 +7,7 @@
    5. "Preparando tu próximo gran momento..."
    6. Una línea dorada cierra y se ve la tienda
 
-   - Dura ~3 s y NO espera a que cargue la página (no la frena).
+   - Dura ~4 s y NO espera a que cargue la página (no la frena).
    - Solo anima transform/opacity (y el trazo de un SVG chico).
    - Una vez por visita; se saltea con click o cualquier tecla.
    - Si la persona pidió menos movimiento, no se muestra.
@@ -15,7 +15,7 @@
 ===================================================== */
 
 (function () {
-  const DURACION_MS = 3000; // tiene que coincidir con la animación de salida en styles.css
+  const DURACION_MS = 3950; // tiene que coincidir con la animación de salida en styles.css
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
