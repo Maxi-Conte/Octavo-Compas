@@ -2806,3 +2806,134 @@ dialog::backdrop {
 .hero-botones.centrado {
   justify-content: center;
 }
+
+/* ---------- Páginas de texto: arrepentimiento y ayuda ---------- */
+
+.pagina-legal {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
+  gap: clamp(40px, 7vw, 112px);
+  align-items: start;
+  padding: clamp(32px, 5vw, 56px) 0 clamp(64px, 8vw, 112px);
+}
+
+.pagina-legal h1,
+.pagina-ayuda h1 {
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  margin-bottom: 24px;
+}
+
+.pagina-legal-texto > p,
+.lista-legal {
+  color: var(--c-texto-2);
+  max-width: 560px;
+}
+
+.pagina-legal-texto strong {
+  color: var(--c-texto);
+  font-weight: 600;
+}
+
+.lista-legal {
+  padding-left: 18px;
+  margin: 24px 0;
+}
+
+.lista-legal li {
+  margin-bottom: 10px;
+}
+
+.nota-legal {
+  font-size: 0.8rem;
+}
+
+.form-legal {
+  display: grid;
+  gap: 18px;
+  padding: clamp(24px, 4vw, 40px);
+  background: var(--c-superficie);
+}
+
+.form-legal h2 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.form-ayuda {
+  margin: -10px 0 0;
+  font-size: 0.82rem;
+  color: var(--c-texto-2);
+}
+
+.form-legal .texto-error:empty {
+  display: none;
+}
+
+.form-acciones {
+  display: grid;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.constancia {
+  padding: 20px;
+  background: var(--c-fondo);
+  border-left: 2px solid var(--c-acento);
+}
+
+.constancia p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--c-texto-2);
+}
+
+.constancia .constancia-titulo {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-texto);
+}
+
+.constancia .constancia-codigo {
+  font-family: var(--f-titulos);
+  font-size: 1.8rem;
+  color: var(--c-texto);
+  margin: 4px 0 8px;
+  letter-spacing: 0.04em;
+}
+
+.pagina-ayuda {
+  max-width: 760px;
+  padding: clamp(32px, 5vw, 56px) 0 clamp(64px, 8vw, 112px);
+}
+
+.pagina-ayuda-intro {
+  color: var(--c-texto-2);
+  margin-bottom: 24px;
+}
+
+.pagina-ayuda section {
+  padding: 36px 0;
+  border-top: 1px solid var(--c-borde);
+  scroll-margin-top: calc(var(--alto-header) + 16px);
+}
+
+.pagina-ayuda h2 {
+  font-size: 2rem;
+  margin-bottom: 14px;
+}
+
+.pagina-ayuda section p {
+  color: var(--c-texto-2);
+}
+
+.pagina-ayuda .tabla-talles {
+  margin: 20px 0;
+}
+
+@media (max-width: 860px) {
+  .pagina-legal {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

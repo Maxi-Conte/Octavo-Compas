@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Botón de arrepentimiento | Octavo Compás Indumentaria</title>
+  <meta name="description" content="Pedí la revocación de tu compra en Octavo Compás Indumentaria dentro de los 10 días corridos. Completá el formulario y te respondemos con tu código de solicitud.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="/img/marca/isotipo.svg" type="image/svg+xml">
+  <script src="/js/comun.js" defer></script>
+  <script src="/js/arrepentimiento.js" defer></script>
+</head>
+<body>
+  <header id="header"></header>
+
+  <main id="contenido" class="contenedor">
+    <div class="pagina-legal">
+      <div class="pagina-legal-texto">
+        <nav class="migas" aria-label="Ubicación"><a href="/">Inicio</a> / Botón de arrepentimiento</nav>
+        <span class="sobretitulo">Ley 24.240 · Resolución 424/2020</span>
+        <h1>Botón de arrepentimiento</h1>
+        <p>Si compraste en nuestra tienda online, podés revocar la compra dentro de los <strong>10 días corridos</strong> desde que recibiste el producto o desde la compra, lo que ocurra último. No tiene costo ni hace falta que nos expliques el motivo.</p>
+        <ul class="lista-legal">
+          <li>La prenda tiene que estar sin uso, con sus etiquetas y en su empaque.</li>
+          <li>Te devolvemos el dinero por el mismo medio de pago que usaste.</li>
+          <li>Los costos de devolución corren por nuestra cuenta.</li>
+          <li>Las prendas confeccionadas a medida, según tus medidas o diseño, no tienen derecho de arrepentimiento.</li>
+        </ul>
+        <p class="nota-legal">[REVISAR ESTE TEXTO CON UN ASESOR LEGAL ANTES DE PUBLICAR]</p>
+      </div>
+
+      <form class="form-legal" id="form-arrepentimiento" novalidate>
+        <h2>Pedí la revocación</h2>
+        <p class="form-ayuda">Todos los campos son obligatorios.</p>
+
+        <label class="campo">Nombre y apellido
+          <input name="nombre" autocomplete="name" required minlength="3" aria-describedby="error-nombre">
+          <span class="texto-error" id="error-nombre"></span>
+        </label>
+
+        <label class="campo">Email
+          <input name="email" type="email" autocomplete="email" required aria-describedby="error-email">
+          <span class="texto-error" id="error-email"></span>
+        </label>
+
+        <label class="campo">Número de pedido
+          <input name="pedido" inputmode="numeric" required placeholder="Lo encontrás en el email de tu compra" aria-describedby="error-pedido">
+          <span class="texto-error" id="error-pedido"></span>
+        </label>
+
+        <label class="campo">Motivo (opcional)
+          <textarea name="motivo" rows="4" maxlength="500"></textarea>
+        </label>
+
+        <div class="form-acciones">
+          <button class="boton boton-destacado" type="submit" data-canal="whatsapp">Enviar por WhatsApp</button>
+          <button class="boton boton-secundario" type="submit" data-canal="email" id="enviar-email">Enviar por email</button>
+        </div>
+
+        <div class="constancia" id="constancia" role="status" hidden>
+          <p class="constancia-titulo">Tu código de solicitud</p>
+          <p class="constancia-codigo" id="codigo-solicitud"></p>
+          <p>Guardalo: lo incluimos en tu mensaje y te lo vamos a confirmar por escrito.</p>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer id="footer"></footer>
+</body>
+</html>
