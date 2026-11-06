@@ -2200,88 +2200,7 @@ h1, h2,
 
 /* ---------- Grilla y tarjetas ---------- */
 
-.grilla {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 48px 20px;
-}
-
-.tarjeta-link {
-  display: block;
-}
-
-.tarjeta-foto {
-  aspect-ratio: 4 / 5;
-}
-
-.tarjeta-foto > img {
-  transition: opacity 0.45s ease, transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.tarjeta-foto .foto-hover {
-  opacity: 0;
-}
-
-.tarjeta-link:hover .foto-hover {
-  opacity: 1;
-}
-
-.tarjeta-link:hover .tarjeta-foto > img {
-  transform: scale(1.03);
-}
-
-.etiqueta {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  padding: 5px 9px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.etiqueta-oferta {
-  background: var(--c-acento);
-  color: #fff;
-}
-
-.etiqueta-agotado {
-  left: auto;
-  right: 12px;
-  background: var(--c-fondo);
-  color: var(--c-texto);
-}
-
-.tarjeta-info {
-  padding-top: 16px;
-}
-
-.tarjeta-etiqueta {
-  display: block;
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--c-texto-2);
-  margin-bottom: 6px;
-}
-
-.tarjeta-nombre {
-  font-family: var(--f-texto);
-  font-size: 0.82rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  line-height: 1.45;
-  margin: 0 0 6px;
-}
-
-.tarjeta-link:hover .tarjeta-nombre {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
+/* Base compartida con la página de producto y el admin */
 .precio {
   display: flex;
   flex-wrap: wrap;
@@ -2299,26 +2218,359 @@ h1, h2,
   font-size: 0.88em;
 }
 
-.tarjeta-colores {
-  margin: 12px 0 0;
-}
-
-.tarjeta-puntos {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
 .punto-color {
+  display: inline-block;
   width: 13px;
   height: 13px;
   border-radius: 50%;
   border: 1px solid rgba(20, 18, 23, 0.18);
 }
 
-.colores-mas {
-  font-size: 0.75rem;
+.grilla {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 56px 24px;
+}
+
+/* Tarjeta de producto: foto protagonista, información ordenada en tres niveles
+   (tipo + colores / nombre / precio + cuotas) y una sola acción al pasar el mouse. */
+
+.tarjeta {
+  position: relative;
+  min-width: 0;
+  animation: tarjeta-entra 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.tarjeta:nth-child(4n + 2) { animation-delay: 0.06s; }
+.tarjeta:nth-child(4n + 3) { animation-delay: 0.12s; }
+.tarjeta:nth-child(4n + 4) { animation-delay: 0.18s; }
+
+@keyframes tarjeta-entra {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.tarjeta-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.tarjeta-link:focus-visible {
+  outline: none;
+}
+
+.tarjeta-link:focus-visible .tarjeta-foto {
+  outline: 2px solid var(--c-texto);
+  outline-offset: 4px;
+}
+
+.tarjeta-foto {
+  aspect-ratio: 4 / 5;
+  isolation: isolate;
+}
+
+/* Filete interior: separa la foto del fondo cuando la prenda es clara */
+.tarjeta-foto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  box-shadow: inset 0 0 0 1px rgba(20, 18, 23, 0.05);
+  pointer-events: none;
+}
+
+.tarjeta-foto > img {
+  transition:
+    opacity 0.6s ease,
+    transform 1.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.tarjeta-foto .foto-hover {
+  opacity: 0;
+}
+
+/* Sellos sobre la foto */
+.tarjeta-insignias {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.insignia {
+  padding: 6px 10px 5px;
+  background: var(--c-fondo);
+  color: var(--c-texto);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+}
+
+.insignia-oferta {
+  background: var(--c-acento);
+  color: #fff;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sin stock: la foto se apaga y el sello queda abajo */
+.tarjeta-agotada .tarjeta-foto > img {
+  filter: grayscale(0.7);
+  opacity: 0.55;
+}
+
+.tarjeta-sin-stock {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 3;
+  padding: 6px 10px 5px;
+  background: var(--c-texto);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+  transition: opacity 0.3s ease;
+}
+
+/* Barra de acción (solo con mouse) */
+.tarjeta-accion {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 16px 14px;
+  background: rgba(251, 249, 247, 0.94);
+  color: var(--c-texto);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.35s ease,
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  pointer-events: none;
+}
+
+.tarjeta-accion svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .tarjeta-accion {
+    background: rgba(251, 249, 247, 0.86);
+    backdrop-filter: blur(10px) saturate(1.2);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tarjeta-link:hover .foto-hover {
+    opacity: 1;
+  }
+
+  .tarjeta-link:hover .tarjeta-foto > img {
+    transform: scale(1.045);
+  }
+
+  .tarjeta-link:hover .tarjeta-accion,
+  .tarjeta-link:focus-visible .tarjeta-accion {
+    opacity: 1;
+    transform: none;
+  }
+
+  .tarjeta-link:hover .tarjeta-accion svg {
+    transform: translateX(3px);
+  }
+
+  .tarjeta-link:hover .tarjeta-sin-stock {
+    opacity: 0;
+  }
+
+  .tarjeta-link:hover .tarjeta-nombre {
+    text-decoration-color: currentColor;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .tarjeta-accion {
+    display: none;
+  }
+}
+
+/* Información */
+.tarjeta-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-top: 18px;
+}
+
+.tarjeta-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 16px;
+  margin-bottom: 10px;
+}
+
+.tarjeta-etiqueta {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--c-texto-2);
+}
+
+.tarjeta-colores {
+  flex: none;
+  margin-left: auto;
+}
+
+.tarjeta-puntos {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tarjeta-puntos .punto-color {
+  width: 11px;
+  height: 11px;
+  border: 0;
+  box-shadow:
+    inset 0 0 0 1px rgba(20, 18, 23, 0.16),
+    0 0 0 2px var(--c-fondo);
+}
+
+.colores-mas {
+  margin-left: 2px;
+  font-size: 0.72rem;
+  color: var(--c-texto-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.tarjeta-nombre {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin: 0 0 12px;
+  font-family: var(--f-titulos);
+  font-size: clamp(1.15rem, 0.6vw + 0.95rem, 1.35rem);
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.3s ease;
+}
+
+.tarjeta-precio {
+  gap: 10px;
+  margin-top: auto;
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tarjeta-precio .precio-actual {
+  font-weight: 600;
+}
+
+.tarjeta-agotada .tarjeta-precio {
+  color: var(--c-texto-2);
+}
+
+.tarjeta-cuotas {
+  margin: 5px 0 0;
+  font-size: 0.78rem;
+  color: var(--c-texto-2);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 760px) {
+  .tarjeta-insignias {
+    top: 10px;
+    left: 10px;
+  }
+
+  .tarjeta-sin-stock {
+    left: 10px;
+    bottom: 10px;
+  }
+
+  .tarjeta-info {
+    padding-top: 14px;
+  }
+
+  .tarjeta-fila {
+    margin-bottom: 8px;
+  }
+
+  .tarjeta-etiqueta {
+    letter-spacing: 0.12em;
+  }
+
+  .tarjeta-nombre {
+    margin-bottom: 10px;
+    font-size: 1.08rem;
+  }
+
+  .tarjeta-precio {
+    gap: 2px 8px;
+    font-size: 0.86rem;
+  }
+
+  .tarjeta-cuotas {
+    font-size: 0.74rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta {
+    animation: none;
+  }
+
+  .tarjeta-foto > img,
+  .tarjeta-accion {
+    transition: opacity 0.2s ease;
+  }
+
+  .tarjeta-link:hover .tarjeta-foto > img {
+    transform: none;
+  }
 }
 
 .esqueleto-tarjeta {

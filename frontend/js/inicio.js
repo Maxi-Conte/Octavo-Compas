@@ -488,7 +488,7 @@ async function cargarNovedades() {
   try {
     const { productos } = await api("/productos?orden=nuevos&por_pagina=4");
     grilla.innerHTML = productos.length
-      ? productos.map((p) => tarjetaProducto(p, { etiqueta: "Nuevo" })).join("")
+      ? productos.map((p) => tarjetaProducto(p, { insignia: "Nuevo" })).join("")
       : `<p class="vacio">Pronto vas a ver productos acá.</p>`;
   } catch (error) {
     grilla.innerHTML = `<p class="vacio">${esc(error.message)}</p>`;

@@ -126,44 +126,53 @@ function tipoDePrenda(nombre) {
 }
 
 /*
-  opciones.etiqueta: texto chico arriba del nombre ("Nuevo", "Ballet"...).
-  Si no se pasa, se usa el tipo de prenda.
+  opciones.insignia: sello sobre la foto ("Nuevo"). Arriba del nombre va siempre el tipo de prenda.
+  En escritorio, al pasar el mouse aparece la segunda foto y la barra "Elegí tu talle".
 */
 function tarjetaProducto(p, opciones = {}) {
   const conOferta = p.precio_oferta !== null;
+  const actual = conOferta ? p.precio_oferta : p.precio;
   const descuento = conOferta ? Math.round((1 - p.precio_oferta / p.precio) * 100) : 0;
-  const etiqueta = opciones.etiqueta || tipoDePrenda(p.nombre);
+  const tipo = tipoDePrenda(p.nombre);
 
-  const colores = p.colores.slice(0, 5);
+  const insignias = [
+    opciones.insignia ? `<li class="insignia">${esc(opciones.insignia)}</li>` : "",
+    descuento > 0 ? `<li class="insignia insignia-oferta">-${descuento}%</li>` : ""
+  ].join("");
+
+  const colores = p.colores.slice(0, 4);
   const puntos = colores
     .map((c) => `<span class="punto-color" style="background:${colorSeguro(c.hex)}"></span>`)
     .join("");
-  const extra = p.colores.length > 5 ? `<span class="colores-mas">+${p.colores.length - 5}</span>` : "";
+  const extra = p.colores.length > 4 ? `<span class="colores-mas">+${p.colores.length - 4}</span>` : "";
   const nombresColores = p.colores.map((c) => c.nombre).join(", ");
 
   return `
-    <article class="tarjeta">
+    <article class="tarjeta${p.agotado ? " tarjeta-agotada" : ""}">
       <a class="tarjeta-link" href="/producto.html?p=${encodeURIComponent(p.slug)}">
         <div class="tarjeta-foto foto" data-foto="Foto del producto · 4:5">
           ${p.imagen ? `<img src="${esc(p.imagen)}" alt="${esc(p.nombre)}" loading="lazy" width="800" height="1000">` : ""}
           ${p.imagen_hover ? `<img class="foto-hover" src="${esc(p.imagen_hover)}" alt="" loading="lazy" width="800" height="1000">` : ""}
-          ${conOferta ? `<span class="etiqueta etiqueta-oferta">-${descuento}%</span>` : ""}
-          ${p.agotado ? `<span class="etiqueta etiqueta-agotado">Sin stock</span>` : ""}
+          ${insignias ? `<ul class="tarjeta-insignias">${insignias}</ul>` : ""}
+          ${p.agotado ? `<span class="tarjeta-sin-stock">Sin stock</span>` : ""}
+          <span class="tarjeta-accion" aria-hidden="true">${p.agotado ? "Ver detalle" : "Elegí tu talle"}${icono("flechaDer")}</span>
         </div>
         <div class="tarjeta-info">
-          ${etiqueta ? `<span class="tarjeta-etiqueta">${esc(etiqueta)}</span>` : ""}
+          <div class="tarjeta-fila">
+            ${tipo ? `<span class="tarjeta-etiqueta">${esc(tipo)}</span>` : ""}
+            ${colores.length
+              ? `<span class="tarjeta-colores" title="${esc(nombresColores)}">
+                   <span class="oculto-visual">Colores: ${esc(nombresColores)}</span>
+                   <span aria-hidden="true" class="tarjeta-puntos">${puntos}${extra}</span>
+                 </span>`
+              : ""}
+          </div>
           <h3 class="tarjeta-nombre">${esc(p.nombre)}</h3>
-          <p class="precio">
-            ${conOferta
-              ? `<span class="precio-actual">${pesos(p.precio_oferta)}</span><s><span class="oculto-visual">Antes </span>${pesos(p.precio)}</s>`
-              : `<span class="precio-actual">${pesos(p.precio)}</span>`}
+          <p class="precio tarjeta-precio">
+            <span class="precio-actual">${pesos(actual)}</span>
+            ${conOferta ? `<s><span class="oculto-visual">Antes </span>${pesos(p.precio)}</s>` : ""}
           </p>
-          ${colores.length
-            ? `<p class="tarjeta-colores" title="${esc(nombresColores)}">
-                 <span class="oculto-visual">Colores: ${esc(nombresColores)}</span>
-                 <span aria-hidden="true" class="tarjeta-puntos">${puntos}${extra}</span>
-               </p>`
-            : ""}
+          ${p.agotado ? "" : `<p class="tarjeta-cuotas">12 cuotas de ${pesos(actual / 12)}</p>`}
         </div>
       </a>
     </article>`;
