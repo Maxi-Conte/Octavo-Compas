@@ -85,6 +85,21 @@ cada una con su propio stock.
 3. Si justo dos personas pagaron la última unidad, el segundo pedido queda
    marcado **"⚠️ Requiere revisión"** y te llega un mail de alerta.
 4. Si cancelás un pedido pagado desde el panel, el stock vuelve solo.
+5. Si Mercado Pago devuelve el pago de un pedido que todavía no salió, el pedido
+   se cancela y el stock vuelve. Si ya estaba enviado o entregado, queda en
+   **"Requiere revisión"** y el stock lo reingresás vos cuando la prenda vuelva.
+6. También van a revisión: un **segundo pago** del mismo pedido (doble cobro),
+   un pago aprobado sobre un **pedido cancelado** y un pago de una prenda que
+   se borró del catálogo.
+
+### Tests de pagos y stock
+
+```powershell
+npm test
+```
+
+Corren contra una base aparte (`tienda_ropa_test`, se crea sola) y con Mercado
+Pago y los mails simulados: no tocan tus datos ni salen a internet.
 
 ---
 

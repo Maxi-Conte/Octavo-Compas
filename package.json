@@ -10,7 +10,8 @@
     "db:seed": "node backend/db/seed.js",
     "db:setup": "node backend/db/init.js && node backend/db/seed.js",
     "db:seed:danza": "node backend/db/seed-danza.js",
-    "demo": "node scripts/construir-demo.js"
+    "demo": "node scripts/construir-demo.js",
+    "test": "node --test --test-concurrency=1 \"test/*.test.js\""
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",
