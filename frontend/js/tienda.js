@@ -138,6 +138,39 @@ async function pintarFiltrosDisponibles(filtros) {
   if (disponibles.precio_max) formPrecio.max.placeholder = `Máx ${pesos(disponibles.precio_max)}`;
 }
 
+/*
+  Filtros aplicados, a la vista y quitables de a uno.
+  En celular los filtros viven en un panel cerrado: sin esto,
+  no se ve por qué la lista está recortada.
+*/
+function pintarFiltrosActivos(filtros) {
+  const lista = (valor) => (valor || "").split(",").filter(Boolean);
+
+  const activos = [
+    ...lista(filtros.talle).map((t) => ({ clave: "talle", valor: t, texto: `Talle ${t}` })),
+    ...lista(filtros.color).map((c) => ({ clave: "color", valor: c, texto: c })),
+    filtros.min && { clave: "min", texto: `Desde ${pesos(filtros.min)}` },
+    filtros.max && { clave: "max", texto: `Hasta ${pesos(filtros.max)}` },
+    filtros.buscar && { clave: "buscar", texto: `“${filtros.buscar}”` },
+    filtros.ofertas && { clave: "ofertas", texto: "Ofertas" }
+  ].filter(Boolean);
+
+  const caja = document.getElementById("filtros-activos");
+  caja.hidden = activos.length === 0;
+  caja.innerHTML =
+    activos
+      .map(
+        (f) => `<button type="button" class="filtro-activo" data-quitar="${f.clave}" data-valor="${esc(f.valor || "")}"
+          aria-label="Quitar filtro: ${esc(f.texto)}">${esc(f.texto)}${icono("cerrar")}</button>`
+      )
+      .join("") +
+    (activos.length > 1 ? `<button type="button" class="limpiar-filtros" data-quitar="todo">Limpiar todo</button>` : "");
+
+  const cuenta = document.getElementById("filtros-cuenta");
+  cuenta.textContent = activos.length;
+  cuenta.hidden = activos.length === 0;
+}
+
 function pintarPaginacion(pagina, paginas) {
   const nav = document.getElementById("paginacion");
   if (paginas <= 1) {
@@ -158,6 +191,7 @@ async function cargar() {
   document.getElementById("orden").value = filtros.orden || "nuevos";
   pintarCategorias(filtros);
   pintarTitulo(filtros);
+  pintarFiltrosActivos(filtros);
   pintarFiltrosDisponibles(filtros);
 
   grilla.innerHTML = Array.from({ length: 6 }, () =>
@@ -207,6 +241,21 @@ document.getElementById("filtros").addEventListener("click", (e) => {
 document.getElementById("filtro-precio").addEventListener("submit", (e) => {
   e.preventDefault();
   cambiarFiltros({ min: e.target.min.value, max: e.target.max.value });
+});
+
+document.getElementById("filtros-activos").addEventListener("click", (e) => {
+  const boton = e.target.closest("[data-quitar]");
+  if (!boton) return;
+
+  const { quitar, valor } = boton.dataset;
+  const filtros = leerFiltros();
+
+  /* "Limpiar todo" conserva la categoría y el orden: saca solo los filtros */
+  if (quitar === "todo") {
+    return cambiarFiltros({ talle: "", color: "", min: "", max: "", buscar: "", ofertas: "" });
+  }
+
+  cambiarFiltros({ [quitar]: quitar === "talle" || quitar === "color" ? alternar(filtros[quitar], valor) : "" });
 });
 
 document.getElementById("orden").addEventListener("change", (e) => cambiarFiltros({ orden: e.target.value }));

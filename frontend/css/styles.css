@@ -30,6 +30,7 @@
   --alto-header: 72px;
   --alto-anuncio: 36px;
   --transicion: 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+  --suave: cubic-bezier(0.22, 1, 0.36, 1);   /* entradas: arranca rápido y frena largo */
 
   /* Alias para el código existente (admin, etc.) */
   --color-texto: var(--c-texto);
@@ -146,6 +147,60 @@ h1, h2,
   color: #fff;
 }
 
+/* Lo que dibuja el navegador también lleva la paleta:
+   casillas, cursor de texto y barras de desplazamiento */
+:root {
+  accent-color: var(--c-acento);
+  caret-color: var(--c-acento);
+  scrollbar-color: #CBC1C8 transparent;
+}
+
+/* Títulos sin palabras sueltas en la última línea; párrafos sin viudas */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+p, li {
+  text-wrap: pretty;
+}
+
+/* Los precios se alinean en columna (todos los dígitos del mismo ancho) */
+.precio,
+.tarjeta-cuotas,
+.cuotas,
+.fila-total,
+.fila-resumen,
+.item-carrito > strong {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Paso entre páginas ----------
+   En vez de un corte en blanco, una página se funde con la siguiente,
+   y la foto de una tarjeta viaja hasta la ficha del producto. */
+
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.28s;
+  }
+
+  ::view-transition-group(producto-foto) {
+    animation-duration: 0.55s;
+    animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  /* La foto conserva su proporción mientras cambia de tamaño */
+  ::view-transition-old(producto-foto),
+  ::view-transition-new(producto-foto) {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
 /* Texto chico en mayúsculas (etiquetas, "colección 2026") */
 .sobretitulo {
   display: block;
@@ -169,7 +224,13 @@ h1, h2,
   padding: 0 28px;
   border: 1px solid var(--c-texto);
   border-radius: 0;
-  background: var(--c-texto);
+  /* Al pasar el mouse, el color de --relleno sube desde abajo */
+  --relleno: var(--c-acento);
+  background-color: var(--c-texto);
+  background-image: linear-gradient(var(--relleno), var(--relleno));
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 100% 0%;
   color: #fff;
   font-size: 0.78rem;
   font-weight: 600;
@@ -177,12 +238,17 @@ h1, h2,
   text-transform: uppercase;
   text-align: center;
   cursor: pointer;
-  transition: background var(--transicion), color var(--transicion), border-color var(--transicion);
+  transition: background-size 0.55s var(--suave), color 0.35s ease, border-color 0.45s ease;
 }
 
 .boton:hover {
-  background: #2C2731;
-  border-color: #2C2731;
+  background-size: 100% 100%;
+  border-color: var(--relleno);
+}
+
+/* Se hunde apenas al apretarlo */
+.boton:active {
+  transform: translateY(1px);
 }
 
 .boton:disabled,
@@ -192,36 +258,28 @@ h1, h2,
 }
 
 .boton-secundario {
-  background: transparent;
+  --relleno: var(--c-texto);
+  background-color: transparent;
   color: var(--c-texto);
 }
 
 .boton-secundario:hover {
-  background: var(--c-texto);
   color: #fff;
 }
 
 .boton-destacado {
-  background: var(--c-acento);
+  --relleno: #7E1859;
+  background-color: var(--c-acento);
   border-color: var(--c-acento);
   color: #fff;
 }
 
-.boton-destacado:hover {
-  background: #7E1859;
-  border-color: #7E1859;
-}
-
 /* Sobre fondo oscuro */
 .boton-claro {
-  background: #fff;
+  --relleno: var(--c-acento-claro);
+  background-color: #fff;
   border-color: #fff;
   color: var(--c-texto);
-}
-
-.boton-claro:hover {
-  background: var(--c-acento-claro);
-  border-color: var(--c-acento-claro);
 }
 
 .boton-ancho {
@@ -286,6 +344,21 @@ h1, h2,
   position: relative;
   overflow: hidden;
   background: var(--c-superficie);
+}
+
+/* Mientras falta la foto, el isotipo de la marca acompaña a la etiqueta */
+.foto[data-foto]:not([data-foto=""]):not(.foto-ok)::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(28px, 18%, 72px);
+  aspect-ratio: 1;
+  translate: -50% calc(-100% - 22px);
+  background: currentColor;
+  opacity: 0.16;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M50 12 C36 4 14 8 11 26 C9 38 19 44 29 40'/%3E%3Cpath d='M14 52 C28 60 50 56 53 38 C55 26 45 20 35 24'/%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
 }
 
 .foto::before {
@@ -3174,6 +3247,57 @@ h1, h2,
   display: none;
 }
 
+/* Cuántos filtros hay aplicados (el panel está cerrado en celular) */
+.filtros-cuenta {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: var(--c-acento);
+  color: #fff;
+  font-size: 0.68rem;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Filtros aplicados: se quitan de a uno */
+.filtros-activos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: -8px 0 28px;
+}
+
+.filtro-activo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 10px 0 14px;
+  border: 1px solid transparent;
+  background: var(--c-superficie);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.filtro-activo:hover {
+  border-color: var(--c-texto);
+}
+
+.filtro-activo svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 1.6;
+}
+
+.filtros-activos .limpiar-filtros {
+  margin: 0 0 0 8px;
+}
+
 .grilla-tienda {
   grid-template-columns: repeat(3, 1fr);
 }
@@ -3494,7 +3618,6 @@ h1, h2,
   padding: 24px;
   margin-bottom: 32px;
   background: var(--c-superficie);
-  border-left: 2px solid var(--c-acento);
 }
 
 .bloque-medida > svg {
@@ -3610,78 +3733,905 @@ h1, h2,
   }
 }
 
+/* ---------- Producto: galería deslizable ----------
+   Todas las fotos van en una pista horizontal. En celular se desliza con
+   el dedo; en escritorio se recorre con las miniaturas o el teclado. */
 
-/* ---------- Carrito lateral ---------- */
+/* La foto de la tarjeta "viaja" hasta acá al entrar a la ficha */
+.foto-principal {
+  view-transition-name: producto-foto;
+}
+
+.galeria-pista {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.galeria-pista::-webkit-scrollbar {
+  display: none;
+}
+
+.galeria-pista:focus-visible {
+  outline-offset: -2px;
+}
+
+.galeria-slide {
+  flex: 0 0 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.galeria-slide > img {
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Lupa: la foto se amplía desde donde está el cursor */
+.galeria-slide.con-zoom {
+  cursor: zoom-in;
+}
+
+.galeria-slide.con-zoom > img {
+  transform: scale(1.9);
+  transform-origin: var(--zoom-x, 50%) var(--zoom-y, 50%);
+  transition-duration: 0.3s;
+}
+
+.galeria-contador {
+  display: none;
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  padding: 6px 10px;
+  background: rgba(251, 249, 247, 0.92);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* ---------- Producto: falta elegir el talle ---------- */
+
+.aviso-stock.aviso-falta {
+  color: var(--c-error);
+}
+
+.selector.pide-talle .chip-talle:not(:disabled):not(.activo) {
+  border-color: var(--c-texto);
+}
+
+.selector.pide-talle .opciones-talle {
+  animation: pide-talle 0.45s cubic-bezier(0.3, 0.7, 0.3, 1);
+}
+
+@keyframes pide-talle {
+  30% { transform: translateX(-5px); }
+  65% { transform: translateX(4px); }
+}
+
+/* ---------- Producto: garantías junto al botón de compra ---------- */
+
+.garantias-compra {
+  list-style: none;
+  display: grid;
+  gap: 16px;
+  margin: 0 0 32px;
+  padding: 22px 0 0;
+  border-top: 1px solid var(--c-borde);
+}
+
+.garantias-compra li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 14px;
+  align-items: start;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.garantias-compra svg {
+  width: 22px;
+  height: 22px;
+}
+
+.garantias-compra strong {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 22px;
+}
+
+.garantias-compra li > span > span {
+  color: var(--c-texto-2);
+}
+
+/* ---------- Producto: acordeones que se abren con suavidad ---------- */
+
+@supports (interpolate-size: allow-keywords) {
+  .acordeones details {
+    interpolate-size: allow-keywords;
+  }
+
+  .acordeones details::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition: block-size 0.4s cubic-bezier(0.22, 0.61, 0.36, 1), content-visibility 0.4s allow-discrete;
+  }
+
+  .acordeones details[open]::details-content {
+    block-size: auto;
+  }
+}
+
+/* ---------- Producto: barra de compra fija (celular) ---------- */
+
+.compra-fija {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .galeria-contador {
+    display: block;
+  }
+
+  .compra-fija {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px var(--margen) calc(12px + env(safe-area-inset-bottom));
+    background: var(--c-fondo);
+    border-top: 1px solid var(--c-borde);
+    box-shadow: 0 -10px 30px rgba(20, 18, 23, 0.07);
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform var(--transicion), visibility var(--transicion);
+  }
+
+  .compra-fija.visible {
+    transform: none;
+    visibility: visible;
+  }
+
+  .compra-fija-datos {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+  }
+
+  .compra-fija-nombre {
+    font-family: var(--f-titulos);
+    font-size: 1.15rem;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .compra-fija-precio {
+    font-size: 0.88rem;
+  }
+
+  .compra-fija .boton {
+    flex-shrink: 0;
+    padding: 0 20px;
+  }
+
+  /* El aviso flotante sube para no quedar tapado por la barra */
+  .con-compra-fija .aviso {
+    bottom: calc(92px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .galeria-slide > img,
+  .compra-fija {
+    transition: none;
+  }
+
+  .selector.pide-talle .opciones-talle {
+    animation: none;
+  }
+}
+
+
+/* ---------- Carrito lateral ----------
+   Un panel que entra desde la derecha, con el mismo lenguaje del resto:
+   títulos en serif, datos chicos en mayúsculas y filetes finos. */
 
 .fondo-oscuro {
   position: fixed;
   inset: 0;
-  background: rgba(20, 18, 23, 0.45);
   z-index: 90;
-}
-
-.panel-carrito {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100%;
-  width: min(440px, 100%);
-  background: var(--c-fondo);
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(100%);
+  background: rgba(20, 18, 23, 0.5);
+  opacity: 0;
   visibility: hidden;
-  transition: transform var(--transicion), visibility var(--transicion);
+  transition: opacity 0.5s ease, visibility 0.5s;
 }
 
-.panel-carrito.abierto {
-  transform: translateX(0);
+.fondo-oscuro.visible {
+  opacity: 1;
   visibility: visible;
 }
 
-.panel-cabecera {
+.panel-carrito {
+  --bolsa-margen: 32px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 100;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: var(--alto-header);
-  padding: 0 14px 0 28px;
-  border-bottom: 1px solid var(--c-borde);
+  flex-direction: column;
+  width: min(480px, 100%);
+  height: 100%;
+  height: 100dvh;
+  background: var(--c-fondo);
+  box-shadow: -30px 0 80px -40px rgba(20, 18, 23, 0.4);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 0.6s var(--suave), visibility 0.6s;
 }
 
-.panel-cabecera h2 {
-  font-size: 1.8rem;
+.panel-carrito.abierto {
+  transform: none;
+  visibility: visible;
+}
+
+/* Cabecera */
+
+.bolsa-cabecera {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 26px calc(var(--bolsa-margen) - 14px) 22px var(--bolsa-margen);
+}
+
+.bolsa-cabecera h2 {
+  margin: 0;
+  font-size: 2.1rem;
+  line-height: 1;
+}
+
+.bolsa-cuenta {
+  flex: 1;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-texto-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.bolsa-cabecera .boton-icono {
+  align-self: center;
+}
+
+.bolsa-cabecera .boton-icono svg,
+.bolsa-quitar svg {
+  transition: transform 0.5s var(--suave);
+}
+
+.bolsa-cabecera .boton-icono:hover svg,
+.bolsa-quitar:hover svg {
+  transform: rotate(90deg);
+}
+
+/* Envío gratis: la barra se llena a medida que suma el pedido */
+
+.bolsa-envio {
+  display: grid;
+  gap: 12px;
+  margin: 0 var(--bolsa-margen);
+  padding: 16px 0 20px;
+  border-top: 1px solid var(--c-borde);
+  font-size: 0.84rem;
+}
+
+.bolsa-envio p {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin: 0;
 }
+
+.bolsa-envio svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.bolsa-envio strong {
+  font-weight: 600;
+}
+
+.bolsa-envio-barra {
+  height: 2px;
+  background: var(--c-borde);
+}
+
+.bolsa-envio-barra span {
+  position: relative;
+  display: block;
+  width: var(--avance, 0%);
+  height: 100%;
+  background: var(--c-acento);
+  transition: width 0.9s var(--suave), background-color 0.4s;
+}
+
+/* La punta de la barra */
+.bolsa-envio-barra span::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: inherit;
+}
+
+.bolsa-envio.logrado {
+  color: var(--c-ok);
+}
+
+.bolsa-envio.logrado .bolsa-envio-barra span {
+  background: var(--c-ok);
+}
+
+/* Lista de prendas */
 
 .panel-cuerpo {
   flex: 1;
   overflow-y: auto;
-  padding: 8px 28px;
+  overscroll-behavior: contain;
+  padding: 0 var(--bolsa-margen);
+  border-top: 1px solid var(--c-borde);
+  scrollbar-width: thin;
 }
+
+.bolsa-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bolsa-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 20px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--c-borde);
+  overflow: hidden;
+  transition: height 0.38s var(--suave), padding 0.38s var(--suave), opacity 0.28s ease;
+}
+
+/* Al quitarla, la fila se pliega */
+.bolsa-item.saliendo {
+  padding-block: 0;
+  border-bottom-color: transparent;
+  opacity: 0;
+}
+
+.bolsa-precio {
+  transition: opacity 0.2s;
+}
+
+.bolsa-item.actualizando .bolsa-precio {
+  opacity: 0.35;
+}
+
+.bolsa-item.no-disponible .bolsa-foto,
+.bolsa-item.no-disponible .bolsa-nombre {
+  opacity: 0.5;
+}
+
+.bolsa-foto {
+  display: block;
+  align-self: start;
+  aspect-ratio: 4 / 5;
+}
+
+.bolsa-foto img,
+.bolsa-sugerido img {
+  transition: transform 1.2s var(--suave);
+}
+
+.bolsa-item:hover .bolsa-foto img,
+.bolsa-sugerido:hover img {
+  transform: scale(1.05);
+}
+
+.bolsa-info {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+  padding-right: 28px;
+}
+
+.bolsa-nombre {
+  font-family: var(--f-titulos);
+  font-size: 1.32rem;
+  font-weight: 500;
+  line-height: 1.15;
+  transition: color 0.2s;
+}
+
+.bolsa-nombre:hover {
+  color: var(--c-acento);
+}
+
+.bolsa-detalle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-texto-2);
+}
+
+.bolsa-info .texto-error {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.bolsa-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  margin: 12px -28px 0 0;
+}
+
+.bolsa-cantidad button {
+  width: 36px;
+  min-height: 36px;
+  transition: background-color 0.2s;
+}
+
+.bolsa-cantidad button:hover:not(:disabled) {
+  background: var(--c-superficie);
+}
+
+.bolsa-cantidad span {
+  min-width: 26px;
+  font-size: 0.88rem;
+}
+
+.bolsa-precio {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.bolsa-precio strong {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.bolsa-precio span {
+  font-size: 0.72rem;
+  color: var(--c-texto-2);
+}
+
+.bolsa-quitar {
+  position: absolute;
+  top: 16px;
+  right: -10px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--c-texto-2);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.bolsa-quitar svg {
+  width: 16px;
+  height: 16px;
+}
+
+.bolsa-quitar:hover {
+  color: var(--c-texto);
+}
+
+/* Sugerencias */
+
+.bolsa-sugeridos {
+  padding: 28px 0 32px;
+}
+
+.bolsa-sugeridos h3 {
+  margin: 0 0 16px;
+  font-family: var(--f-titulos);
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.bolsa-sugeridos-pista {
+  list-style: none;
+  display: flex;
+  gap: 14px;
+  margin: 0 calc(var(--bolsa-margen) * -1);
+  padding: 0 var(--bolsa-margen) 4px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scroll-padding-left: var(--bolsa-margen);
+  scrollbar-width: none;
+}
+
+.bolsa-sugeridos-pista::-webkit-scrollbar {
+  display: none;
+}
+
+.bolsa-sugeridos-pista li {
+  flex: 0 0 132px;
+  scroll-snap-align: start;
+}
+
+.bolsa-sugerido {
+  display: grid;
+  gap: 4px;
+}
+
+.bolsa-sugerido .foto {
+  aspect-ratio: 4 / 5;
+  margin-bottom: 8px;
+}
+
+.bolsa-sugerido-nombre {
+  font-family: var(--f-titulos);
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.bolsa-sugerido-precio {
+  font-size: 0.8rem;
+  color: var(--c-texto-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Totales y pago */
 
 .panel-pie {
-  border-top: 1px solid var(--c-borde);
-  padding: 20px 28px 24px;
+  position: relative;
   display: grid;
   gap: 14px;
+  padding: 22px var(--bolsa-margen) calc(24px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--c-borde);
+  box-shadow: 0 -18px 30px -26px rgba(20, 18, 23, 0.25);
 }
 
-.carrito-vacio {
-  padding: 64px 0;
+.bolsa-totales {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.bolsa-totales div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.bolsa-totales dt {
+  color: var(--c-texto-2);
+}
+
+.bolsa-totales dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.bolsa-totales .bolsa-total {
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--c-borde);
+}
+
+.bolsa-total dt {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-texto);
+}
+
+.bolsa-total dd {
+  font-family: var(--f-titulos);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.bolsa-cuotas {
+  margin: -6px 0 0;
+  text-align: right;
+  font-size: 0.76rem;
+  color: var(--c-texto-2);
+}
+
+.panel-pie .texto-error {
+  margin: 0;
+}
+
+.bolsa-pagar {
+  justify-content: space-between;
+  min-height: 56px;
+  padding: 0 22px 0 26px;
+}
+
+.bolsa-pagar svg {
+  transition: transform 0.5s var(--suave);
+}
+
+.bolsa-pagar:hover svg {
+  transform: translateX(6px);
+}
+
+.bolsa-pie-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.bolsa-seguir {
+  min-height: 32px;
+  padding: 0 0 3px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid currentColor;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.bolsa-seguir:hover {
+  color: var(--c-acento);
+}
+
+.bolsa-seguro {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--c-texto-2);
+}
+
+.bolsa-seguro svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Carrito vacío */
+
+.panel-carrito.vacio .panel-cuerpo {
+  display: grid;
+  align-content: center;
+}
+
+.bolsa-vacia {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 40px 0;
   text-align: center;
 }
 
-.carrito-vacio p {
-  font-family: var(--f-titulos);
-  font-size: 1.7rem;
-  margin: 0 0 6px;
+.bolsa-vacia-isotipo {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 14px;
+  fill: none;
+  stroke: var(--c-acento);
+  stroke-width: 1.2;
+  stroke-linecap: round;
 }
 
-.carrito-vacio span {
-  color: var(--c-texto-2);
-  font-size: 0.9rem;
+.bolsa-vacia-titulo {
+  max-width: 13ch;
+  margin: 0;
+  font-family: var(--f-titulos);
+  font-size: 2rem;
+  line-height: 1.08;
+  text-wrap: balance;
 }
+
+.bolsa-vacia > p:not(.bolsa-vacia-titulo) {
+  max-width: 30ch;
+  margin: 0 0 20px;
+  font-size: 0.9rem;
+  color: var(--c-texto-2);
+}
+
+.bolsa-accesos {
+  list-style: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--c-borde);
+  text-align: left;
+}
+
+.bolsa-accesos a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 54px;
+  border-bottom: 1px solid var(--c-borde);
+  font-family: var(--f-titulos);
+  font-size: 1.3rem;
+  transition: padding 0.5s var(--suave), color 0.2s;
+}
+
+.bolsa-accesos svg {
+  width: 16px;
+  height: 16px;
+  color: var(--c-texto-2);
+  transition: transform 0.5s var(--suave), color 0.2s;
+}
+
+.bolsa-accesos a:hover {
+  padding-left: 10px;
+  color: var(--c-acento);
+}
+
+.bolsa-accesos a:hover svg {
+  transform: translateX(-6px);
+  color: inherit;
+}
+
+/* El número de la bolsa da un saltito cuando entra una prenda */
+
+.contador-carrito.rebote {
+  animation: contador-rebote 0.6s var(--suave);
+}
+
+@keyframes contador-rebote {
+  35% { scale: 1.5; }
+}
+
+/* Al abrir, el contenido entra escalonado desde la derecha */
+
+@media (prefers-reduced-motion: no-preference) {
+  .panel-carrito.entrando .bolsa-item,
+  .panel-carrito.entrando .bolsa-envio,
+  .panel-carrito.entrando .bolsa-vacia > *,
+  .panel-carrito.entrando .bolsa-sugeridos,
+  .panel-carrito.entrando .panel-pie > * {
+    animation: bolsa-entra 0.8s var(--suave) both;
+    animation-delay: calc(0.2s + var(--orden, 0) * 70ms);
+  }
+
+  .panel-carrito.entrando .panel-pie > * {
+    animation-delay: 0.38s;
+  }
+
+  .panel-carrito.entrando .bolsa-vacia > :nth-child(2) { --orden: 1; }
+  .panel-carrito.entrando .bolsa-vacia > :nth-child(3) { --orden: 2; }
+  .panel-carrito.entrando .bolsa-vacia > :nth-child(4) { --orden: 3; }
+
+  /* El isotipo se dibuja con un solo trazo */
+  .panel-carrito.entrando .bolsa-vacia-isotipo path {
+    stroke-dasharray: 80;
+    animation: bolsa-traza 1.4s var(--suave) 0.3s both;
+  }
+}
+
+@keyframes bolsa-entra {
+  from {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+}
+
+@keyframes bolsa-traza {
+  from { stroke-dashoffset: 80; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-carrito,
+  .fondo-oscuro,
+  .bolsa-item,
+  .bolsa-envio-barra span {
+    transition-duration: 0.01s;
+  }
+}
+
+@media (max-width: 520px) {
+  .panel-carrito {
+    --bolsa-margen: 20px;
+  }
+
+  .bolsa-item {
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .bolsa-cabecera {
+    padding-top: 18px;
+    padding-bottom: 16px;
+  }
+
+  .bolsa-cabecera h2 {
+    font-size: 1.9rem;
+  }
+
+  .bolsa-envio {
+    padding: 12px 0 16px;
+  }
+
+  /* En celular el pie se achica para dejarle lugar a las prendas */
+  .panel-pie {
+    gap: 10px;
+    padding-top: 16px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .bolsa-totales {
+    gap: 6px;
+  }
+
+  .bolsa-totales .bolsa-total {
+    padding-top: 10px;
+  }
+
+  .bolsa-total dd {
+    font-size: 1.7rem;
+  }
+
+  .bolsa-pagar {
+    min-height: 52px;
+  }
+
+  .bolsa-seguro {
+    display: none;
+  }
+
+  .bolsa-pie-links {
+    justify-content: center;
+  }
+}
+
+/* Pantallas bajas: lo accesorio del pie se va */
+@media (max-height: 700px) {
+  .bolsa-cuotas,
+  .bolsa-totales div:first-child {
+    display: none;
+  }
+}
+
+/* Filas del resumen del checkout (comparten nombre con el carrito viejo) */
 
 .item-carrito {
   display: grid;
@@ -3692,21 +4642,11 @@ h1, h2,
   font-size: 0.88rem;
 }
 
-.item-foto {
-  display: block;
-  width: 76px;
-  aspect-ratio: 4 / 5;
-}
-
 .item-carrito > img {
   width: 76px;
   aspect-ratio: 4 / 5;
   object-fit: cover;
   background: var(--c-superficie);
-}
-
-.item-carrito.no-disponible {
-  opacity: 0.6;
 }
 
 .item-nombre {
@@ -3718,27 +4658,18 @@ h1, h2,
   line-height: 1.45;
 }
 
-a.item-nombre:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
 .item-detalle {
   color: var(--c-texto-2);
   margin: 4px 0 12px;
 }
 
-.item-acciones {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.texto-error {
+  color: var(--c-error);
+  font-size: 0.85rem;
+  margin: 4px 0;
 }
 
-.item-acciones .cantidad button {
-  width: 36px;
-  min-height: 36px;
-}
-
+/* Acción secundaria en forma de link (la usa el panel de administración) */
 .link-quitar {
   min-height: 36px;
   background: none;
@@ -3753,38 +4684,6 @@ a.item-nombre:hover {
 
 .link-quitar:hover {
   color: var(--c-texto);
-}
-
-.fila-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.fila-total strong {
-  font-size: 1.15rem;
-  letter-spacing: 0;
-  font-weight: 500;
-}
-
-.envio-gratis {
-  margin: 0;
-  font-size: 0.82rem;
-  background: var(--c-superficie);
-  padding: 10px 14px;
-}
-
-.envio-gratis.ok {
-  color: var(--c-ok);
-}
-
-.texto-error {
-  color: var(--c-error);
-  font-size: 0.85rem;
-  margin: 4px 0;
 }
 
 /* ---------- Checkout y resultado ---------- */
@@ -4511,4 +5410,153 @@ dialog::backdrop {
 
 .disc-final .link-subrayado {
   color: #EAD3A0;
+}
+
+
+/* ---------- Movimiento de entrada (js/comun.js) ----------
+   Solo corre si el navegador no pidió menos movimiento (la clase
+   "con-movimiento" la pone el script). Sin esa clase, todo se ve
+   desde el primer momento.
+
+   - "sube":  textos y listas suben mientras aparecen.
+   - "telon": las fotos grandes se descubren desde el centro, como
+              un telón que se abre, y la imagen se asienta despacio.
+   - "hero":  la entrada del inicio, palabra por palabra.            */
+
+.con-movimiento [data-mov="sube"]:not(.en-vista),
+.con-movimiento [data-mov="telon"]:not(.en-vista) {
+  opacity: 0;
+}
+
+.con-movimiento [data-mov="sube"].en-vista {
+  animation: mov-sube 1s var(--suave) calc(var(--orden, 0) * 80ms) backwards;
+}
+
+.con-movimiento [data-mov="telon"].en-vista {
+  animation: mov-telon 1.5s var(--suave) calc(var(--orden, 0) * 110ms) backwards;
+}
+
+.con-movimiento [data-mov="telon"].en-vista > img {
+  animation: mov-asienta 2.2s var(--suave) calc(var(--orden, 0) * 110ms) backwards;
+}
+
+/* Las tarjetas usan esta entrada (al llegar a la pantalla) en vez de la propia */
+.con-movimiento .tarjeta {
+  animation: none;
+}
+
+@keyframes mov-sube {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+
+@keyframes mov-telon {
+  from {
+    clip-path: inset(0 50%);
+  }
+  to {
+    clip-path: inset(0 0%);
+  }
+}
+
+@keyframes mov-asienta {
+  from {
+    transform: scale(1.16);
+  }
+}
+
+/* --- Hero --- */
+
+.con-movimiento .hero .palabra {
+  display: inline-block;
+  overflow: hidden;
+  /* aire para que no se corten los acentos ni las colas de las letras */
+  padding: 0.14em 0.04em 0.16em;
+  margin: -0.14em -0.04em -0.16em;
+  vertical-align: top;
+}
+
+.con-movimiento .hero .palabra > span {
+  display: inline-block;
+}
+
+.con-movimiento .hero:not(.en-vista) .palabra > span,
+.con-movimiento .hero:not(.en-vista) .hero-palabra,
+.con-movimiento .hero:not(.en-vista) .hero-texto .sobretitulo,
+.con-movimiento .hero:not(.en-vista) .hero-texto p,
+.con-movimiento .hero:not(.en-vista) .hero-acciones,
+.con-movimiento .hero:not(.en-vista) .hero-figura,
+.con-movimiento .hero:not(.en-vista) .hero-prendas {
+  opacity: 0;
+}
+
+.con-movimiento .hero.en-vista .palabra > span {
+  animation: mov-palabra 1.1s var(--suave) calc(0.15s + var(--i, 0) * 90ms) backwards;
+}
+
+.con-movimiento .hero.en-vista .hero-texto .sobretitulo {
+  animation: mov-sube 0.9s var(--suave) 0.05s backwards;
+}
+
+.con-movimiento .hero.en-vista .hero-texto p {
+  animation: mov-sube 1s var(--suave) 0.6s backwards;
+}
+
+.con-movimiento .hero.en-vista .hero-acciones {
+  animation: mov-sube 1s var(--suave) 0.75s backwards;
+}
+
+.con-movimiento .hero.en-vista .hero-figura {
+  animation: mov-telon-hero 1.6s var(--suave) 0.2s backwards;
+}
+
+.con-movimiento .hero.en-vista .hero-prendas {
+  animation: mov-sube 1s var(--suave) 0.9s backwards;
+}
+
+.con-movimiento .hero.en-vista .hero-palabra {
+  animation: mov-fondo 2.4s var(--suave) backwards;
+}
+
+@keyframes mov-palabra {
+  from {
+    opacity: 1;
+    transform: translateY(115%);
+  }
+}
+
+/* Termina más abierto que la caja para no cortar la sombra de la foto */
+@keyframes mov-telon-hero {
+  from {
+    opacity: 1;
+    clip-path: inset(0 50%);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(-15% -15%);
+  }
+}
+
+@keyframes mov-fondo {
+  from {
+    opacity: 0;
+    letter-spacing: 0.14em;
+  }
+}
+
+/* La palabra de fondo se queda atrás al bajar por la página */
+@supports (animation-timeline: scroll()) {
+  .con-movimiento .hero.en-vista .hero-palabra {
+    animation: mov-fondo 2.4s var(--suave) backwards, mov-deriva linear both;
+    animation-timeline: auto, scroll(root block);
+    animation-range: normal, 0 90vh;
+  }
+
+  @keyframes mov-deriva {
+    to {
+      translate: 0 28%;
+    }
+  }
 }

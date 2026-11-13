@@ -572,15 +572,43 @@ function armarFooter() {
   });
 }
 
-/* ---------- Carrito lateral ---------- */
+/* ---------- Carrito lateral ----------
+   Un panel que entra desde la derecha:
+   - arriba, cuánto falta para el envío gratis (la barra se va llenando);
+   - cada prenda con su foto, color, talle, cantidad y precio;
+   - sugerencias para completar el look;
+   - abajo, los totales y el botón para pagar. */
 
 let carritoActual = null;
+let carritoFocoPrevio = null;
+let sugeridosPromesa = null;
+
+const ISOTIPO_TRAZO =
+  '<path d="M50 12 C36 4 14 8 11 26 C9 38 19 44 29 40"/><path d="M14 52 C28 60 50 56 53 38 C55 26 45 20 35 24"/>';
+
+/* Accesos del carrito vacío */
+const ACCESOS_CARRITO = [
+  ["Ballet", "/tienda.html?categoria=ballet"],
+  ["Contemporáneo", "/tienda.html?categoria=contemporaneo"],
+  ["Folklore", "/tienda.html?categoria=folklore"],
+  ["Tango", "/tienda.html?categoria=tango"],
+  ["Fiesta y gala", "/tienda.html?categoria=fiesta-y-gala"]
+];
 
 function actualizarContador(carrito) {
   const contador = document.querySelector(".contador-carrito");
   if (!contador) return;
+
+  const antes = Number(contador.textContent) || 0;
   contador.textContent = carrito.cantidad;
   contador.hidden = carrito.cantidad === 0;
+
+  /* Un saltito cuando entra una prenda */
+  if (carrito.cantidad > antes && carritoActual) {
+    contador.classList.remove("rebote");
+    void contador.offsetWidth;
+    contador.classList.add("rebote");
+  }
 }
 
 function crearPanelCarrito() {
@@ -588,23 +616,35 @@ function crearPanelCarrito() {
 
   document.body.insertAdjacentHTML(
     "beforeend",
-    `<div class="fondo-oscuro" hidden></div>
-     <aside class="panel-carrito" aria-label="Carrito" aria-hidden="true" inert>
-       <div class="panel-cabecera">
-         <h2>Tu carrito</h2>
+    `<div class="fondo-oscuro"></div>
+     <aside class="panel-carrito" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito" inert>
+       <header class="bolsa-cabecera">
+         <h2 id="titulo-carrito">Tu carrito</h2>
+         <span class="bolsa-cuenta" id="bolsa-cuenta"></span>
          <button class="boton-icono cerrar-carrito" type="button" aria-label="Cerrar carrito">${icono("cerrar")}</button>
+       </header>
+       <div class="bolsa-envio" id="bolsa-envio" hidden>
+         <p id="bolsa-envio-texto"></p>
+         <div class="bolsa-envio-barra" aria-hidden="true"><span id="bolsa-envio-avance"></span></div>
        </div>
        <div class="panel-cuerpo"></div>
-       <div class="panel-pie"></div>
+       <footer class="panel-pie"></footer>
      </aside>`
   );
 
-  document.querySelector(".cerrar-carrito").addEventListener("click", cerrarCarrito);
+  const panel = document.querySelector(".panel-carrito");
+
+  panel.querySelector(".cerrar-carrito").addEventListener("click", cerrarCarrito);
   document.querySelector(".fondo-oscuro").addEventListener("click", cerrarCarrito);
   document.addEventListener("keydown", (e) => e.key === "Escape" && cerrarCarrito());
 
-  /* Delegación de eventos: sumar, restar y quitar */
-  document.querySelector(".panel-cuerpo").addEventListener("click", async (e) => {
+  /* Los links del panel cierran el carrito (en la demo no se recarga la página) */
+  panel.addEventListener("click", (e) => {
+    if (e.target.closest("[data-cerrar-carrito]")) cerrarCarrito();
+  });
+
+  /* Sumar, restar y quitar */
+  panel.querySelector(".panel-cuerpo").addEventListener("click", async (e) => {
     const boton = e.target.closest("[data-accion]");
     if (!boton) return;
 
@@ -612,93 +652,222 @@ function crearPanelCarrito() {
     const item = carritoActual.items.find((i) => String(i.variante_id) === id);
     if (!item) return;
 
-    boton.disabled = true;
+    const fila = boton.closest(".bolsa-item");
+    const nueva = item.cantidad + (boton.dataset.accion === "sumar" ? 1 : -1);
+    const quitar = boton.dataset.accion === "quitar" || nueva < 1;
+
+    fila.querySelectorAll("button").forEach((b) => (b.disabled = true));
+    fila.classList.add(quitar ? "saliendo" : "actualizando");
 
     try {
-      if (boton.dataset.accion === "quitar") {
-        pintarCarrito(await api(`/carrito/items/${id}`, { method: "DELETE" }));
-      } else {
-        const nueva = item.cantidad + (boton.dataset.accion === "sumar" ? 1 : -1);
-        if (nueva < 1) {
-          pintarCarrito(await api(`/carrito/items/${id}`, { method: "DELETE" }));
-        } else {
-          pintarCarrito(await api(`/carrito/items/${id}`, { method: "PUT", body: { cantidad: nueva } }));
-        }
-      }
+      const pedido = quitar
+        ? api(`/carrito/items/${id}`, { method: "DELETE" })
+        : api(`/carrito/items/${id}`, { method: "PUT", body: { cantidad: nueva } });
+
+      /* Al quitar, la fila se pliega antes de redibujar la lista */
+      const [carrito] = await Promise.all([pedido, quitar ? plegarFila(fila) : null]);
+      pintarCarrito(carrito);
     } catch (error) {
       aviso(error.message, "error");
-      boton.disabled = false;
+      pintarCarrito(carritoActual);
     }
   });
 }
 
+/* Pliega una fila (alto y opacidad a cero) y avisa cuando terminó */
+function plegarFila(fila) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return Promise.resolve();
+
+  fila.style.height = `${fila.offsetHeight}px`;
+  void fila.offsetHeight;
+  fila.style.height = "0px";
+
+  return new Promise((listo) => setTimeout(listo, 380));
+}
+
+/* Cuánto falta para el envío gratis. La barra es siempre la misma: así se anima al cambiar */
+function pintarEnvioGratis(carrito) {
+  const caja = document.getElementById("bolsa-envio");
+  const { gratisDesde } = carrito.envio;
+  const hayPrendas = carrito.items.some((i) => i.disponible);
+
+  caja.hidden = !(gratisDesde > 0 && hayPrendas);
+  if (caja.hidden) return;
+
+  const avance = Math.min(Math.round((carrito.subtotal / gratisDesde) * 100), 100);
+  const logrado = avance >= 100;
+
+  caja.classList.toggle("logrado", logrado);
+  document.getElementById("bolsa-envio-texto").innerHTML = logrado
+    ? `${icono("check")}<span>Tu pedido tiene <strong>envío gratis</strong></span>`
+    : `${icono("envio")}<span>Te faltan <strong>${pesos(gratisDesde - carrito.subtotal)}</strong> para el envío gratis</span>`;
+  document.getElementById("bolsa-envio-avance").style.setProperty("--avance", `${avance}%`);
+}
+
+function itemDelCarrito(i, orden) {
+  const url = `/producto.html?p=${encodeURIComponent(i.slug)}`;
+
+  return `
+    <li class="bolsa-item ${i.disponible ? "" : "no-disponible"}" style="--orden:${orden}">
+      <a class="foto bolsa-foto" data-foto="" href="${url}" data-cerrar-carrito tabindex="-1" aria-hidden="true">
+        ${i.imagen ? `<img src="${esc(i.imagen)}" alt="" width="200" height="250">` : ""}
+      </a>
+      <div class="bolsa-info">
+        <a class="bolsa-nombre" href="${url}" data-cerrar-carrito>${esc(i.nombre)}</a>
+        <p class="bolsa-detalle">
+          <span class="punto-color" style="background:${colorSeguro(i.color_hex)}"></span>${esc(i.color)}<span aria-hidden="true">·</span>Talle ${esc(i.talle)}
+        </p>
+        ${!i.disponible ? `<p class="texto-error">Sin stock: quitala para continuar</p>` : ""}
+        ${i.stock_insuficiente ? `<p class="texto-error">Solo quedan ${i.maximo}</p>` : ""}
+        <div class="bolsa-fila">
+          <div class="cantidad bolsa-cantidad" role="group" aria-label="Cantidad de ${esc(i.nombre)}">
+            <button type="button" data-accion="restar" data-id="${i.variante_id}"
+              aria-label="${i.cantidad === 1 ? "Quitar" : "Restar una unidad de"} ${esc(i.nombre)}">−</button>
+            <span aria-live="polite">${i.cantidad}</span>
+            <button type="button" data-accion="sumar" data-id="${i.variante_id}" aria-label="Sumar una unidad de ${esc(i.nombre)}"
+              ${i.cantidad >= i.maximo ? "disabled" : ""}>+</button>
+          </div>
+          <p class="bolsa-precio">
+            <strong>${pesos(i.precio * i.cantidad)}</strong>
+            ${i.cantidad > 1 ? `<span>${pesos(i.precio)} c/u</span>` : ""}
+          </p>
+        </div>
+      </div>
+      <button type="button" class="bolsa-quitar" data-accion="quitar" data-id="${i.variante_id}"
+              aria-label="Quitar ${esc(i.nombre)} del carrito" title="Quitar">${icono("cerrar")}</button>
+    </li>`;
+}
+
+/* Prendas para sumar al pedido: las novedades que todavía no están en el carrito */
+function obtenerSugeridos() {
+  if (!sugeridosPromesa) {
+    sugeridosPromesa = api("/productos?por_pagina=12")
+      .then((datos) => datos.productos.filter((p) => !p.agotado))
+      .catch(() => []);
+  }
+  return sugeridosPromesa;
+}
+
+async function pintarSugeridos(carrito) {
+  const caja = document.querySelector(".bolsa-sugeridos");
+  if (!caja) return;
+
+  const enCarrito = new Set(carrito.items.map((i) => i.producto_id));
+  const sugeridos = (await obtenerSugeridos()).filter((p) => !enCarrito.has(p.id)).slice(0, 6);
+
+  /* Mientras se pedían, el carrito pudo cambiar */
+  if (carrito !== carritoActual || sugeridos.length === 0) return;
+
+  caja.innerHTML = `
+    <h3>Completá tu look</h3>
+    <ul class="bolsa-sugeridos-pista">
+      ${sugeridos
+        .map((p) => {
+          const precio = p.precio_oferta ?? p.precio;
+          return `
+          <li>
+            <a class="bolsa-sugerido" href="/producto.html?p=${encodeURIComponent(p.slug)}" data-cerrar-carrito>
+              <span class="foto" data-foto="">${p.imagen ? `<img src="${esc(p.imagen)}" alt="" loading="lazy" width="240" height="300">` : ""}</span>
+              <span class="bolsa-sugerido-nombre">${esc(p.nombre)}</span>
+              <span class="bolsa-sugerido-precio">${pesos(precio)}</span>
+            </a>
+          </li>`;
+        })
+        .join("")}
+    </ul>`;
+  caja.hidden = false;
+}
+
 function pintarCarrito(carrito) {
-  carritoActual = carrito;
   actualizarContador(carrito);
+  carritoActual = carrito;
 
-  const cuerpo = document.querySelector(".panel-cuerpo");
-  const pie = document.querySelector(".panel-pie");
-  if (!cuerpo) return;
+  const panel = document.querySelector(".panel-carrito");
+  if (!panel) return;
 
+  const cuerpo = panel.querySelector(".panel-cuerpo");
+  const pie = panel.querySelector(".panel-pie");
+  const cuenta = document.getElementById("bolsa-cuenta");
+
+  pintarEnvioGratis(carrito);
+
+  /* ---------- Vacío ---------- */
   if (carrito.items.length === 0) {
-    cuerpo.innerHTML = `<div class="carrito-vacio"><p>Tu carrito está vacío</p><span>Encontrá tu próxima prenda para la función.</span></div>`;
-    pie.innerHTML = `<a class="boton boton-secundario" href="/tienda.html">Ver productos</a>`;
+    cuenta.textContent = "";
+    panel.classList.add("vacio");
+
+    cuerpo.innerHTML = `
+      <div class="bolsa-vacia">
+        <svg class="bolsa-vacia-isotipo" viewBox="0 0 64 64" aria-hidden="true">${ISOTIPO_TRAZO}</svg>
+        <p class="bolsa-vacia-titulo">Tu carrito espera su primera prenda</p>
+        <p>Elegí por disciplina y armá el look para tu próxima función.</p>
+        <ul class="bolsa-accesos">
+          ${ACCESOS_CARRITO.map(([nombre, url]) => `<li><a href="${url}" data-cerrar-carrito>${esc(nombre)}${icono("flechaDer")}</a></li>`).join("")}
+        </ul>
+      </div>`;
+    pie.innerHTML = `<a class="boton boton-ancho" href="/tienda.html" data-cerrar-carrito>Ver toda la tienda</a>`;
     return;
   }
 
-  cuerpo.innerHTML = carrito.items
-    .map(
-      (i) => `
-      <div class="item-carrito ${i.disponible ? "" : "no-disponible"}">
-        <span class="foto item-foto" data-foto="">${i.imagen ? `<img src="${esc(i.imagen)}" alt="" width="160" height="200">` : ""}</span>
-        <div>
-          <a href="/producto.html?p=${encodeURIComponent(i.slug)}" class="item-nombre">${esc(i.nombre)}</a>
-          <p class="item-detalle">${esc(i.color)} · Talle ${esc(i.talle)}</p>
-          ${!i.disponible ? `<p class="texto-error">Sin stock</p>` : ""}
-          ${i.stock_insuficiente ? `<p class="texto-error">Solo quedan ${i.maximo}</p>` : ""}
-          <div class="item-acciones">
-            <div class="cantidad">
-              <button type="button" data-accion="restar" data-id="${i.variante_id}" aria-label="Restar una unidad de ${esc(i.nombre)}">−</button>
-              <span>${i.cantidad}</span>
-              <button type="button" data-accion="sumar" data-id="${i.variante_id}" aria-label="Sumar una unidad de ${esc(i.nombre)}"
-                ${i.cantidad >= i.maximo ? "disabled" : ""}>+</button>
-            </div>
-            <button type="button" class="link-quitar" data-accion="quitar" data-id="${i.variante_id}" aria-label="Quitar ${esc(i.nombre)}">Quitar</button>
-          </div>
-        </div>
-        <strong>${pesos(i.precio * i.cantidad)}</strong>
-      </div>`
-    )
-    .join("");
+  /* ---------- Con prendas ---------- */
+  panel.classList.remove("vacio");
+  cuenta.textContent = `${carrito.cantidad} ${carrito.cantidad === 1 ? "prenda" : "prendas"}`;
 
-  const faltaEnvioGratis = carrito.envio.gratisDesde > 0 && carrito.subtotal < carrito.envio.gratisDesde
-    ? `<p class="envio-gratis">Te faltan ${pesos(carrito.envio.gratisDesde - carrito.subtotal)} para el envío gratis</p>`
-    : carrito.envio.gratisDesde > 0
-      ? `<p class="envio-gratis ok">¡Tenés envío gratis!</p>`
-      : "";
+  cuerpo.innerHTML = `
+    <ul class="bolsa-lista">${carrito.items.map(itemDelCarrito).join("")}</ul>
+    <section class="bolsa-sugeridos" aria-label="Sugerencias" hidden></section>`;
+
+  pintarSugeridos(carrito);
 
   const hayProblemas = carrito.items.some((i) => !i.disponible || i.stock_insuficiente);
+  const { costo, gratisDesde } = carrito.envio;
+  const envio = gratisDesde > 0 && carrito.subtotal >= gratisDesde ? 0 : costo || 0;
+  const total = carrito.subtotal + envio;
 
   pie.innerHTML = `
-    ${faltaEnvioGratis}
-    <div class="fila-total"><span>Subtotal</span><strong>${pesos(carrito.subtotal)}</strong></div>
-    ${hayProblemas ? `<p class="texto-error">Quitá o ajustá los productos sin stock para continuar.</p>` : ""}
-    <a class="boton ${hayProblemas ? "deshabilitado" : ""}" href="/checkout.html">Finalizar compra</a>`;
+    <dl class="bolsa-totales">
+      <div><dt>Subtotal</dt><dd>${pesos(carrito.subtotal)}</dd></div>
+      <div><dt>Envío a domicilio</dt><dd>${envio === 0 ? "Gratis" : pesos(envio)}</dd></div>
+      <div class="bolsa-total"><dt>Total</dt><dd>${pesos(total)}</dd></div>
+    </dl>
+    <p class="bolsa-cuotas">Hasta 12 cuotas de ${pesos(total / 12)} con Mercado Pago</p>
+    ${hayProblemas ? `<p class="texto-error">Quitá o ajustá las prendas sin stock para continuar.</p>` : ""}
+    <a class="boton boton-ancho bolsa-pagar ${hayProblemas ? "deshabilitado" : ""}" href="/checkout.html" data-cerrar-carrito>
+      Finalizar compra${icono("flechaDer")}
+    </a>
+    <div class="bolsa-pie-links">
+      <button type="button" class="bolsa-seguir" data-cerrar-carrito>Seguir comprando</button>
+      <span class="bolsa-seguro">${icono("escudo")}Pago seguro</span>
+    </div>`;
+}
+
+/* Con el carrito abierto, el resto de la página no recibe foco ni clics */
+function bloquearFondo(bloquear) {
+  document.querySelectorAll("#header, #contenido, #footer, .barra-anuncio").forEach((el) => (el.inert = bloquear));
 }
 
 async function abrirCarrito() {
   crearPanelCarrito();
-  document.querySelector(".fondo-oscuro").hidden = false;
+
   const panel = document.querySelector(".panel-carrito");
+  if (panel.classList.contains("abierto")) return;
+
   carritoFocoPrevio = document.activeElement;
-  panel.classList.add("abierto");
-  panel.setAttribute("aria-hidden", "false");
+
+  document.querySelector(".fondo-oscuro").classList.add("visible");
+  panel.classList.add("abierto", "entrando");
   panel.inert = false;
   document.body.classList.add("sin-scroll");
-  panel.querySelector(".cerrar-carrito").focus();
+  bloquearFondo(true);
+  panel.querySelector(".cerrar-carrito").focus({ preventScroll: true });
+
+  /* Las filas entran escalonadas solo al abrir, no en cada cambio de cantidad */
+  setTimeout(() => panel.classList.remove("entrando"), 1200);
 
   try {
-    pintarCarrito(await api("/carrito"));
+    /* Se muestra lo que ya teníamos; solo se redibuja si el servidor dice otra cosa */
+    const fresco = await api("/carrito");
+    if (JSON.stringify(fresco) !== JSON.stringify(carritoActual)) pintarCarrito(fresco);
   } catch (error) {
     aviso(error.message, "error");
   }
@@ -707,25 +876,182 @@ async function abrirCarrito() {
 function cerrarCarrito() {
   const panel = document.querySelector(".panel-carrito");
   if (!panel || !panel.classList.contains("abierto")) return;
-  panel.classList.remove("abierto");
-  panel.setAttribute("aria-hidden", "true");
-  panel.inert = true;
-  document.querySelector(".fondo-oscuro").hidden = true;
-  document.body.classList.remove("sin-scroll");
-  carritoFocoPrevio?.focus?.();
-}
 
-let carritoFocoPrevio = null;
+  panel.classList.remove("abierto", "entrando");
+  panel.inert = true;
+  document.querySelector(".fondo-oscuro").classList.remove("visible");
+  document.body.classList.remove("sin-scroll");
+  bloquearFondo(false);
+  carritoFocoPrevio?.focus?.({ preventScroll: true });
+}
 
 /* Para que otras páginas (producto) actualicen el carrito */
 window.tienda = { abrirCarrito, pintarCarrito, actualizarContador };
 
-/* ---------- Arranque ---------- */
+/* ---------- De la tarjeta a la ficha ----------
+   Al tocar una tarjeta, su foto "viaja" hasta la ficha del producto
+   (en navegadores con transiciones entre páginas). Guardamos qué foto
+   era para que la ficha la muestre desde el primer instante. */
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("click", (e) => {
+  const link = e.target.closest(".tarjeta-link");
+  if (!link || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+  const foto = link.querySelector(".tarjeta-foto");
+  if (!foto) return;
+
+  /* El nombre de la transición tiene que estar en un solo elemento */
+  document.querySelectorAll(".tarjeta-foto").forEach((f) => (f.style.viewTransitionName = ""));
+  const fotoDeFicha = document.getElementById("foto-principal");
+  if (fotoDeFicha) fotoDeFicha.style.viewTransitionName = "none";
+  foto.style.viewTransitionName = "producto-foto";
+
+  try {
+    const img = foto.querySelector("img:not(.foto-hover):not(.foto-faltante)");
+    const slug = new URL(link.href).searchParams.get("p");
+    if (img && slug) {
+      sessionStorage.setItem("oc-foto-previa", JSON.stringify({ slug, url: img.getAttribute("src") }));
+    }
+  } catch {
+    /* sin sessionStorage la ficha carga la foto como siempre */
+  }
+});
+
+/* ---------- Movimiento de entrada ----------
+   Cada cosa entra a su manera cuando llega a la pantalla:
+   - los textos suben;
+   - las fotos grandes se descubren como un telón que se abre;
+   - el hero arma su propia entrada, palabra por palabra.
+   Si la persona pidió menos movimiento, no se anima nada.
+   Las reglas visuales están en styles.css ("Movimiento de entrada"). */
+
+const MOVIMIENTO = [
+  [".hero", "hero"],
+  [".a-medida-foto, .reinas-foto, .escena-grilla .foto", "telon"],
+  [".seccion-cabecera > *, .disc-titulos > *, .disc-controles, .seccion-pie", "sube"],
+  [".a-medida-texto > .sobretitulo, .a-medida-texto > h2, .a-medida-texto > p, .a-medida-texto > .boton", "sube"],
+  [".reinas-texto > *, .pie-cta-interior > *, .tienda-cabecera > *", "sube"],
+  [".beneficios li, .pasos li, .pie-garantias li", "sube"],
+  [".tarjeta", "sube"]
+];
+
+function iniciarMovimiento() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  document.documentElement.classList.add("con-movimiento");
+
+  /* Hasta que el telón de entrada termina, nada se descubre */
+  let telonTerminado = false;
+  let pendientes = [];
+  let revisionPedida = false;
+  let reloj = null;
+
+  /*
+    Descubre lo que ya está en pantalla. Se mide la posición directamente
+    (en vez de esperar un aviso del navegador): así nada queda oculto.
+  */
+  const revisar = () => {
+    revisionPedida = false;
+    if (!telonTerminado || pendientes.length === 0) return;
+
+    const limite = window.innerHeight * 0.94;
+
+    pendientes = pendientes.filter((el) => {
+      if (!el.isConnected) return false;
+
+      const caja = el.getBoundingClientRect();
+      const visible = caja.top < limite && caja.bottom > 0 && caja.width > 0;
+      if (visible) el.classList.add("en-vista");
+      return !visible;
+    });
+
+    /*
+      Red de seguridad: mientras quede algo por descubrir, se vuelve a mirar
+      cada tanto. Cubre los casos en que el navegador no avisa del scroll.
+    */
+    if (pendientes.length === 0) {
+      clearInterval(reloj);
+      reloj = null;
+    } else if (!reloj) {
+      reloj = setInterval(revisar, 500);
+    }
+  };
+
+  const pedirRevision = () => {
+    if (revisionPedida) return;
+    revisionPedida = true;
+    requestAnimationFrame(revisar);
+    /* Si la ventana no está dibujando (pestaña en segundo plano), el reloj lo resuelve igual */
+    setTimeout(revisar, 160);
+  };
+
+  /* El título del hero se parte en palabras para que suban de a una */
+  const partirTitulo = (hero) => {
+    const titulo = hero.querySelector("h1");
+    if (!titulo || titulo.querySelector(".palabra")) return;
+
+    const texto = titulo.textContent.trim();
+    titulo.setAttribute("aria-label", texto);
+    titulo.innerHTML = texto
+      .split(/\s+/)
+      .map((p, i) => `<span class="palabra" aria-hidden="true"><span style="--i:${i}">${esc(p)}</span></span>`)
+      .join(" ");
+  };
+
+  const marcar = (nodo) => {
+    if (!(nodo instanceof Element)) return;
+
+    MOVIMIENTO.forEach(([selector, tipo]) => {
+      const encontrados = [...nodo.querySelectorAll(selector)];
+      if (nodo.matches(selector)) encontrados.unshift(nodo);
+
+      encontrados.forEach((el) => {
+        if (el.dataset.mov) return;
+        el.dataset.mov = tipo;
+
+        /* Los hermanos entran uno detrás del otro */
+        const hermanos = [...el.parentElement.children].filter((h) => h.matches(selector));
+        el.style.setProperty("--orden", hermanos.indexOf(el) % (tipo === "telon" ? 4 : 6));
+
+        if (tipo === "hero") partirTitulo(el);
+        pendientes.push(el);
+      });
+    });
+
+    pedirRevision();
+  };
+
+  marcar(document.body);
+
+  /* Lo que se agrega después (tarjetas de producto, vistas de la demo) */
+  new MutationObserver((cambios) => {
+    cambios.forEach((c) => c.addedNodes.forEach(marcar));
+  }).observe(document.body, { childList: true, subtree: true });
+
+  window.addEventListener("scroll", pedirRevision, { passive: true });
+  window.addEventListener("resize", pedirRevision);
+
+  (window.telonListo || Promise.resolve()).then(() => {
+    telonTerminado = true;
+    revisar();
+  });
+}
+
+/* ---------- Arranque ----------
+   El header y el footer se arman apenas hay página (antes del primer
+   dibujo, porque el script bloquea el render): así no "aparecen" después. */
+
+function arrancar() {
   armarHeader();
   armarFooter();
+  iniciarMovimiento();
   activarLinksWhatsApp();
   crearPanelCarrito();
   api("/carrito").then(pintarCarrito).catch(() => {});
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", arrancar);
+} else {
+  arrancar();
+}

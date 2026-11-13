@@ -15,11 +15,15 @@
 ===================================================== */
 
 (function () {
+  /* El resto de la página espera esta señal para empezar sus animaciones de entrada */
+  let avisarListo;
+  window.telonListo = new Promise((listo) => (avisarListo = listo));
+
   /* Tienen que coincidir con la animación de salida en styles.css */
   const DURACION_COMPLETA_MS = 3950; // primera vez en la visita
   const DURACION_RAPIDA_MS = 1350;   // al refrescar la página
 
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return avisarListo();
 
   let rapido = false;
   try {
@@ -27,12 +31,12 @@
       /* Ya lo vio: solo se repite (en versión rápida) si refrescó la página,
          no al pasar de una página a otra */
       const navegacion = performance.getEntriesByType("navigation")[0];
-      if (navegacion?.type !== "reload") return;
+      if (navegacion?.type !== "reload") return avisarListo();
       rapido = true;
     }
     sessionStorage.setItem("oc-telon-visto", "1");
   } catch {
-    return; /* sin sessionStorage no podemos evitar que se repita: mejor no mostrarlo */
+    return avisarListo(); /* sin sessionStorage no podemos evitar que se repita: mejor no mostrarlo */
   }
 
   const DURACION_MS = rapido ? DURACION_RAPIDA_MS : DURACION_COMPLETA_MS;
@@ -61,6 +65,7 @@
   function terminar() {
     if (terminado) return;
     terminado = true;
+    avisarListo();
     telon.classList.add("telon-fuera");
     setTimeout(() => telon.remove(), 450);
     window.removeEventListener("keydown", terminar);

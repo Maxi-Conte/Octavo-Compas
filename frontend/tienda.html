@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#141217">
   <title>Tienda | Octavo Compás Indumentaria</title>
   <meta name="description" content="Ropa de danza para ballet, contemporáneo, folklore y tango, y vestidos de fiesta y gala. Elegí por talle, color y precio. Envíos a todo el país.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +12,7 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="icon" href="/img/marca/isotipo.svg" type="image/svg+xml">
   <script src="/js/telon.js"></script>
-  <script src="/js/comun.js" defer></script>
+  <script src="/js/comun.js" defer blocking="render"></script>
   <script src="/js/tienda.js" defer></script>
 </head>
 <body>
@@ -73,6 +74,7 @@
                   aria-expanded="false" aria-controls="filtros">
             <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
             Filtros
+            <span class="filtros-cuenta" id="filtros-cuenta" hidden></span>
           </button>
           <span class="cantidad-resultados" id="cantidad-resultados" aria-live="polite"></span>
           <label class="orden">
@@ -85,6 +87,8 @@
             </select>
           </label>
         </div>
+
+        <div class="filtros-activos" id="filtros-activos" aria-label="Filtros aplicados" hidden></div>
 
         <div class="grilla grilla-tienda" id="grilla"></div>
         <nav class="paginacion" id="paginacion" aria-label="Páginas"></nav>

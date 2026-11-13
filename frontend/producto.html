@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#141217">
   <title>Producto | Octavo Compás Indumentaria</title>
   <meta name="description" content="Indumentaria de danza y vestidos de gala de Octavo Compás. Elegí color y talle, o pedila a medida.">
   <meta property="og:type" content="product">
@@ -17,8 +18,8 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="icon" href="/img/marca/isotipo.svg" type="image/svg+xml">
   <script src="/js/telon.js"></script>
-  <script src="/js/comun.js" defer></script>
-  <script src="/js/producto.js" defer></script>
+  <script src="/js/comun.js" defer blocking="render"></script>
+  <script src="/js/producto.js" defer blocking="render"></script>
 </head>
 <body>
   <header id="header"></header>
@@ -43,7 +44,7 @@
           <div class="opciones-color" id="colores" role="group" aria-label="Color"></div>
         </div>
 
-        <div class="selector">
+        <div class="selector" id="selector-talle">
           <div class="selector-titulo">
             <span>Talle: <strong id="talle-elegido"></strong></span>
             <button type="button" class="link-guia" id="ver-guia">Guía de talles</button>
@@ -60,6 +61,21 @@
           </div>
           <button class="boton" id="agregar" type="button" disabled>Elegí un talle</button>
         </div>
+
+        <ul class="garantias-compra">
+          <li>
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg>
+            <span><strong>Envíos a todo el país</strong><span id="garantia-envio">Despacho en 24 a 48 horas hábiles</span></span>
+          </li>
+          <li>
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h13l-3-3M20 15H7l3 3"/></svg>
+            <span><strong>Cambios dentro de 30 días</strong><span>De talle o color, con la prenda sin uso</span></span>
+          </li>
+          <li>
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 5 6v5.5c0 4.3 3 7.6 7 9 4-1.4 7-4.7 7-9V6l-7-2.5Z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>
+            <span><strong>Compra protegida</strong><span>Pagás con Mercado Pago</span></span>
+          </li>
+        </ul>
 
         <div class="bloque-medida">
           <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5 8.5 15.5"/><path d="M16.5 4.5a1.8 1.8 0 0 1 3 3"/><path d="M8.5 15.5 5 19"/><path d="M4 9c3-3 8-4 11-2M10 20c3-1 6-3 7-7"/></svg>
@@ -100,6 +116,15 @@
       <div class="grilla" id="relacionados"></div>
     </section>
   </main>
+
+  <!-- Barra de compra fija: solo en celular, cuando el botón principal no se ve -->
+  <div class="compra-fija" id="compra-fija" inert>
+    <div class="compra-fija-datos">
+      <span class="compra-fija-nombre" id="nombre-fijo"></span>
+      <span class="precio compra-fija-precio" id="precio-fijo"></span>
+    </div>
+    <button class="boton" id="agregar-fijo" type="button" disabled>Elegí un talle</button>
+  </div>
 
   <dialog id="guia-talles" aria-labelledby="titulo-guia">
     <div class="dialogo-cabecera">
