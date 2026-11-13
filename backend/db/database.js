@@ -3,11 +3,11 @@ const config = require("../config");
 
 /*
   Render / Railway / Neon exigen SSL en producción.
-  En local no hace falta.
+  En local no hace falta. Se puede apagar con DATABASE_SSL=false.
 */
 const pool = new Pool({
   connectionString: config.databaseUrl,
-  ssl: config.esProduccion ? { rejectUnauthorized: false } : false,
+  ssl: config.databaseSsl ? { rejectUnauthorized: false } : false,
   max: 10
 });
 

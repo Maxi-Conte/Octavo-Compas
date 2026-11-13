@@ -25,6 +25,13 @@ const ORDENES = {
   nombre: "p.nombre ASC, p.id"
 };
 
+/* Número entero dentro de un rango (lo que llega por la URL puede ser cualquier cosa) */
+function enteroEntre(valor, porDefecto, minimo, maximo) {
+  const numero = Math.trunc(Number(valor));
+  if (!Number.isFinite(numero) || numero === 0) return porDefecto;
+  return Math.min(Math.max(numero, minimo), maximo);
+}
+
 /* "M,L,XL" -> ["M","L","XL"] */
 function lista(valor, maximo = 20) {
   return String(valor || "")
@@ -76,12 +83,15 @@ function construirFiltros(query, { incluirTalleColor = true } = {}) {
     }
   }
 
-  const minimo = Number(query.min);
+  /* Tope: precios más grandes no entran en la columna y romperían la consulta */
+  const TOPE_PRECIO = 9999999999;
+
+  const minimo = Math.min(Number(query.min), TOPE_PRECIO);
   if (Number.isFinite(minimo) && minimo > 0) {
     condiciones.push(`${PRECIO_FINAL} >= ${agregar(minimo)}`);
   }
 
-  const maximo = Number(query.max);
+  const maximo = Math.min(Number(query.max), TOPE_PRECIO);
   if (Number.isFinite(maximo) && maximo > 0) {
     condiciones.push(`${PRECIO_FINAL} <= ${agregar(maximo)}`);
   }
@@ -151,9 +161,9 @@ router.get(
   asyncRuta(async (req, res) => {
     const { where, parametros, agregar } = construirFiltros(req.query);
 
-    const orden = ORDENES[req.query.orden] || ORDENES.nuevos;
-    const porPagina = Math.min(Math.max(Number(req.query.por_pagina) || 24, 1), 60);
-    const pagina = Math.max(Number(req.query.pagina) || 1, 1);
+    const orden = Object.hasOwn(ORDENES, String(req.query.orden)) ? ORDENES[req.query.orden] : ORDENES.nuevos;
+    const porPagina = enteroEntre(req.query.por_pagina, 24, 1, 60);
+    const pagina = enteroEntre(req.query.pagina, 1, 1, 10000);
 
     const limite = agregar(porPagina);
     const desde = agregar((pagina - 1) * porPagina);

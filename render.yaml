@@ -16,8 +16,10 @@ services:
     name: tienda-ropa
     runtime: node
     plan: starter
-    buildCommand: npm ci && npm run db:init
-    startCommand: npm start
+    buildCommand: npm ci
+    # Las tablas se crean al arrancar (no borra nada): durante el build
+    # la base todavía no es accesible.
+    startCommand: npm run db:init && npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV

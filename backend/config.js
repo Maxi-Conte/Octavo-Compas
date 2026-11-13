@@ -23,6 +23,8 @@ const config = {
   puerto: Number(process.env.PORT) || 3000,
   urlSitio: texto("FRONTEND_URL", "http://localhost:3000").replace(/\/+$/, ""),
   databaseUrl: texto("DATABASE_URL"),
+  /* SSL hacia la base: activado en producción salvo que DATABASE_SSL=false */
+  databaseSsl: esProduccion && texto("DATABASE_SSL").toLowerCase() !== "false",
 
   admin: {
     usuario: texto("ADMIN_USER"),
@@ -75,6 +77,11 @@ if (esProduccion) {
   if (config.admin.password.length < 12) {
     errores.push("ADMIN_PASSWORD (mínimo 12 caracteres en producción)");
   }
+  /* Las contraseñas de ejemplo son públicas: están en el repositorio */
+  const EJEMPLOS = ["cambiar-esta-password", "tu_password", config.admin.usuario];
+  if (EJEMPLOS.includes(config.admin.password)) {
+    errores.push("ADMIN_PASSWORD (es una contraseña de ejemplo: elegí una propia)");
+  }
 }
 
 if (errores.length > 0) {
@@ -90,6 +97,29 @@ if (!config.mp.accessToken) {
 
 if (!config.mp.webhookSecret) {
   console.warn("⚠️  Falta MP_WEBHOOK_SECRET: en desarrollo el webhook no valida la firma.");
+}
+
+/* En producción la tienda arranca igual, pero estas cosas la dejan a medias */
+if (esProduccion) {
+  const avisos = [];
+
+  if (config.mp.accessToken.startsWith("TEST-")) {
+    avisos.push("MP_ACCESS_TOKEN es de PRUEBA: los pagos no son reales.");
+  }
+  if (!config.mail.resendApiKey) {
+    avisos.push("Falta RESEND_API_KEY: no se envía NINGÚN mail (ni confirmaciones ni alertas).");
+  }
+  if (!config.mail.tienda) {
+    avisos.push("Falta MAIL_TIENDA: no vas a recibir avisos de ventas ni de pedidos a revisar.");
+  }
+  if (/resend.dev|tudominio/i.test(config.mail.from)) {
+    avisos.push("MAIL_FROM sigue con la dirección de ejemplo: los mails a clientes no van a salir.");
+  }
+  if (config.negocio.nombre === "TU MARCA") {
+    avisos.push("Falta NEGOCIO_NOMBRE: los mails y el resumen de la tarjeta dicen \"TU MARCA\".");
+  }
+
+  avisos.forEach((aviso) => console.warn("⚠️  " + aviso));
 }
 
 module.exports = config;

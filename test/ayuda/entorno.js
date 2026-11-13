@@ -154,7 +154,7 @@ async function crearVariante({ precio = 10000, precioOferta = null, stock = 5, t
   const producto = (
     await db.query(
       `INSERT INTO productos (nombre, slug, precio, precio_oferta)
-       VALUES ($1, $2, $3, $4) RETURNING id, nombre`,
+       VALUES ($1, $2, $3, $4) RETURNING id, nombre, slug`,
       [`Malla ${contador}`, `malla-${contador}`, precio, precioOferta]
     )
   ).rows[0];
@@ -171,6 +171,7 @@ async function crearVariante({ precio = 10000, precioOferta = null, stock = 5, t
     id: variante.id,
     productoId: producto.id,
     nombre: producto.nombre,
+    slug: producto.slug,
     talle,
     color,
     precio: Number(precioOferta ?? precio)
@@ -236,7 +237,44 @@ async function leerOrden(orden) {
   return (await db.query("SELECT * FROM ordenes WHERE id = $1", [orden.id])).rows[0];
 }
 
+/* ---------- Servidor local para probar por HTTP ---------- */
+
+async function levantar(app) {
+  const servidor = await new Promise((listo) => {
+    const s = app.listen(0, "127.0.0.1", () => listo(s));
+  });
+  const base = `http://127.0.0.1:${servidor.address().port}`;
+
+  /* pedir("POST", "/api/...", { cuerpo, cookie, cabeceras }) */
+  function pedir(metodo, ruta, { cuerpo, cookie, cabeceras = {}, crudo } = {}) {
+    return fetch(base + ruta, {
+      method: metodo,
+      redirect: "manual",
+      headers: {
+        ...(cuerpo !== undefined || crudo !== undefined ? { "Content-Type": "application/json" } : {}),
+        ...(cookie ? { Cookie: cookie } : {}),
+        ...cabeceras
+      },
+      body: crudo ?? (cuerpo === undefined ? undefined : JSON.stringify(cuerpo))
+    });
+  }
+
+  return {
+    base,
+    pedir,
+    cerrar: () => new Promise((listo) => servidor.close(listo))
+  };
+}
+
+/* "nombre=valor" de una cookie que mandó el servidor (para reenviarla) */
+function cookieDe(respuesta, nombre) {
+  const linea = respuesta.headers.getSetCookie().find((c) => c.startsWith(`${nombre}=`));
+  return linea ? { valor: linea.split(";")[0], atributos: linea } : null;
+}
+
 module.exports = {
+  levantar,
+  cookieDe,
   db,
   mp,
   mails,

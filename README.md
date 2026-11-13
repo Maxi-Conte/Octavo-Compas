@@ -46,7 +46,8 @@ npm run dev
 
 ```
 backend/
-  server.js              Servidor, seguridad y rutas
+  server.js              Abre el puerto y se apaga prolijo
+  app.js                 Seguridad, límites de intentos y rutas
   config.js              Lee y valida el .env
   db/
     schema.sql           Tablas (se puede correr varias veces)
@@ -99,7 +100,8 @@ npm test
 ```
 
 Corren contra una base aparte (`tienda_ropa_test`, se crea sola) y con Mercado
-Pago y los mails simulados: no tocan tus datos ni salen a internet.
+Pago y los mails simulados: no tocan tus datos ni salen a internet. Cubren pagos
+y stock, el acceso al panel, el catálogo, el carrito y el arranque en modo producción.
 
 ---
 
@@ -139,6 +141,20 @@ Pago y los mails simulados: no tocan tus datos ni salen a internet.
 - `FRONTEND_URL` tiene que ser `https://...`.
 - Configurá un monitor (UptimeRobot) apuntando a `/api/health`.
 - Las fotos conviene subirlas a **Cloudinary** y pegar la URL en el panel.
+
+### Antes de abrir la tienda al público
+
+El servidor **no arranca** en producción si falta `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET`,
+un `FRONTEND_URL` con https, o si `ADMIN_PASSWORD` es corta o es la del ejemplo.
+Además **avisa en el registro** (sin frenar) si:
+
+- el token de Mercado Pago es de prueba (`TEST-...`);
+- falta `RESEND_API_KEY` o `MAIL_TIENDA` (no llegarían confirmaciones ni alertas);
+- `MAIL_FROM` sigue con la dirección de ejemplo;
+- falta `NEGOCIO_NOMBRE`.
+
+Después de publicar, mirá el registro de Render: no tiene que quedar ningún ⚠️.
+Las tablas se crean solas al arrancar (`npm run db:init`, no borra nada).
 
 ---
 

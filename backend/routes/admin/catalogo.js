@@ -198,8 +198,8 @@ function datosProducto(body) {
 
   const imagenes = Array.isArray(body.imagenes)
     ? body.imagenes.slice(0, 20).map((img, indice) => ({
-        url: v.urlImagen(img.url),
-        color: v.textoONull(img.color, 40),
+        url: v.urlImagen(img?.url),
+        color: v.textoONull(img?.color, 40),
         orden: indice
       }))
     : null;
@@ -312,7 +312,7 @@ router.post(
     )].slice(0, 30);
 
     const colores = (Array.isArray(req.body.colores) ? req.body.colores : [])
-      .map((c) => ({ nombre: v.texto(c.nombre, 40), hex: v.colorHex(c.hex) }))
+      .map((c) => ({ nombre: v.texto(c?.nombre, 40), hex: v.colorHex(c?.hex) }))
       .filter((c) => c.nombre)
       .slice(0, 30);
 
