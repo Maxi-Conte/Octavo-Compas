@@ -300,3 +300,65 @@ test("pago que llega justo cuando el panel cancela el pedido: nunca pasa desaper
     );
   }
 });
+
+/* ---------- El SDK de Mercado Pago de verdad ---------- */
+
+test("SDK de Mercado Pago sin dobles: las llamadas salen a la API con el formato correcto", async () => {
+  const malla = await crearVariante({ precio: 20000, stock: 5 });
+  const carrito = await crearCarrito([{ variante: malla, cantidad: 2 }]);
+  const llamadas = [];
+  let ordenId = null;
+
+  const json = (cuerpo) =>
+    new Response(JSON.stringify(cuerpo), { status: 200, headers: { "Content-Type": "application/json" } });
+
+  const deshacer = entorno.usarSdkReal(async (url, opciones) => {
+    const cabeceras = new Headers(opciones.headers);
+    llamadas.push({
+      url: url.split("?")[0].replace(/\/$/, ""),
+      metodo: opciones.method,
+      autorizacion: cabeceras.get("authorization"),
+      cuerpo: opciones.body ? JSON.parse(opciones.body) : null
+    });
+
+    if (url.includes("/checkout/preferences")) {
+      return json({ id: "pref-real", init_point: "https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=pref-real" });
+    }
+    if (url.includes("/v1/payments/888")) {
+      return json({ id: 888, status: "approved", external_reference: String(ordenId), transaction_amount: 47000, currency_id: "ARS" });
+    }
+    return new Response("{}", { status: 404, headers: { "Content-Type": "application/json" } });
+  });
+
+  try {
+    const compra = await comprar(carrito);
+    const datos = await compra.json();
+    assert.equal(compra.status, 200);
+    assert.match(datos.url_pago, /^https:\/\/www\.mercadopago\.com\.ar\//);
+
+    const orden = (await db.query("SELECT id, mp_preference_id FROM ordenes")).rows[0];
+    ordenId = orden.id;
+    assert.equal(orden.mp_preference_id, "pref-real");
+
+    const preferencia = llamadas[0];
+    assert.equal(preferencia.url, "https://api.mercadopago.com/checkout/preferences");
+    assert.equal(preferencia.metodo, "POST");
+    assert.equal(preferencia.autorizacion, "Bearer TEST-token-falso");
+    assert.equal(preferencia.cuerpo.external_reference, String(orden.id));
+    assert.equal(preferencia.cuerpo.items[0].unit_price, 20000);
+    assert.equal(preferencia.cuerpo.items[0].quantity, 2);
+
+    const aviso = await avisar(888, firmar(888));
+    assert.equal(aviso.status, 200);
+
+    const consulta = llamadas[1];
+    assert.equal(consulta.url, "https://api.mercadopago.com/v1/payments/888");
+    assert.equal(consulta.metodo, "GET");
+    assert.equal(consulta.autorizacion, "Bearer TEST-token-falso");
+
+    assert.equal((await leerOrden({ id: orden.id })).estado, "pagado");
+    assert.equal(await stockDe(malla), 3);
+  } finally {
+    deshacer();
+  }
+});

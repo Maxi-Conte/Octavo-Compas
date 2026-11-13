@@ -129,6 +129,24 @@ function mailAlertaRevision(orden, motivo) {
   });
 }
 
+/* Un pago aprobado que no corresponde a ningún pedido guardado */
+function mailPagoSinPedido(pago) {
+  return enviarMail({
+    para: config.mail.tienda,
+    asunto: `⚠️ Pago aprobado sin pedido (${pago.id})`,
+    html: plantilla(
+      "Llegó un pago que no corresponde a ningún pedido",
+      `<p>Mercado Pago aprobó el pago <strong>${escaparHTML(pago.id)}</strong>
+          por ${pesos(pago.transaction_amount)}, pero el pedido
+          #${escaparHTML(pago.external_reference)} ya no existe
+          (los pedidos sin pagar se borran a los 30 días).</p>
+       <p>Pagador: ${escaparHTML(pago.payer?.email || "sin email")}</p>
+       <p>Buscá el pago en tu cuenta de Mercado Pago y contactá a la persona,
+          o devolvele la plata desde ahí.</p>`
+    )
+  });
+}
+
 const TEXTOS_ESTADO = {
   preparando: "Estamos preparando tu pedido.",
   enviado: "¡Tu pedido está en camino!",
@@ -208,6 +226,7 @@ module.exports = {
   mailConfirmacionCompra,
   mailNuevaVenta,
   mailAlertaRevision,
+  mailPagoSinPedido,
   mailCambioEstado,
   mailConstanciaArrepentimiento,
   mailAvisoArrepentimiento,

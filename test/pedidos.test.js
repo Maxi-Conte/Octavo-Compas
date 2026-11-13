@@ -282,3 +282,74 @@ test("pago sin pedido o de un pedido inexistente: se ignora", async () => {
   assert.equal((await procesarPago({ id: 1, status: "approved", external_reference: "999" })).resultado, "ignorado");
   assert.equal((await procesarPago({ id: 1, status: "approved" })).resultado, "ignorado");
 });
+
+/* ---------- Limpieza de abandonados ---------- */
+
+const { limpiarAbandonados } = require("../backend/services/limpieza");
+
+const envejecer = (tabla, id, dias) =>
+  db.query(`UPDATE ${tabla} SET actualizado_en = NOW() - make_interval(days => $2) WHERE id = $1`, [id, dias]);
+
+test("limpieza: borra pedidos sin pagar y carritos viejos, y nada más", async () => {
+  const malla = await crearVariante({ stock: 5 });
+  const item = [{ variante: malla }];
+
+  const abandonado = await crearOrden(item);
+  const rechazadoViejo = await crearOrden(item);
+  const reciente = await crearOrden(item);
+  const pagadoViejo = await crearOrden(item);
+  const canceladoViejo = await crearOrden(item);
+  const enRevision = await crearOrden(item);
+  const conArrepentimiento = await crearOrden(item);
+
+  await procesarPago(pagoMP(pagadoViejo, { id: 50 }));
+  await db.query("UPDATE ordenes SET estado = 'rechazado' WHERE id = $1", [rechazadoViejo.id]);
+  await db.query("UPDATE ordenes SET estado = 'cancelado' WHERE id = $1", [canceladoViejo.id]);
+  await db.query("UPDATE ordenes SET requiere_revision = TRUE WHERE id = $1", [enRevision.id]);
+  await db.query(
+    `INSERT INTO arrepentimientos (codigo, nombre, email, numero_pedido, orden_id)
+     VALUES ('ARR-1', 'Ana', 'a@correo.test', '1', $1)`,
+    [conArrepentimiento.id]
+  );
+
+  for (const orden of [abandonado, rechazadoViejo, pagadoViejo, canceladoViejo, enRevision, conArrepentimiento]) {
+    await envejecer("ordenes", orden.id, 31);
+  }
+  await envejecer("ordenes", reciente.id, 29);
+
+  const carritoViejo = await crearCarrito(item);
+  const carritoNuevo = await crearCarrito(item);
+  await envejecer("carritos", carritoViejo.id, 61);
+  await envejecer("carritos", carritoNuevo.id, 59);
+
+  const resultado = await limpiarAbandonados();
+
+  assert.deepEqual(resultado, { pedidos: 2, carritos: 1 });
+
+  const quedan = (await db.query("SELECT id FROM ordenes ORDER BY id")).rows.map((o) => o.id);
+  assert.deepEqual(quedan, [reciente, pagadoViejo, canceladoViejo, enRevision, conArrepentimiento].map((o) => o.id));
+
+  const carritos = (await db.query("SELECT id FROM carritos")).rows.map((c) => c.id);
+  assert.deepEqual(carritos, [carritoNuevo.id]);
+  assert.equal(await stockDe(malla), 4, "el stock no se toca");
+});
+
+test("pago aprobado de un pedido que ya se borró: avisa a la tienda una sola vez", async () => {
+  const malla = await crearVariante({ stock: 5 });
+  const orden = await crearOrden([{ variante: malla }]);
+  await envejecer("ordenes", orden.id, 31);
+  await limpiarAbandonados();
+
+  const pago = { ...pagoMP(orden, { id: 4242 }), payer: { email: "ana@correo.test" } };
+  const r = await procesarPago(pago);
+  await procesarPago(pago);
+
+  assert.equal(r.resultado, "ignorado");
+  assert.equal(await stockDe(malla), 5);
+
+  const enviados = await esperarMails();
+  assert.equal(enviados.length, 1);
+  assert.equal(enviados[0].para, "tienda@tienda.test");
+  assert.match(enviados[0].asunto, /Pago aprobado sin pedido \(4242\)/);
+  assert.match(enviados[0].html, /ana@correo\.test/);
+});

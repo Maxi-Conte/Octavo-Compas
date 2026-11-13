@@ -174,7 +174,10 @@ async function cargar() {
     grilla.innerHTML = datos.productos.length
       ? datos.productos.map((p) => tarjetaProducto(p)).join("")
       : `<div class="vacio vacio-tienda">
-           <p>No encontramos productos con esos filtros.</p>
+           <p>${filtros.buscar
+             ? `No encontramos nada para “${esc(filtros.buscar)}”.`
+             : "No encontramos productos con esos filtros."}</p>
+           <a class="boton boton-secundario" href="/tienda.html">Ver toda la tienda</a>
            <a class="link-subrayado" data-whatsapp="Hola Octavo Compás, estoy buscando una prenda que no encontré en la tienda.">¿Buscás algo especial? Lo confeccionamos a medida</a>
          </div>`;
 

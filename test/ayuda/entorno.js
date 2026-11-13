@@ -70,6 +70,11 @@ globalThis.fetch = async (url, opciones) => {
     return { ok: true, status: 200, text: async () => "" };
   }
 
+  /* Mercado Pago: solo si el test puso una API falsa (ver usarSdkReal) */
+  if (destino.startsWith("https://api.mercadopago.com/") && mp.apiFalsa) {
+    return mp.apiFalsa(destino, opciones);
+  }
+
   /* Solo dejamos pasar las llamadas al servidor de prueba local */
   if (destino.startsWith("http://127.0.0.1:")) return fetchReal(url, opciones);
 
@@ -90,7 +95,13 @@ const mp = {
   pagos: new Map(),      // id -> pago que "devuelve" Mercado Pago
   consultas: [],         // ids consultados
   preferencias: [],      // cuerpos de las preferencias creadas
-  fallarPreferencia: false
+  fallarPreferencia: false,
+  apiFalsa: null         // (url, opciones) => Response, para probar el SDK de verdad
+};
+
+const sdkReal = {
+  get: mercadopago.Payment.prototype.get,
+  create: mercadopago.Preference.prototype.create
 };
 
 mercadopago.Payment.prototype.get = async function ({ id }) {
@@ -105,6 +116,27 @@ mercadopago.Preference.prototype.create = async function ({ body }) {
   mp.preferencias.push(body);
   return { id: `pref-${mp.preferencias.length}`, init_point: "https://mp.test/pagar" };
 };
+
+const dobles = {
+  get: mercadopago.Payment.prototype.get,
+  create: mercadopago.Preference.prototype.create
+};
+
+/*
+  Para un test puntual: usa el SDK de Mercado Pago sin dobles y atiende
+  sus llamadas HTTP con "apiFalsa". Devuelve la función que lo deshace.
+*/
+function usarSdkReal(apiFalsa) {
+  mercadopago.Payment.prototype.get = sdkReal.get;
+  mercadopago.Preference.prototype.create = sdkReal.create;
+  mp.apiFalsa = apiFalsa;
+
+  return () => {
+    mercadopago.Payment.prototype.get = dobles.get;
+    mercadopago.Preference.prototype.create = dobles.create;
+    mp.apiFalsa = null;
+  };
+}
 
 /* ---------- Preparar y limpiar la base ---------- */
 
@@ -273,6 +305,7 @@ function cookieDe(respuesta, nombre) {
 }
 
 module.exports = {
+  usarSdkReal,
   levantar,
   cookieDe,
   db,

@@ -6,11 +6,14 @@
 const config = require("./config"); // primero: valida el .env
 const db = require("./db/database");
 const { crearApp } = require("./app");
+const { programarLimpieza } = require("./services/limpieza");
 
 const servidor = crearApp().listen(config.puerto, () => {
   console.log(`🛍️  Tienda corriendo en http://localhost:${config.puerto}`);
   console.log(`🔐 Panel admin en   http://localhost:${config.puerto}/admin.html`);
 });
+
+programarLimpieza();
 
 /*
   En cada publicación el hosting manda SIGTERM: dejamos de aceptar

@@ -32,7 +32,7 @@ function pintarResumen() {
     .map(
       (i) => `
       <div class="item-carrito">
-        <img src="${esc(i.imagen || "")}" alt="">
+        ${i.imagen ? `<img src="${esc(i.imagen)}" alt="">` : "<span></span>"}
         <div>
           <span class="item-nombre">${esc(i.nombre)}</span>
           <p class="item-detalle">${esc(i.color)} · Talle ${esc(i.talle)} · x${i.cantidad}</p>
@@ -51,22 +51,56 @@ function pintarResumen() {
   document.getElementById("campos-envio").hidden = metodoEntrega() === "retiro";
 }
 
-/* Validación rápida en el navegador (el servidor valida igual) */
+/*
+  Validación rápida en el navegador (el servidor valida igual).
+  Devuelve [campo, mensaje] del primer dato que falta, o null.
+*/
 function validar(datos) {
-  if (datos.nombre.trim().length < 3) return "Ingresá tu nombre y apellido.";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(datos.email.trim())) return "Ingresá un email válido.";
-  if (datos.telefono.replace(/\D/g, "").length < 8) return "Ingresá un teléfono con código de área.";
-  if (!/^\d{7,11}$/.test(datos.dni.replace(/[.\s-]/g, ""))) return "Ingresá un DNI o CUIT válido.";
+  if (datos.nombre.trim().length < 3) return ["nombre", "Ingresá tu nombre y apellido."];
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(datos.email.trim())) return ["email", "Ingresá un email válido."];
+  if (datos.telefono.replace(/\D/g, "").length < 8) return ["telefono", "Ingresá un teléfono con código de área."];
+  if (!/^\d{7,11}$/.test(datos.dni.replace(/[.\s-]/g, ""))) return ["dni", "Ingresá un DNI o CUIT válido (solo números)."];
 
   if (datos.metodo_entrega === "envio") {
-    if (datos.direccion.trim().length < 5) return "Ingresá la dirección.";
-    if (datos.ciudad.trim().length < 2) return "Ingresá la ciudad.";
-    if (!datos.provincia) return "Elegí la provincia.";
-    if (!/^[A-Za-z]?\d{4}[A-Za-z]{0,3}$/.test(datos.codigo_postal.trim())) return "Ingresá un código postal válido.";
+    if (datos.direccion.trim().length < 5) return ["direccion", "Ingresá la calle y el número."];
+    if (datos.ciudad.trim().length < 2) return ["ciudad", "Ingresá la ciudad."];
+    if (!datos.provincia) return ["provincia", "Elegí la provincia."];
+    if (!/^[A-Za-z]?\d{4}[A-Za-z]{0,3}$/.test(datos.codigo_postal.trim())) {
+      return ["codigo_postal", "Ingresá un código postal válido (por ejemplo 5500)."];
+    }
   }
 
   return null;
 }
+
+/* El mensaje va debajo del campo que falló, y el cursor queda ahí */
+function limpiarErrorDeCampo() {
+  document.getElementById("error-campo")?.remove();
+  form.querySelectorAll("[aria-invalid]").forEach((el) => {
+    el.removeAttribute("aria-invalid");
+    el.removeAttribute("aria-describedby");
+  });
+}
+
+function mostrarErrorDeCampo(campo, mensaje) {
+  limpiarErrorDeCampo();
+
+  const control = form.elements[campo];
+  const aviso = document.createElement("span");
+  aviso.id = "error-campo";
+  aviso.className = "texto-error";
+  aviso.textContent = mensaje;
+
+  control.closest(".campo").append(aviso);
+  control.setAttribute("aria-invalid", "true");
+  control.setAttribute("aria-describedby", "error-campo");
+  control.focus();
+}
+
+/* Apenas la persona corrige el dato, el aviso se va */
+form.addEventListener("input", (e) => {
+  if (e.target.getAttribute("aria-invalid")) limpiarErrorDeCampo();
+});
 
 form.addEventListener("change", (e) => {
   if (e.target.name === "metodo_entrega") pintarResumen();
@@ -79,13 +113,15 @@ form.addEventListener("submit", async (e) => {
   const errorCaja = document.getElementById("error-checkout");
   const boton = document.getElementById("boton-pagar");
 
+  errorCaja.textContent = "";
+
   const error = validar(datos);
   if (error) {
-    errorCaja.textContent = error;
+    mostrarErrorDeCampo(...error);
     return;
   }
 
-  errorCaja.textContent = "";
+  limpiarErrorDeCampo();
   boton.disabled = true;
   boton.textContent = "Conectando con Mercado Pago...";
 

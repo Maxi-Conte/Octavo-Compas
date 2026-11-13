@@ -8,6 +8,7 @@ const {
   mailConfirmacionCompra,
   mailNuevaVenta,
   mailAlertaRevision,
+  mailPagoSinPedido,
   mailCambioEstado,
   enviarSinEsperar
 } = require("../utils/mailer");
@@ -149,6 +150,9 @@ async function marcarRevision(ordenId, motivo, cliente = db) {
    dos avisos juntos, o un aviso mientras el panel cancela el
    pedido, se atienden de a uno y cada uno ve el estado real.
 ===================================================== */
+
+/* Pagos sin pedido por los que ya se avisó (Mercado Pago repite sus avisos) */
+const sinPedidoAvisados = new Set();
 
 /* Estados en los que la prenda ya salió del local */
 const DESPACHADO = ["enviado", "entregado"];
@@ -303,6 +307,16 @@ async function procesarPago(pago) {
 
     return { resultado: "pendiente" };
   });
+
+  /*
+    Plata cobrada sin pedido: pasa si alguien paga un link viejo cuyo
+    pedido ya se borró por abandonado. No hay dónde anotarlo, así que
+    se avisa a la tienda por mail.
+  */
+  if (salida.motivo === "orden inexistente" && pago.status === "approved" && !sinPedidoAvisados.has(pagoId)) {
+    sinPedidoAvisados.add(pagoId);
+    enviarSinEsperar(mailPagoSinPedido(pago), `pago sin pedido ${pagoId}`);
+  }
 
   if (avisos.length > 0) {
     const orden = await obtenerOrden(ordenId);

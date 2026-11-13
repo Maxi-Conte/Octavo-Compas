@@ -369,3 +369,29 @@ test("servidor: /api/config no publica ningún secreto", async () => {
     assert.ok(!texto.includes(secreto), `no aparece ${secreto.slice(0, 8)}...`);
   }
 });
+
+/* ---------- Buscadores ---------- */
+
+test("buscadores: el sitemap lista lo que está a la venta y robots.txt apunta a él", async () => {
+  const activa = await crearVariante();
+  const pausada = await crearVariante();
+  await db.query("UPDATE productos SET activo = FALSE WHERE id = $1", [pausada.productoId]);
+  await db.query("INSERT INTO categorias (nombre, slug) VALUES ('Ballet', 'ballet'), ('Oculta', 'oculta')");
+  await db.query("UPDATE categorias SET activo = FALSE WHERE slug = 'oculta'");
+
+  const sitemap = await tienda.pedir("GET", "/sitemap.xml");
+  const xml = await sitemap.text();
+
+  assert.equal(sitemap.status, 200);
+  assert.match(sitemap.headers.get("content-type"), /xml/);
+  assert.ok(xml.includes("<loc>https://tienda.test/</loc>"));
+  assert.ok(xml.includes(`<loc>https://tienda.test/producto.html?p=${activa.slug}</loc>`));
+  assert.ok(xml.includes("<loc>https://tienda.test/tienda.html?categoria=ballet</loc>"));
+  assert.ok(!xml.includes(pausada.slug), "un producto pausado no se publica");
+  assert.ok(!xml.includes("oculta"), "una categoría oculta tampoco");
+  assert.ok(!xml.includes("admin"), "el panel no figura");
+
+  const robots = await (await tienda.pedir("GET", "/robots.txt")).text();
+  assert.match(robots, /^Disallow: \/api\/$/m);
+  assert.match(robots, /^Sitemap: https:\/\/tienda\.test\/sitemap\.xml$/m);
+});

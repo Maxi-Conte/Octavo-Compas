@@ -140,6 +140,12 @@ h1, h2,
   outline-offset: 3px;
 }
 
+/* Texto seleccionado con el color de la marca */
+::selection {
+  background: var(--c-acento);
+  color: #fff;
+}
+
 /* Texto chico en mayúsculas (etiquetas, "colección 2026") */
 .sobretitulo {
   display: block;
@@ -3071,6 +3077,7 @@ h1, h2,
 }
 
 .muestra-color {
+  position: relative;
   width: 30px;
   height: 30px;
   padding: 0;
@@ -3079,6 +3086,13 @@ h1, h2,
   cursor: pointer;
   box-shadow: 0 0 0 3px var(--c-fondo), 0 0 0 4px transparent;
   transition: box-shadow 0.2s;
+}
+
+/* El círculo mide 30px pero se puede tocar en 42px */
+.muestra-color::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
 }
 
 .muestra-color:hover {
@@ -3188,6 +3202,8 @@ h1, h2,
   margin: 0;
   font-family: var(--f-titulos);
   font-size: 1.6rem;
+  line-height: 1.25;
+  text-wrap: balance;
   color: var(--c-texto);
 }
 
@@ -3583,6 +3599,9 @@ h1, h2,
     grid-row: 2;
     flex-direction: row;
     overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--c-borde) transparent;
   }
 
   .miniaturas button {
@@ -3773,13 +3792,20 @@ a.item-nombre:hover {
 .checkout {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-  gap: clamp(32px, 5vw, 80px);
+  gap: 32px clamp(32px, 5vw, 80px);
   padding: clamp(32px, 5vw, 56px) 0 clamp(64px, 8vw, 112px);
 }
 
+/* El título encabeza las dos columnas (y en celular va antes del resumen) */
 .checkout h1 {
+  grid-column: 1 / -1;
   font-size: clamp(2.2rem, 4vw, 3.2rem);
-  margin-bottom: 32px;
+  margin-bottom: 0;
+}
+
+/* En el checkout y el resultado del pago no se ofrece otra cosa */
+.pagina-compra .pie-cta {
+  display: none;
 }
 
 fieldset {
@@ -3833,8 +3859,13 @@ legend {
   border-color: var(--c-texto);
 }
 
-.campo input[aria-invalid="true"] {
+.campo input[aria-invalid="true"],
+.campo select[aria-invalid="true"] {
   border-color: var(--c-error);
+}
+
+.campo .texto-error {
+  margin: 0;
 }
 
 .opcion-entrega {
@@ -3960,6 +3991,10 @@ legend {
   .checkout {
     grid-template-columns: minmax(0, 1fr);
     gap: 24px;
+  }
+
+  .checkout h1 {
+    order: -2;
   }
 
   .resumen {

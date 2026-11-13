@@ -112,6 +112,10 @@ function crearApp() {
   /* Ruta de API inexistente */
   app.use("/api", (req, res) => res.status(404).json({ error: "Ruta no encontrada." }));
 
+  /* ---------- Buscadores ---------- */
+
+  app.use(require("./routes/seo"));
+
   /* ---------- Frontend ---------- */
 
   app.use(
