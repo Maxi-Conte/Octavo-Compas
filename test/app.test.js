@@ -54,7 +54,9 @@ const RUTAS_DEL_PANEL = [
   ["PATCH", "/api/admin/pedidos/1/estado"],
   ["PATCH", "/api/admin/pedidos/1/revisado"],
   ["GET", "/api/admin/arrepentimientos"],
-  ["PATCH", "/api/admin/arrepentimientos/1/estado"]
+  ["PATCH", "/api/admin/arrepentimientos/1/estado"],
+  ["GET", "/api/admin/fotos/destino"],
+  ["POST", "/api/admin/fotos"]
 ];
 
 test("panel: todas las rutas responden 401 sin sesión y no tocan nada", async () => {
@@ -394,4 +396,51 @@ test("buscadores: el sitemap lista lo que está a la venta y robots.txt apunta a
   const robots = await (await tienda.pedir("GET", "/robots.txt")).text();
   assert.match(robots, /^Disallow: \/api\/$/m);
   assert.match(robots, /^Sitemap: https:\/\/tienda\.test\/sitemap\.xml$/m);
+});
+
+/* ---------- Panel: subir fotos ---------- */
+
+test("fotos: la firma de Cloudinary coincide con el ejemplo de su documentación", () => {
+  const { firmarCloudinary } = require("../backend/routes/admin/fotos");
+  const firma = firmarCloudinary(
+    { timestamp: 1315060510, public_id: "sample_image", eager: "w_400,h_300,c_pad|w_260,h_200,c_crop" },
+    "abcd"
+  );
+  assert.equal(firma, "bfd09f95f331f558cbd1320e67aa8d488770583e");
+});
+
+test("fotos: sin Cloudinary, en desarrollo se guardan en la carpeta local y se rechaza lo que no es foto", async () => {
+  const fs = require("fs");
+  const path = require("path");
+  const { CARPETA_LOCAL } = require("../backend/routes/admin/fotos");
+  const cookie = (await entrarAlPanel()).valor;
+
+  const destino = await tienda.pedir("GET", "/api/admin/fotos/destino", { cookie });
+  assert.equal(destino.status, 200);
+  assert.deepEqual(await destino.json(), { tipo: "local", url: "/api/admin/fotos" });
+
+  const jpg = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(60, 1)]);
+  const subida = await tienda.pedir("POST", "/api/admin/fotos", {
+    cookie,
+    crudo: jpg,
+    cabeceras: { "Content-Type": "image/jpeg" }
+  });
+  assert.equal(subida.status, 201);
+  const { url } = await subida.json();
+  assert.match(url, /^\/img\/subidas\/\d+-[0-9a-f]{12}\.jpg$/);
+
+  const archivo = path.join(CARPETA_LOCAL, path.basename(url));
+  try {
+    assert.ok(fs.readFileSync(archivo).equals(jpg));
+  } finally {
+    fs.rmSync(archivo, { force: true });
+  }
+
+  /* Un HTML disfrazado de foto no se guarda */
+  const falsa = await tienda.pedir("POST", "/api/admin/fotos", {
+    cookie,
+    crudo: Buffer.from("<html><script>alert(1)</script></html>"),
+    cabeceras: { "Content-Type": "image/jpeg" }
+  });
+  assert.equal(falsa.status, 400);
 });

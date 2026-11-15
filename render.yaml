@@ -48,6 +48,14 @@ services:
         sync: false
       - key: MAIL_TIENDA
         sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: CLOUDINARY_CARPETA
+        value: octavo-compas/productos
       - key: ENVIO_COSTO
         sync: false
       - key: ENVIO_GRATIS_DESDE

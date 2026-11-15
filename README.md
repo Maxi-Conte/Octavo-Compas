@@ -140,7 +140,22 @@ y stock, el acceso al panel, el catálogo, el carrito y el arranque en modo prod
 - Completá todas las variables (el servidor no arranca si falta algo crítico).
 - `FRONTEND_URL` tiene que ser `https://...`.
 - Configurá un monitor (UptimeRobot) apuntando a `/api/health`.
-- Las fotos conviene subirlas a **Cloudinary** y pegar la URL en el panel.
+- Cargá las variables de **Cloudinary** para poder subir fotos desde el panel (ver abajo).
+
+### Fotos de productos (Cloudinary)
+
+En el editor de producto, **Subir fotos** (o arrastrarlas) las achica en el navegador
+(lado largo de 1600 px, WEBP) y las sube directo a Cloudinary. La tienda las pide con
+`f_auto,q_auto`, así cada navegador recibe el formato y el peso justos.
+
+1. Creá una cuenta gratis en https://cloudinary.com.
+2. En **Settings → API Keys** copiá *Cloud name*, *API Key* y *API Secret*.
+3. Cargalos en `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` y `CLOUDINARY_API_SECRET`.
+
+El secreto nunca llega al navegador: el servidor solo entrega una firma que vence en una hora.
+Sin Cloudinary, **en tu compu** las fotos se guardan en `frontend/img/subidas/` (no se sube a
+GitHub); en producción no, porque el disco de Render se borra en cada deploy.
+También se puede pegar el link de una foto que ya esté en internet.
 
 ### Antes de abrir la tienda al público
 
@@ -151,7 +166,8 @@ Además **avisa en el registro** (sin frenar) si:
 - el token de Mercado Pago es de prueba (`TEST-...`);
 - falta `RESEND_API_KEY` o `MAIL_TIENDA` (no llegarían confirmaciones ni alertas);
 - `MAIL_FROM` sigue con la dirección de ejemplo;
-- falta `NEGOCIO_NOMBRE`.
+- falta `NEGOCIO_NOMBRE`;
+- falta Cloudinary (no se podrían subir fotos desde el panel).
 
 Después de publicar, mirá el registro de Render: no tiene que quedar ningún ⚠️.
 Las tablas se crean solas al arrancar (`npm run db:init`, no borra nada).
@@ -223,7 +239,6 @@ que faltan atender), muestra si coinciden con un pedido y permite pasarlas a
 
 - [ ] Fotos reales y logo original (ver tabla de arriba)
 - [ ] Servicio de newsletter
-- [ ] Subida de fotos directa desde el panel (Cloudinary)
 - [ ] Cupones de descuento
 - [ ] Cálculo de envío por código postal (Andreani / Correo Argentino)
 - [ ] Cuentas de cliente e historial de pedidos

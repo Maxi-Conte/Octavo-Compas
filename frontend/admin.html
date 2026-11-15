@@ -132,9 +132,14 @@
       </div>
 
       <h3>Fotos</h3>
-      <p class="ayuda">Pegá la URL de cada foto (ej: de Cloudinary). Si indicás el color, se muestra al elegir ese color.</p>
+      <p class="ayuda">Subí las fotos desde tu compu o celular: se achican solas antes de subir. La primera es la principal y la segunda aparece al pasar el mouse. Si indicás el color, se muestra al elegir ese color.</p>
+      <div class="zona-fotos" id="zona-fotos">
+        <input type="file" id="input-fotos" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden>
+        <button type="button" class="boton boton-chico" id="subir-fotos">Subir fotos</button>
+        <span>o arrastralas acá</span>
+      </div>
       <div id="lista-imagenes"></div>
-      <button type="button" class="boton boton-secundario boton-chico" id="agregar-imagen">+ Agregar foto</button>
+      <button type="button" class="link-quitar" id="agregar-imagen">+ Pegar el link de una foto</button>
 
       <p class="texto-error" id="error-producto" role="alert"></p>
       <div class="dialogo-pie">

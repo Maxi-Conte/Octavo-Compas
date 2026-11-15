@@ -51,7 +51,8 @@ function crearApp() {
           styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
           fontSrc: ["'self'", "https://fonts.gstatic.com"],
           imgSrc: ["'self'", "data:", "https:"],
-          connectSrc: ["'self'"],
+          /* El panel sube las fotos directo a Cloudinary */
+          connectSrc: ["'self'", "https://api.cloudinary.com"],
           formAction: ["'self'"],
           frameAncestors: ["'none'"],
           upgradeInsecureRequests: config.esProduccion ? [] : null
@@ -108,6 +109,7 @@ function crearApp() {
   app.use("/api/admin", requiereAdmin, require("./routes/admin/catalogo"));
   app.use("/api/admin/pedidos", requiereAdmin, require("./routes/admin/pedidos"));
   app.use("/api/admin/arrepentimientos", requiereAdmin, require("./routes/admin/arrepentimientos"));
+  app.use("/api/admin/fotos", requiereAdmin, require("./routes/admin/fotos"));
 
   /* Ruta de API inexistente */
   app.use("/api", (req, res) => res.status(404).json({ error: "Ruta no encontrada." }));

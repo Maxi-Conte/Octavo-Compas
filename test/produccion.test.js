@@ -35,6 +35,9 @@ function configValida(extra = {}) {
     MAIL_FROM: "Octavo Compás <ventas@tienda.test>",
     MAIL_TIENDA: "ventas@tienda.test",
     NEGOCIO_NOMBRE: "Octavo Compás",
+    CLOUDINARY_CLOUD_NAME: "tienda-test",
+    CLOUDINARY_API_KEY: "123456",
+    CLOUDINARY_API_SECRET: "secreto-cloudinary",
     ENVIO_COSTO: "7000",
     ENVIO_GRATIS_DESDE: "150000",
     RETIRO_DIRECCION: "",
@@ -88,12 +91,13 @@ test("producción: avisa si quedó en modo prueba o sin mails", async () => {
       RESEND_API_KEY: "",
       MAIL_TIENDA: "",
       MAIL_FROM: "Tienda <ventas@tudominio.com>",
-      NEGOCIO_NOMBRE: "TU MARCA"
+      NEGOCIO_NOMBRE: "TU MARCA",
+      CLOUDINARY_API_SECRET: ""
     })
   );
 
   assert.equal(codigo, 0, "son avisos: la tienda arranca igual");
-  for (const aviso of [/de PRUEBA/, /RESEND_API_KEY/, /MAIL_TIENDA/, /MAIL_FROM/, /NEGOCIO_NOMBRE/]) {
+  for (const aviso of [/de PRUEBA/, /RESEND_API_KEY/, /MAIL_TIENDA/, /MAIL_FROM/, /NEGOCIO_NOMBRE/, /Cloudinary/]) {
     assert.match(salida, aviso);
   }
 });

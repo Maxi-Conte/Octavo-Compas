@@ -258,11 +258,140 @@ function filaImagen(img = { url: "", color: "" }) {
   return `
     <div class="fila-imagen">
       ${img.url ? `<img src="${esc(img.url)}" alt="">` : "<span></span>"}
-      <input name="img-url" placeholder="https://..." value="${esc(img.url)}">
-      <input name="img-color" placeholder="Color (opcional)" value="${esc(img.color || "")}">
-      <button type="button" class="link-quitar" data-quitar-fila>Quitar</button>
+      <input name="img-url" placeholder="https://..." value="${esc(img.url)}" aria-label="Link de la foto">
+      <input name="img-color" placeholder="Color (opcional)" value="${esc(img.color || "")}" aria-label="Color de la foto">
+      <span class="fila-imagen-acciones">
+        <button type="button" class="link-quitar" data-mover-arriba title="Mover antes" aria-label="Mover antes">↑</button>
+        <button type="button" class="link-quitar" data-quitar-fila>Quitar</button>
+      </span>
     </div>`;
 }
+
+/* ---------- Subir fotos ----------
+   1. El navegador achica la foto (lado largo máximo 1600 px) y la pasa a WEBP o JPG.
+   2. Se sube a Cloudinary con la firma del servidor (o a la carpeta local en desarrollo).
+   3. Aparece como una fila más, lista para guardar con el producto. */
+
+const LADO_MAXIMO = 1600;
+
+async function achicarFoto(archivo) {
+  let imagen;
+  try {
+    imagen = await createImageBitmap(archivo, { imageOrientation: "from-image" });
+  } catch {
+    throw new Error(`No se pudo leer "${archivo.name}". Probá exportarla como JPG.`);
+  }
+
+  const escala = Math.min(1, LADO_MAXIMO / Math.max(imagen.width, imagen.height));
+  const lienzo = document.createElement("canvas");
+  lienzo.width = Math.round(imagen.width * escala);
+  lienzo.height = Math.round(imagen.height * escala);
+  lienzo.getContext("2d").drawImage(imagen, 0, 0, lienzo.width, lienzo.height);
+  imagen.close();
+
+  const comoBlob = (tipo) => new Promise((listo) => lienzo.toBlob(listo, tipo, 0.86));
+  let blob = await comoBlob("image/webp");
+  if (!blob || blob.type !== "image/webp") blob = await comoBlob("image/jpeg");
+  if (!blob) throw new Error(`No se pudo procesar "${archivo.name}".`);
+  return blob;
+}
+
+/* Cloudinary entrega la foto en el mejor formato y calidad para cada navegador */
+function urlOptimizada(url) {
+  return url.replace("/image/upload/", "/image/upload/f_auto,q_auto/");
+}
+
+async function subirFoto(blob, destino) {
+  if (destino.tipo === "cloudinary") {
+    const datos = new FormData();
+    datos.append("file", blob);
+    Object.entries(destino.campos).forEach(([clave, valor]) => datos.append(clave, valor));
+
+    const respuesta = await fetch(destino.url, { method: "POST", body: datos });
+    const resultado = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok || !resultado.secure_url) {
+      throw new Error(resultado.error?.message || "Cloudinary no aceptó la foto.");
+    }
+    return urlOptimizada(resultado.secure_url);
+  }
+
+  const respuesta = await fetch(destino.url, {
+    method: "POST",
+    headers: { "Content-Type": blob.type },
+    credentials: "same-origin",
+    body: blob
+  });
+  const resultado = await respuesta.json().catch(() => ({}));
+  if (!respuesta.ok) throw new Error(resultado.error || "No se pudo subir la foto.");
+  return resultado.url;
+}
+
+async function subirFotos(archivos) {
+  const fotos = [...archivos].filter((a) => a.type.startsWith("image/") || /\.(heic|heif)$/i.test(a.name));
+  if (!fotos.length) return;
+
+  /* Saca la fila vacía del principio, si la hay */
+  document.querySelectorAll("#lista-imagenes .fila-imagen").forEach((fila) => {
+    if (!fila.querySelector("[name=img-url]").value.trim()) fila.remove();
+  });
+
+  let destino;
+  try {
+    destino = await api("/admin/fotos/destino");
+  } catch (error) {
+    return aviso(error.message, "error");
+  }
+
+  const boton = $("subir-fotos");
+  boton.disabled = true;
+  let subidas = 0;
+
+  for (const archivo of fotos) {
+    const fila = document.createElement("div");
+    fila.className = "fila-imagen subiendo";
+    fila.innerHTML = `<span class="fila-imagen-carga" aria-hidden="true"></span><p>Subiendo ${esc(archivo.name)}…</p>`;
+    $("lista-imagenes").appendChild(fila);
+
+    try {
+      const url = await subirFoto(await achicarFoto(archivo), destino);
+      fila.outerHTML = filaImagen({ url, color: "" });
+      subidas++;
+    } catch (error) {
+      fila.remove();
+      aviso(error.message, "error");
+    }
+  }
+
+  boton.disabled = false;
+  if (subidas) aviso(`${subidas === 1 ? "Foto subida" : `${subidas} fotos subidas`}. Acordate de guardar el producto.`);
+}
+
+$("subir-fotos").addEventListener("click", () => $("input-fotos").click());
+
+$("input-fotos").addEventListener("change", (e) => {
+  subirFotos(e.target.files);
+  e.target.value = "";
+});
+
+const zonaFotos = $("zona-fotos");
+["dragenter", "dragover"].forEach((evento) =>
+  $("editor").addEventListener(evento, (e) => {
+    if (!e.dataTransfer?.types.includes("Files")) return;
+    e.preventDefault();
+    zonaFotos.classList.add("arrastrando");
+  })
+);
+["dragleave", "drop"].forEach((evento) =>
+  $("editor").addEventListener(evento, (e) => {
+    if (evento === "dragleave" && $("editor").contains(e.relatedTarget)) return;
+    zonaFotos.classList.remove("arrastrando");
+  })
+);
+$("editor").addEventListener("drop", (e) => {
+  if (!e.dataTransfer?.files.length) return;
+  e.preventDefault();
+  subirFotos(e.dataTransfer.files);
+});
 
 function filaColor(color = { nombre: "", hex: "#cccccc" }) {
   return `
@@ -343,6 +472,13 @@ $("agregar-color").addEventListener("click", () => {
 
 $("editor").addEventListener("click", (e) => {
   if (e.target.closest("[data-quitar-fila]")) e.target.closest(".fila-imagen, .fila-color").remove();
+
+  const mover = e.target.closest("[data-mover-arriba]");
+  if (mover) {
+    const fila = mover.closest(".fila-imagen");
+    const anterior = fila.previousElementSibling;
+    if (anterior) fila.parentNode.insertBefore(fila, anterior);
+  }
 });
 
 $("form-producto").addEventListener("submit", async (e) => {

@@ -49,6 +49,15 @@ const config = {
     tienda: texto("MAIL_TIENDA")
   },
 
+  /* Fotos de productos: se suben a Cloudinary desde el panel.
+     Sin Cloudinary, en desarrollo se guardan en frontend/img/subidas */
+  fotos: {
+    cloudName: texto("CLOUDINARY_CLOUD_NAME"),
+    apiKey: texto("CLOUDINARY_API_KEY"),
+    apiSecret: texto("CLOUDINARY_API_SECRET"),
+    carpeta: texto("CLOUDINARY_CARPETA", "productos").replace(/[^\w/-]/g, "") || "productos"
+  },
+
   negocio: {
     nombre: texto("NEGOCIO_NOMBRE", "TU MARCA"),
     whatsapp: texto("NEGOCIO_WHATSAPP"),
@@ -114,6 +123,9 @@ if (esProduccion) {
   }
   if (/resend.dev|tudominio/i.test(config.mail.from)) {
     avisos.push("MAIL_FROM sigue con la dirección de ejemplo: los mails a clientes no van a salir.");
+  }
+  if (!config.fotos.cloudName || !config.fotos.apiKey || !config.fotos.apiSecret) {
+    avisos.push("Falta Cloudinary (CLOUDINARY_*): no se pueden subir fotos desde el panel.");
   }
   if (config.negocio.nombre === "TU MARCA") {
     avisos.push("Falta NEGOCIO_NOMBRE: los mails y el resumen de la tarjeta dicen \"TU MARCA\".");
