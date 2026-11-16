@@ -11,13 +11,33 @@
   --c-borde: #E6E0E3;
   --c-superficie: #F3ECF1;     /* bloques suaves */
   --c-beige: #EDE6DF;          /* fondo del hero */
-  --c-acento: #9B1F6E;         /* magenta: usar con moderación */
+  --c-acento: #7A2343;         /* vino: usar con moderación */
+  --c-acento-hondo: #5E1A33;   /* relleno al pasar el mouse */
   --c-acento-claro: #E7A6CF;   /* acento sobre fondo oscuro */
   --c-oscuro: #141217;
   --c-oscuro-2: #1C1720;
   --c-texto-oscuro-2: #B9B0BE; /* secundario sobre fondo oscuro (AA) */
   --c-error: #A8201A;
   --c-ok: #1F6B45;
+  --c-vino: #531D32;           /* bordó de la marca: barra, entradas, footer */
+  --c-oro: #7A5C24;            /* sobretítulos (dorado oscuro, AA sobre fondo claro) */
+
+  /* Colores que cambian con el modo claro/oscuro */
+  --c-invertido: #fff;         /* texto sobre un bloque del color del texto */
+  --c-sobre-acento: #fff;
+  --c-texto-suave: #514A57;
+  --c-marca-agua: rgba(20, 18, 23, 0.06);
+  --c-boton: var(--c-texto);
+  --c-boton-texto: #fff;
+  --c-boton-hover: #2C2731;
+  --c-vidrio: rgba(251, 249, 247, 0.94);
+  --c-vidrio-2: rgba(251, 249, 247, 0.86);
+  --c-apagado: #9A929F;
+  --c-campo: #fff;
+  --c-brillo: #F9F4F7;
+  --c-barra: #CBC1C8;
+  --c-linea-color: rgba(20, 18, 23, 0.18);
+  --c-linea-foto: rgba(20, 18, 23, 0.06);
 
   /* Tipografía */
   --f-titulos: "Cormorant Garamond", "Times New Roman", Georgia, serif;
@@ -45,7 +65,59 @@
   --fuente: var(--f-texto);
   --radio: 0;
   --sombra: 0 12px 40px rgba(20, 18, 23, 0.08);
+  color-scheme: light;
 }
+
+/* ---------- Modo oscuro (js/tema.js lo pone antes de dibujar) ----------
+   Noche de función: fondo casi negro con un toque de vino, texto marfil y dorado. */
+:root[data-tema="oscuro"] {
+  --c-fondo: #120A0E;
+  --c-texto: #F6EEF1;
+  --c-texto-2: #BFAFB7;        /* 8:1 sobre el fondo */
+  --c-borde: #3A2830;
+  --c-superficie: #1E1117;
+  --c-beige: #1A0F14;
+  --c-acento: #D9B77A;
+  --c-acento-hondo: #EBD3A4;
+  --c-acento-claro: #EBD3A4;
+  --c-oscuro: #0B0609;
+  --c-oscuro-2: #1A0F14;
+  --c-texto-oscuro-2: #BFAFB7;
+  --c-error: #F2958C;
+  --c-ok: #8FD6AE;
+  --c-oro: #D9B77A;
+
+  --c-invertido: #120A0E;
+  --c-sobre-acento: #120A0E;
+  --c-texto-suave: #D8CBD1;
+  --c-marca-agua: rgba(246, 238, 241, 0.05);
+  --c-boton: #D9B77A;
+  --c-boton-texto: #120A0E;
+  --c-boton-hover: #EBD3A4;
+  --c-vidrio: rgba(18, 10, 14, 0.9);
+  --c-vidrio-2: rgba(18, 10, 14, 0.8);
+  --c-apagado: #7D6E76;
+  --c-campo: #1E1117;
+  --c-brillo: #2A1A21;
+  --c-barra: #4A3640;
+  --c-linea-color: rgba(246, 238, 241, 0.3);
+  --c-linea-foto: rgba(246, 238, 241, 0.06);
+  --sombra: 0 12px 40px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+
+/* Al cambiar de modo, los colores se funden en vez de saltar */
+:root.cambiando-tema,
+:root.cambiando-tema * ,
+:root.cambiando-tema *::before,
+:root.cambiando-tema *::after {
+  transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, fill 0.5s ease !important;
+}
+
+/* El logo tiene una versión para cada fondo */
+.logo-modo-oscuro { display: none !important; }
+:root[data-tema="oscuro"] .logo-modo-claro { display: none !important; }
+:root[data-tema="oscuro"] .logo-modo-oscuro { display: block !important; }
 
 *,
 *::before,
@@ -128,7 +200,7 @@ h1, h2,
   top: -60px;
   z-index: 300;
   background: var(--c-texto);
-  color: #fff;
+  color: var(--c-invertido);
   padding: 12px 18px;
 }
 
@@ -144,7 +216,7 @@ h1, h2,
 /* Texto seleccionado con el color de la marca */
 ::selection {
   background: var(--c-acento);
-  color: #fff;
+  color: var(--c-sobre-acento);
 }
 
 /* Lo que dibuja el navegador también lleva la paleta:
@@ -152,7 +224,7 @@ h1, h2,
 :root {
   accent-color: var(--c-acento);
   caret-color: var(--c-acento);
-  scrollbar-color: #CBC1C8 transparent;
+  scrollbar-color: var(--c-barra) transparent;
 }
 
 /* Títulos sin palabras sueltas en la última línea; párrafos sin viudas */
@@ -222,16 +294,16 @@ p, li {
   gap: 10px;
   min-height: 48px;
   padding: 0 28px;
-  border: 1px solid var(--c-texto);
+  border: 1px solid var(--c-boton);
   border-radius: 0;
   /* Al pasar el mouse, el color de --relleno sube desde abajo */
   --relleno: var(--c-acento);
-  background-color: var(--c-texto);
+  background-color: var(--c-boton);
   background-image: linear-gradient(var(--relleno), var(--relleno));
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: 100% 0%;
-  color: #fff;
+  color: var(--c-boton-texto);
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: var(--tracking);
@@ -264,14 +336,14 @@ p, li {
 }
 
 .boton-secundario:hover {
-  color: #fff;
+  color: var(--c-invertido);
 }
 
 .boton-destacado {
-  --relleno: #7E1859;
+  --relleno: var(--c-acento-hondo);
   background-color: var(--c-acento);
   border-color: var(--c-acento);
-  color: #fff;
+  color: var(--c-sobre-acento);
 }
 
 /* Sobre fondo oscuro */
@@ -374,7 +446,7 @@ p, li {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--c-texto-2);
-  outline: 1px solid rgba(20, 18, 23, 0.08);
+  outline: 1px solid var(--c-linea-foto);
   outline-offset: -14px;
 }
 
@@ -393,7 +465,7 @@ p, li {
 /* ---------- Barra de anuncios ---------- */
 
 .barra-anuncio {
-  background: var(--c-oscuro);
+  background: var(--c-vino);
   color: #fff;
   height: var(--alto-anuncio);
   overflow: hidden;
@@ -622,7 +694,7 @@ p, li {
   padding: 0 4px;
   border-radius: 999px;
   background: var(--c-acento);
-  color: #fff;
+  color: var(--c-sobre-acento);
   font-size: 0.65rem;
   font-weight: 600;
   display: grid;
@@ -1542,7 +1614,7 @@ p, li {
   letter-spacing: 0.02em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: rgba(20, 18, 23, 0.06);
+  color: var(--c-marca-agua);
   user-select: none;
 }
 
@@ -1572,7 +1644,7 @@ p, li {
 
 .hero-texto p {
   max-width: 400px;
-  color: #514A57;
+  color: var(--c-texto-suave);
   font-size: 1rem;
   margin: 0 0 32px;
 }
@@ -1683,7 +1755,7 @@ p, li {
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #514A57;
+  color: var(--c-texto-suave);
 }
 
 .hero-lista {
@@ -1732,11 +1804,11 @@ p, li {
 
 .hero-prenda-precio {
   font-size: 0.9rem;
-  color: #514A57;
+  color: var(--c-texto-suave);
 }
 
 .hero-prendas-vacio {
-  color: #514A57;
+  color: var(--c-texto-suave);
   font-size: 0.9rem;
 }
 
@@ -1775,11 +1847,11 @@ p, li {
 .boton-flecha:hover,
 .boton-flecha-llena {
   background: var(--c-texto);
-  color: #fff;
+  color: var(--c-invertido);
 }
 
 .boton-flecha-llena:hover {
-  background: #2C2731;
+  background: var(--c-boton-hover);
 }
 
 /* ---------- Beneficios ---------- */
@@ -2355,7 +2427,7 @@ p, li {
   width: 13px;
   height: 13px;
   border-radius: 50%;
-  border: 1px solid rgba(20, 18, 23, 0.18);
+  border: 1px solid var(--c-linea-color);
 }
 
 .grilla {
@@ -2412,7 +2484,7 @@ p, li {
   position: absolute;
   inset: 0;
   z-index: 2;
-  box-shadow: inset 0 0 0 1px rgba(20, 18, 23, 0.05);
+  box-shadow: inset 0 0 0 1px var(--c-linea-foto);
   pointer-events: none;
 }
 
@@ -2454,7 +2526,7 @@ p, li {
 
 .insignia-oferta {
   background: var(--c-acento);
-  color: #fff;
+  color: var(--c-sobre-acento);
   letter-spacing: 0.06em;
   font-variant-numeric: tabular-nums;
 }
@@ -2472,7 +2544,7 @@ p, li {
   z-index: 3;
   padding: 6px 10px 5px;
   background: var(--c-texto);
-  color: #fff;
+  color: var(--c-invertido);
   font-size: 0.72rem;
   font-weight: 600;
   line-height: 1;
@@ -2493,7 +2565,7 @@ p, li {
   justify-content: space-between;
   gap: 12px;
   padding: 15px 16px 14px;
-  background: rgba(251, 249, 247, 0.94);
+  background: var(--c-vidrio);
   color: var(--c-texto);
   font-size: 0.72rem;
   font-weight: 600;
@@ -2517,7 +2589,7 @@ p, li {
 
 @supports (backdrop-filter: blur(1px)) {
   .tarjeta-accion {
-    background: rgba(251, 249, 247, 0.86);
+    background: var(--c-vidrio-2);
     backdrop-filter: blur(10px) saturate(1.2);
   }
 }
@@ -3146,7 +3218,7 @@ p, li {
 
 .chip.activo {
   background: var(--c-texto);
-  color: #fff;
+  color: var(--c-invertido);
   border-color: var(--c-texto);
 }
 
@@ -3162,7 +3234,7 @@ p, li {
   height: 30px;
   padding: 0;
   border-radius: 50%;
-  border: 1px solid rgba(20, 18, 23, 0.18);
+  border: 1px solid var(--c-linea-color);
   cursor: pointer;
   box-shadow: 0 0 0 3px var(--c-fondo), 0 0 0 4px transparent;
   transition: box-shadow 0.2s;
@@ -3263,7 +3335,7 @@ p, li {
   padding: 0 5px;
   border-radius: 10px;
   background: var(--c-acento);
-  color: #fff;
+  color: var(--c-sobre-acento);
   font-size: 0.68rem;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums;
@@ -3559,7 +3631,7 @@ p, li {
 }
 
 .chip:disabled {
-  color: #9A929F;
+  color: var(--c-apagado);
   background: var(--c-superficie);
   text-decoration: line-through;
   cursor: not-allowed;
@@ -3798,7 +3870,7 @@ p, li {
   bottom: 12px;
   z-index: 2;
   padding: 6px 10px;
-  background: rgba(251, 249, 247, 0.92);
+  background: var(--c-vidrio);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -4754,7 +4826,7 @@ legend {
   padding: 12px 14px;
   border: 1px solid var(--c-borde);
   border-radius: 0;
-  background: #fff;
+  background: var(--c-campo);
   font-size: 0.95rem;
   transition: border-color 0.2s;
 }
@@ -4820,7 +4892,7 @@ legend {
 
 .resumen .item-carrito {
   grid-template-columns: 56px 1fr auto;
-  border-bottom-color: #E2D8DF;
+  border-bottom-color: var(--c-borde);
 }
 
 .resumen .item-carrito img {
@@ -4922,7 +4994,7 @@ legend {
   left: 50%;
   transform: translate(-50%, 20px);
   background: var(--c-texto);
-  color: #fff;
+  color: var(--c-invertido);
   padding: 14px 22px;
   font-size: 0.88rem;
   opacity: 0;
@@ -4945,7 +5017,7 @@ legend {
 /* ---------- Esqueleto de carga ---------- */
 
 .cargando {
-  background: linear-gradient(90deg, var(--c-superficie) 25%, #F9F4F7 50%, var(--c-superficie) 75%);
+  background: linear-gradient(90deg, var(--c-superficie) 25%, var(--c-brillo) 50%, var(--c-superficie) 75%);
   background-size: 200% 100%;
   animation: brillo 1.2s infinite;
   border-radius: var(--radio);
@@ -5565,5 +5637,47 @@ dialog::backdrop {
     to {
       translate: 0 28%;
     }
+  }
+}
+
+/* En modo oscuro el botón es dorado: al pasar el mouse sube un dorado más claro */
+:root[data-tema="oscuro"] .boton:not(.boton-secundario):not(.boton-claro) {
+  --relleno: var(--c-acento-hondo);
+}
+
+/* ---------- Botón de modo claro/oscuro (header) ---------- */
+
+.boton-tema .icono-sol,
+.boton-tema .icono-luna {
+  transition: transform 0.6s var(--suave), opacity 0.3s ease;
+}
+
+.boton-tema svg {
+  grid-area: 1 / 1;
+}
+
+:root:not([data-tema="oscuro"]) .boton-tema .icono-sol,
+:root[data-tema="oscuro"] .boton-tema .icono-luna {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.6);
+}
+
+/* Cambio de modo con un círculo que se abre desde el botón (View Transitions) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: tema-revelar 0.75s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@keyframes tema-revelar {
+  from {
+    clip-path: circle(0 at var(--tema-x, 100%) var(--tema-y, 0%));
+  }
+  to {
+    clip-path: circle(150vmax at var(--tema-x, 100%) var(--tema-y, 0%));
   }
 }

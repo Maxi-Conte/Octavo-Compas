@@ -235,6 +235,8 @@ const ICONOS = {
   ubicacion: '<path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/>',
   escudo: '<path d="M12 3.5 5 6v5.5c0 4.3 3 7.6 7 9 4-1.4 7-4.7 7-9V6l-7-2.5Z"/><path d="m9 12 2.2 2.2L15.5 10"/>',
   arriba: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+  sol: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>',
+  luna: '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/>',
   diagonal: '<path d="M7 17 17 7M9 7h8v8"/>'
 };
 
@@ -315,7 +317,8 @@ function armarHeader() {
   header.innerHTML = `
     <div class="header-principal contenedor">
       <a class="logo" href="/" aria-label="${esc(SITIO.nombreCompleto)}, ir al inicio">
-        <img src="/img/marca/logo.svg" alt="" width="210" height="45">
+        <img class="logo-modo-claro" src="/img/marca/logo.svg" alt="" width="210" height="45">
+        <img class="logo-modo-oscuro" src="/img/marca/logo-claro.svg" alt="" width="210" height="45">
       </a>
 
       <div class="header-izq">
@@ -323,7 +326,8 @@ function armarHeader() {
                 aria-expanded="false" aria-controls="nav-principal">${icono("menu")}</button>
         <nav class="nav" id="nav-principal" aria-label="Principal">
           <div class="nav-cabecera">
-            <img src="/img/marca/logo.svg" alt="" width="180" height="38">
+            <img class="logo-modo-claro" src="/img/marca/logo.svg" alt="" width="180" height="38">
+            <img class="logo-modo-oscuro" src="/img/marca/logo-claro.svg" alt="" width="180" height="38">
             <button class="boton-icono boton-cerrar-menu" type="button" aria-label="Cerrar menú">${icono("cerrar")}</button>
           </div>
           <ul class="nav-lista">${items}</ul>
@@ -334,6 +338,7 @@ function armarHeader() {
       </div>
 
       <div class="header-der">
+        <button class="boton-icono boton-tema" type="button">${icono("sol", "icono-sol")}${icono("luna", "icono-luna")}</button>
         <button class="boton-icono boton-buscar" type="button" aria-label="Buscar"
                 aria-expanded="false" aria-controls="panel-busqueda">${icono("buscar")}</button>
         <button class="boton-icono boton-carrito" type="button" aria-label="Abrir carrito">
@@ -420,6 +425,17 @@ function armarHeader() {
   marcarScroll();
 
   header.querySelector(".boton-carrito").addEventListener("click", abrirCarrito);
+
+  /* Modo claro / oscuro (js/tema.js) */
+  const botonTema = header.querySelector(".boton-tema");
+  const rotularTema = (tema = window.temaActual?.()) => {
+    const oscuro = tema !== "claro";
+    botonTema.setAttribute("aria-label", oscuro ? "Pasar a modo claro" : "Pasar a modo oscuro");
+    botonTema.title = oscuro ? "Modo claro" : "Modo oscuro";
+  };
+  rotularTema();
+  if (!window.cambiarTema) botonTema.hidden = true;
+  botonTema.addEventListener("click", () => rotularTema(window.cambiarTema(botonTema)));
 }
 
 function armarFooter() {
