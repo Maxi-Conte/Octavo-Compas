@@ -750,10 +750,22 @@ p, li {
 
 .pie {
   --pie-vino: #531D32;
-  --pie-blanco: #FBF8F5;
   --pie-oro: #EBD3A4;
+  /* Las bandas "claras" siguen el modo: blancas en claro, negras en oscuro */
+  --pie-blanco: #FBF8F5;
   --pie-tinta: #1A1216;
+  --pie-acento: #531D32;
+  --pie-suave: #655A60;
+  --pie-puntos: rgba(83, 29, 50, 0.35);
   font-size: 0.95rem;
+}
+
+:root[data-tema="oscuro"] .pie {
+  --pie-blanco: #120A0E;
+  --pie-tinta: #F6EEF1;
+  --pie-acento: #EBD3A4;
+  --pie-suave: #BFAFB7;
+  --pie-puntos: rgba(235, 211, 164, 0.35);
 }
 
 .pie-banda {
@@ -789,7 +801,7 @@ p, li {
 }
 
 .pie-blanco .pie-titulo-banda {
-  color: var(--pie-vino);
+  color: var(--pie-acento);
 }
 
 /* --- La marca --- */
@@ -843,11 +855,11 @@ p, li {
 }
 
 .pie-blanco .creditos dt {
-  color: #655A60;
+  color: var(--pie-suave);
 }
 
 .pie-blanco .creditos > div::after {
-  border-bottom-color: rgba(83, 29, 50, 0.35);
+  border-bottom-color: var(--pie-puntos);
 }
 
 .pie-seguro {
@@ -857,7 +869,7 @@ p, li {
   gap: 8px;
   margin: 24px 0 0;
   font-size: 0.82rem;
-  color: #655A60;
+  color: var(--pie-suave);
   text-align: center;
 }
 
@@ -938,7 +950,7 @@ p, li {
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--pie-vino);
+  color: var(--pie-acento);
 }
 
 .pie-indice ul {
