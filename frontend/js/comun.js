@@ -438,6 +438,11 @@ function armarHeader() {
   botonTema.addEventListener("click", () => rotularTema(window.cambiarTema(botonTema)));
 }
 
+/*
+  Footer "Créditos": bandas intercaladas vino y blanco, como el final
+  de un programa de mano. Los colores no cambian con el modo claro/oscuro:
+  son la marca.
+*/
 function armarFooter() {
   const footer = document.getElementById("footer");
   if (!footer) return;
@@ -446,43 +451,56 @@ function armarFooter() {
   const consulta = "Hola Octavo Compás, quería hacerles una consulta.";
   const pedido = "Hola Octavo Compás, quiero pedir un presupuesto de vestuario a medida.";
 
-  /* Columna de links: en celular es un acordeón, en escritorio está siempre abierta */
-  const columna = (titulo, contenido) => `
-    <details class="pie-col" open>
-      <summary><h2 class="pie-titulo">${titulo}</h2>${icono("abajo", "pie-col-flecha")}</summary>
-      ${contenido}
-    </details>`;
+  const credito = (dato, valor, id = "") =>
+    `<div><dt>${dato}</dt><dd${id ? ` id="${id}"` : ""}>${valor}</dd></div>`;
 
+  footer.classList.add("pie");
   footer.innerHTML = `
-    <!-- Banda de cierre -->
-    <div class="pie-cta">
-      <div class="contenedor pie-cta-interior">
-        <div>
-          <span class="pie-sobretitulo">Vestuarios a medida</span>
-          <p class="pie-cta-titulo">¿Tenés una función en puerta? <em>Hagamos tu vestuario.</em></p>
-        </div>
-        <div class="pie-cta-acciones">
-          <a class="boton boton-claro" data-whatsapp="${esc(pedido)}">${icono("whatsapp")}Pedí tu presupuesto</a>
-          <a class="pie-link-flecha" href="/#a-medida">Cómo trabajamos ${icono("diagonal")}</a>
-        </div>
+    <!-- VINO · La marca -->
+    <section class="pie-banda pie-vino pie-marca-banda">
+      <div class="contenedor pie-banda-interior">
+        <p class="pie-sobre">— Fin del primer acto —</p>
+        <a href="/" class="pie-marca-nombre" aria-label="${esc(SITIO.nombreCompleto)}, ir al inicio">Octavo Compás</a>
+        <p class="pie-marca-sub">Indumentaria</p>
+        <p class="pie-marca-texto">Indumentaria de danza, vestuarios a medida y ropa de fiesta, hecha en nuestro taller.</p>
+        <a class="boton boton-claro pie-boton" data-whatsapp="${esc(pedido)}">${icono("whatsapp")}Pedí tu vestuario a medida</a>
       </div>
-    </div>
+    </section>
 
-    <div class="contenedor pie-grid">
-      <div class="pie-marca">
-        <a href="/" class="pie-logo" aria-label="${esc(SITIO.nombreCompleto)}, ir al inicio">
-          <img src="/img/marca/logo-claro.svg" alt="" width="250" height="49" loading="lazy">
-        </a>
-        <p>Indumentaria de danza, vestuarios a medida y ropa de fiesta. Cada prenda sale de nuestro taller pensada para moverse, brillar y durar.</p>
-        <ul class="pie-redes" aria-label="Redes y contacto">
-          <li><a href="${esc(SITIO.instagram)}" target="_blank" rel="noopener" aria-label="Instagram ${esc(SITIO.instagramUsuario)}">${icono("instagram")}</a></li>
-          <li><a data-whatsapp="${esc(consulta)}" aria-label="WhatsApp">${icono("whatsapp")}</a></li>
-          <li><a href="/ayuda.html" aria-label="Ayuda y contacto">${icono("email")}</a></li>
+    <!-- BLANCO · La compra -->
+    <section class="pie-banda pie-blanco" aria-labelledby="pie-compra">
+      <div class="contenedor pie-banda-interior">
+        <h2 class="pie-titulo-banda" id="pie-compra">La compra</h2>
+        <dl class="creditos pie-creditos">
+          ${credito("Pago", "<strong>Solo Mercado Pago</strong>")}
+          ${credito("Cuotas", "Hasta 12, dentro de Mercado Pago")}
+          ${credito("Envíos", "A todo el país", "pie-envio")}
+          ${credito("Despacho", "24 a 48 h hábiles")}
+          ${credito("Cambios", "Dentro de los 30 días")}
+          ${credito("Confección", "Taller propio")}
+        </dl>
+        <p class="pie-seguro">${icono("escudo")}Pagás dentro de Mercado Pago: nunca vemos los datos de tu tarjeta.</p>
+      </div>
+    </section>
+
+    <!-- VINO · Contacto -->
+    <section class="pie-banda pie-vino" aria-labelledby="pie-contacto">
+      <div class="contenedor pie-banda-interior">
+        <h2 class="pie-titulo-banda" id="pie-contacto">Tras bambalinas</h2>
+        <ul class="pie-contactos">
+          <li><a data-whatsapp="${esc(consulta)}">${icono("whatsapp")}<span><strong>WhatsApp</strong>Consultas y presupuestos</span>${icono("flechaDer", "pie-flecha")}</a></li>
+          <li><a href="${esc(SITIO.instagram)}" target="_blank" rel="noopener">${icono("instagram")}<span><strong>Instagram</strong>${esc(SITIO.instagramUsuario).replaceAll(".", ".<wbr>")}</span>${icono("flechaDer", "pie-flecha")}</a></li>
+          <li><a href="/ayuda.html">${icono("email")}<span><strong>Email</strong>${esc(SITIO.email)}</span>${icono("flechaDer", "pie-flecha")}</a></li>
+          <li><div>${icono("ubicacion")}<span><strong>Taller</strong>${esc(SITIO.ubicacion)}</span></div></li>
         </ul>
       </div>
+    </section>
 
-      <nav class="pie-navs" aria-label="Pie de página">
-        ${columna("Tienda", `
+    <!-- BLANCO · Índice -->
+    <nav class="pie-banda pie-blanco" aria-label="Pie de página">
+      <div class="contenedor pie-banda-interior pie-indice">
+        <div>
+          <h2 class="pie-indice-titulo">Tienda</h2>
           <ul>
             <li><a href="/tienda.html?categoria=ballet">Ballet</a></li>
             <li><a href="/tienda.html?categoria=contemporaneo">Contemporáneo</a></li>
@@ -490,84 +508,36 @@ function armarFooter() {
             <li><a href="/tienda.html?categoria=tango">Tango</a></li>
             <li><a href="/tienda.html?categoria=fiesta-y-gala">Fiesta y gala</a></li>
             <li><a href="/tienda.html?categoria=reinas-2026">Reinas 2026</a></li>
-          </ul>`)}
-        ${columna("Ayuda", `
+          </ul>
+        </div>
+        <div>
+          <h2 class="pie-indice-titulo">Ayuda</h2>
           <ul>
             <li><a href="/ayuda.html#envios">Envíos</a></li>
             <li><a href="/ayuda.html#cambios">Cambios y devoluciones</a></li>
-            <li><a href="/ayuda.html#pagos">Medios de pago</a></li>
+            <li><a href="/ayuda.html#pagos">Cómo pagar</a></li>
             <li><a href="/ayuda.html#talles">Guía de talles</a></li>
             <li><a href="/#a-medida">Vestuarios a medida</a></li>
-            <li><a href="/arrepentimiento.html">Botón de arrepentimiento</a></li>
-          </ul>`)}
-        ${columna("Contacto", `
-          <ul class="pie-contacto">
-            <li>${icono("whatsapp")}<a data-whatsapp="${esc(consulta)}">WhatsApp</a></li>
-            <li>${icono("instagram")}<a href="${esc(SITIO.instagram)}" target="_blank" rel="noopener">${esc(SITIO.instagramUsuario).replaceAll(".", ".<wbr>")}</a></li>
-            <li>${icono("email")}<span>${esc(SITIO.email)}</span></li>
-            <li>${icono("ubicacion")}<span>${esc(SITIO.ubicacion)}</span></li>
-          </ul>`)}
-      </nav>
-
-      <form class="pie-news" id="form-newsletter" novalidate>
-        <h2 class="pie-titulo">Novedades del taller</h2>
-        <p>Lanzamientos, colecciones nuevas y fechas de toma de medidas. Sin spam.</p>
-        <div class="pie-news-campo">
-          <label class="oculto-visual" for="newsletter-email">Tu email</label>
-          <input id="newsletter-email" type="email" name="email" placeholder="Tu email" autocomplete="email" required>
-          <button type="submit" aria-label="Suscribirme">${icono("flechaDer")}</button>
-        </div>
-        <p class="pie-news-nota">Te podés dar de baja cuando quieras.</p>
-      </form>
-    </div>
-
-    <div class="contenedor">
-      <ul class="pie-garantias">
-        <li>${icono("envio")}<span><strong>Envíos a todo el país</strong>Seguimiento de tu pedido</span></li>
-        <li>${icono("tarjeta")}<span><strong>Hasta 12 cuotas</strong>Con Mercado Pago</span></li>
-        <li>${icono("escudo")}<span><strong>Compra protegida</strong>Pago seguro y cifrado</span></li>
-        <li>${icono("aguja")}<span><strong>Confección propia</strong>Hecho en nuestro taller</span></li>
-      </ul>
-
-      <div class="pie-pagos">
-        <div>
-          <h2 class="pie-titulo">Pago</h2>
-          <ul class="pie-medios">
-            <li>Solo Mercado Pago</li>
           </ul>
-          <p class="pie-pago-nota">Pagás dentro de Mercado Pago: nunca vemos los datos de tu tarjeta.</p>
         </div>
-        <!-- [DATA FISCAL]: reemplazar por el QR de ARCA con su link -->
-        <div class="pie-fiscal" role="img" aria-label="Espacio para el QR de data fiscal">[QR DATA<br>FISCAL]</div>
       </div>
-    </div>
+    </nav>
 
-    <p class="pie-firma" aria-hidden="true">Octavo Compás</p>
-
-    <div class="pie-legal">
-      <div class="contenedor pie-legal-interior">
+    <!-- VINO · Legal -->
+    <section class="pie-banda pie-vino pie-legal-banda">
+      <div class="contenedor pie-banda-interior pie-legal">
+        <div class="pie-legal-fila">
+          <a class="boton-arrepentimiento" href="/arrepentimiento.html">Botón de arrepentimiento</a>
+          <!-- [DATA FISCAL]: reemplazar por el QR de ARCA con su link -->
+          <div class="pie-fiscal" role="img" aria-label="Espacio para el QR de data fiscal">[QR<br>ARCA]</div>
+        </div>
         <p>© ${anio} ${esc(SITIO.nombreCompleto)} · [RAZÓN SOCIAL · CUIT]</p>
-        <ul class="pie-legal-links">
-          <li><a href="/ayuda.html">Ayuda</a></li>
-          <li><a href="https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario" target="_blank" rel="noopener">Defensa del consumidor ${icono("diagonal")}</a></li>
-          <li><a class="boton-arrepentimiento" href="/arrepentimiento.html">Botón de arrepentimiento</a></li>
-        </ul>
-        <button class="pie-arriba" type="button">Volver arriba ${icono("arriba")}</button>
+        <div class="pie-legal-links">
+          <a href="https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario" target="_blank" rel="noopener">Defensa del consumidor</a>
+          <button class="pie-arriba" type="button">Volver arriba ${icono("arriba")}</button>
+        </div>
       </div>
-    </div>`;
-
-  /* Acordeones: abiertos en escritorio, cerrados en celular */
-  const celular = window.matchMedia("(max-width: 760px)");
-  const ajustarColumnas = () => {
-    footer.querySelectorAll(".pie-col").forEach((d) => (d.open = !celular.matches));
-  };
-  ajustarColumnas();
-  celular.addEventListener("change", ajustarColumnas);
-  footer.querySelectorAll(".pie-col summary").forEach((s) => {
-    s.addEventListener("click", (e) => {
-      if (!celular.matches) e.preventDefault(); // en escritorio no se cierran
-    });
-  });
+    </section>`;
 
   footer.querySelector(".pie-arriba").addEventListener("click", () => {
     const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -575,16 +545,11 @@ function armarFooter() {
     document.querySelector(".logo")?.focus({ preventScroll: true });
   });
 
-  /* [SERVICIO DE NEWSLETTER]: todavía no hay dónde guardar los mails */
-  footer.querySelector("#form-newsletter").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const campo = e.target.email;
-    if (!campo.checkValidity() || !campo.value.trim()) {
-      aviso("Revisá el email.", "error");
-      campo.focus();
-      return;
-    }
-    aviso("Muy pronto vas a poder suscribirte. Mientras tanto, seguinos en Instagram.");
+  /* Envío gratis: el monto real sale de la configuración */
+  obtenerConfig().then((config) => {
+    const desde = config.envio?.gratisDesde;
+    const celda = document.getElementById("pie-envio");
+    if (desde > 0 && celda) celda.textContent = `A todo el país · gratis desde ${pesos(desde)}`;
   });
 }
 
@@ -957,8 +922,8 @@ const MOVIMIENTO = [
   [".entrada", "entrada"],
   [".seccion-cabecera > *, .disc-titulos > *, .disc-controles, .seccion-pie", "sube"],
   [".entrada-cuerpo > *, .entrada-talon > *", "sube"],
-  [".reinas-texto > *, .pie-cta-interior > *, .tienda-cabecera > *", "sube"],
-  [".beneficios li, .pasos li, .pie-garantias li", "sube"],
+  [".reinas-texto > *, .pie-banda-interior > *, .tienda-cabecera > *", "sube"],
+  [".beneficios li, .pasos li", "sube"],
   [".tarjeta", "sube"]
 ];
 

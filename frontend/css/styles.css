@@ -744,633 +744,325 @@ p, li {
   border-bottom-color: var(--c-acento);
 }
 
-/* ---------- Footer ---------- */
+/* ---------- Footer "Créditos" ----------
+   Bandas intercaladas vino y blanco, separadas por una doble línea dorada.
+   No cambian con el modo claro/oscuro: son la marca. */
 
-#footer {
-  --pie-fondo: #150D12;
-  --pie-linea: rgba(255, 255, 255, 0.1);
-  --pie-texto-2: #B9B0BE;  /* 8:1 sobre el fondo */
-  --pie-oro: #D9B77A;
-  position: relative;
-  overflow: hidden;
+.pie {
+  --pie-vino: #531D32;
+  --pie-blanco: #FBF8F5;
+  --pie-oro: #EBD3A4;
+  --pie-tinta: #1A1216;
+  font-size: 0.95rem;
+}
+
+.pie-banda {
+  padding: clamp(40px, 6vw, 72px) 0;
+}
+
+.pie-banda + .pie-banda {
+  border-top: 3px double var(--pie-oro);
+}
+
+.pie-vino {
   background:
-    radial-gradient(ellipse 70% 60% at 0% 0%, rgba(83, 29, 50, 0.55), transparent 70%),
-    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(83, 29, 50, 0.35), transparent 70%),
-    var(--pie-fondo);
-  color: #fff;
+    radial-gradient(ellipse 70% 80% at 0% 0%, rgba(255, 255, 255, 0.06), transparent 60%),
+    var(--pie-vino);
+  color: #F6EEF1;
 }
 
-#footer a {
-  transition: color 0.25s ease;
+.pie-blanco {
+  background: var(--pie-blanco);
+  color: var(--pie-tinta);
 }
 
-.pie-titulo {
+.pie-banda-interior {
+  max-width: 980px;
+}
+
+.pie-titulo-banda {
+  margin: 0 0 22px;
+  text-align: center;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.pie-blanco .pie-titulo-banda {
+  color: var(--pie-vino);
+}
+
+/* --- La marca --- */
+
+.pie-marca-banda {
+  text-align: center;
+}
+
+.pie-sobre {
   margin: 0;
-  font-family: var(--f-texto);
   font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--pie-oro);
 }
 
-.pie-sobretitulo {
+.pie-marca-nombre {
   display: block;
-  margin-bottom: 14px;
+  margin-top: 14px;
+  font-family: var(--f-titulos);
+  font-size: clamp(3rem, 9vw, 6rem);
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+}
+
+.pie-marca-sub {
+  margin: 8px 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--pie-oro);
+}
+
+.pie-marca-texto {
+  max-width: 440px;
+  margin: 22px auto 26px;
+  color: #EADDE3;
+}
+
+.pie-boton svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* --- La compra (créditos con puntos guía; .creditos está en la ficha) --- */
+
+.pie-creditos {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.pie-blanco .creditos dt {
+  color: #655A60;
+}
+
+.pie-blanco .creditos > div::after {
+  border-bottom-color: rgba(83, 29, 50, 0.35);
+}
+
+.pie-seguro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px 0 0;
+  font-size: 0.82rem;
+  color: #655A60;
+  text-align: center;
+}
+
+.pie-seguro svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* --- Tras bambalinas --- */
+
+.pie-contactos {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 640px;
+  border-top: 1px solid rgba(235, 211, 164, 0.4);
+}
+
+.pie-contactos li > a,
+.pie-contactos li > div {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 66px;
+  border-bottom: 1px solid rgba(235, 211, 164, 0.25);
+  cursor: pointer;
+}
+
+.pie-contactos li > div {
+  grid-template-columns: 28px 1fr;
+  cursor: default;
+}
+
+.pie-contactos svg {
+  width: 21px;
+  height: 21px;
+  color: var(--pie-oro);
+}
+
+.pie-contactos span {
+  display: grid;
+  font-size: 0.82rem;
+  color: #EADDE3;
+  min-width: 0;
+}
+
+.pie-contactos strong {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #F6EEF1;
+}
+
+.pie-contactos .pie-flecha {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.4s var(--suave);
+}
+
+.pie-contactos a:hover .pie-flecha {
+  transform: translateX(4px);
+}
+
+/* --- Índice --- */
+
+.pie-indice {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 32px;
+  max-width: 640px;
+}
+
+.pie-indice-titulo {
+  margin: 0 0 6px;
+  font-family: var(--f-texto);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--pie-oro);
+  color: var(--pie-vino);
 }
 
-/* Banda de cierre */
-
-.pie-cta {
-  border-bottom: 1px solid var(--pie-linea);
-}
-
-.pie-cta-interior {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 40px;
-  padding-top: clamp(56px, 7vw, 96px);
-  padding-bottom: clamp(48px, 6vw, 80px);
-}
-
-.pie-cta-titulo {
-  max-width: 760px;
-  margin: 0;
-  font-family: var(--f-titulos);
-  font-size: clamp(2rem, 4.2vw, 3.6rem);
-  font-weight: 500;
-  line-height: 1.05;
-  letter-spacing: -0.01em;
-}
-
-.pie-cta-titulo em {
-  font-style: italic;
-  color: #EAD3A0;
-}
-
-.pie-cta-acciones {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 16px;
-  flex-shrink: 0;
-}
-
-.pie-link-flecha {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 32px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--pie-texto-2);
-}
-
-.pie-link-flecha svg {
-  width: 14px;
-  height: 14px;
-  transition: transform 0.3s ease;
-}
-
-.pie-link-flecha:hover {
-  color: #fff;
-}
-
-.pie-link-flecha:hover svg {
-  transform: translate(2px, -2px);
-}
-
-/* Bloque principal */
-
-.pie-grid {
-  display: grid;
-  grid-template-columns: 1.25fr 2.4fr 1.35fr;
-  gap: clamp(32px, 4vw, 64px);
-  padding-top: clamp(48px, 6vw, 80px);
-  padding-bottom: clamp(40px, 5vw, 64px);
-}
-
-.pie-grid > * {
-  min-width: 0;
-}
-
-.pie-logo {
-  display: inline-block;
-}
-
-.pie-logo img {
-  width: 230px;
-  height: auto;
-}
-
-.pie-marca p {
-  max-width: 320px;
-  margin: 22px 0 28px;
-  font-size: 0.9rem;
-  line-height: 1.7;
-  color: var(--pie-texto-2);
-}
-
-.pie-redes {
-  display: flex;
-  gap: 10px;
+.pie-indice ul {
+  list-style: none;
   margin: 0;
   padding: 0;
-  list-style: none;
 }
 
-.pie-redes a {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 50%;
-  color: #fff;
-  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
-}
-
-.pie-redes a:hover {
-  background: #fff;
-  border-color: #fff;
-  color: var(--c-oscuro);
-}
-
-.pie-redes svg {
-  width: 18px;
-  height: 18px;
-}
-
-.pie-navs {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(24px, 3vw, 48px);
-}
-
-.pie-col summary {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  list-style: none;
-  margin-bottom: 20px;
-  cursor: default;
-}
-
-.pie-col summary::-webkit-details-marker {
-  display: none;
-}
-
-.pie-col-flecha {
-  display: none;
-  width: 16px;
-  height: 16px;
-  color: var(--pie-texto-2);
-  transition: transform 0.3s ease;
-}
-
-.pie-col ul {
-  display: grid;
-  gap: 2px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.pie-col li a,
-.pie-col li span {
+.pie-indice a {
   display: inline-block;
-  padding: 5px 0;
-  font-size: 0.9rem;
-  color: var(--pie-texto-2);
+  padding: 8px 0;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 85%;
+  background-size: 0% 1px;
+  transition: background-size 0.45s var(--suave);
 }
 
-.pie-col li a {
-  background: linear-gradient(currentColor, currentColor) no-repeat 0 92% / 0 1px;
-  transition: color 0.25s ease, background-size 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.pie-col li a:hover {
-  color: #fff;
+.pie-indice a:hover {
   background-size: 100% 1px;
 }
 
-.pie-contacto li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* --- Legal --- */
+
+.pie-legal-banda {
+  padding: 32px 0 calc(32px + env(safe-area-inset-bottom));
 }
-
-.pie-contacto svg {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  color: var(--pie-oro);
-}
-
-.pie-contacto li {
-  min-width: 0;
-}
-
-.pie-contacto li span,
-.pie-contacto li a {
-  min-width: 0;
-  overflow-wrap: break-word;
-}
-
-/* Newsletter */
-
-.pie-news p {
-  margin: 14px 0 22px;
-  font-size: 0.9rem;
-  line-height: 1.65;
-  color: var(--pie-texto-2);
-}
-
-.pie-news-campo {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  transition: border-color 0.25s ease;
-}
-
-.pie-news-campo:focus-within {
-  border-color: var(--pie-oro);
-}
-
-.pie-news input {
-  flex: 1;
-  min-width: 0;
-  height: 52px;
-  padding: 0;
-  background: transparent;
-  border: none;
-  color: #fff;
-  font-family: var(--f-titulos);
-  font-size: 1.35rem;
-}
-
-.pie-news input::placeholder {
-  color: var(--pie-texto-2);
-}
-
-.pie-news input:focus-visible {
-  outline: none;
-}
-
-.pie-news button {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  margin-right: -12px;
-  background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-}
-
-.pie-news button svg {
-  width: 20px;
-  height: 20px;
-  transition: transform 0.3s ease;
-}
-
-.pie-news button:hover svg {
-  transform: translateX(4px);
-}
-
-.pie-news .pie-news-nota {
-  margin: 12px 0 0;
-  font-size: 0.78rem;
-}
-
-/* Garantías */
-
-.pie-garantias {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--pie-linea);
-  border-bottom: 1px solid var(--pie-linea);
-}
-
-.pie-garantias li {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 26px 20px;
-}
-
-.pie-garantias li + li {
-  border-left: 1px solid var(--pie-linea);
-}
-
-.pie-garantias li:first-child {
-  padding-left: 0;
-}
-
-.pie-garantias svg {
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-  stroke-width: 1.1;
-  color: var(--pie-oro);
-}
-
-.pie-garantias span {
-  display: grid;
-  gap: 2px;
-  font-size: 0.82rem;
-  color: var(--pie-texto-2);
-}
-
-.pie-garantias strong {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-/* Medios de pago y data fiscal */
-
-.pie-pagos {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 32px;
-  padding: 32px 0;
-}
-
-.pie-medios {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 14px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.pie-medios li {
-  display: inline-flex;
-  align-items: center;
-  min-height: 32px;
-  padding: 0 12px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #E4DDE6;
-}
-
-.pie-pago-nota {
-  margin: 10px 0 0;
-  max-width: 320px;
-  font-size: 0.8rem;
-  color: var(--pie-texto-2);
-}
-
-.pie-fiscal {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 76px;
-  height: 76px;
-  border: 1px dashed rgba(255, 255, 255, 0.35);
-  font-size: 0.6rem;
-  line-height: 1.3;
-  letter-spacing: 0.08em;
-  text-align: center;
-  color: var(--pie-texto-2);
-}
-
-/* Firma gigante */
-
-.pie-firma {
-  margin: 0;
-  padding: 0 var(--margen);
-  font-family: var(--f-titulos);
-  font-size: clamp(2.6rem, 10.6vw, 11.5rem);
-  font-weight: 500;
-  line-height: 0.82;
-  letter-spacing: -0.02em;
-  text-align: center;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(234, 211, 160, 0.22);
-  user-select: none;
-  transform: translateY(12%);
-}
-
-/* Barra legal */
 
 .pie-legal {
-  position: relative;
-  border-top: 1px solid var(--pie-linea);
-  background: rgba(0, 0, 0, 0.35);
-}
-
-.pie-legal-interior {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px 28px;
-  flex-wrap: wrap;
-  padding-top: 18px;
-  padding-bottom: 18px;
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #EADDE3;
 }
 
 .pie-legal p {
   margin: 0;
-  font-size: 0.78rem;
-  color: var(--pie-texto-2);
+}
+
+.pie-legal-fila {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pie .boton-arrepentimiento {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 18px;
+  background: #F6EEF1;
+  color: var(--pie-vino);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pie .pie-fiscal {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 56px;
+  border: 1px dashed rgba(235, 211, 164, 0.6);
+  font-size: 0.55rem;
+  line-height: 1.2;
 }
 
 .pie-legal-links {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 8px 24px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 24px;
 }
 
-.pie-legal-links a:not(.boton-arrepentimiento) {
+.pie-legal-links a {
+  padding: 8px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pie .pie-arriba {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 32px;
-  font-size: 0.78rem;
-  color: var(--pie-texto-2);
-}
-
-.pie-legal-links a:not(.boton-arrepentimiento):hover {
-  color: #fff;
-}
-
-.pie-legal-links svg {
-  width: 12px;
-  height: 12px;
-}
-
-.boton-arrepentimiento {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 18px;
-  border: 1px solid var(--c-acento-claro);
-  color: var(--c-acento-claro);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: var(--tracking);
-  text-transform: uppercase;
-  transition: background 0.2s, color 0.2s;
-}
-
-.boton-arrepentimiento:hover {
-  background: var(--c-acento-claro);
-  color: var(--c-oscuro);
-}
-
-.pie-arriba {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
   min-height: 44px;
   padding: 0;
   background: none;
-  border: none;
-  color: #fff;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  border: 0;
+  color: #F6EEF1;
+  font-size: 0.8rem;
   cursor: pointer;
 }
 
-.pie-arriba svg {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.3s ease;
+.pie .pie-arriba svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.4s var(--suave);
 }
 
-.pie-arriba:hover svg {
+.pie .pie-arriba:hover svg {
   transform: translateY(-3px);
 }
 
-/* Footer en tablet */
-
-@media (max-width: 1100px) {
-  .pie-grid {
-    grid-template-columns: 1fr 1fr;
+/* Escritorio: créditos y contactos en dos columnas, índice en tres */
+@media (min-width: 900px) {
+  .pie-creditos {
+    max-width: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px 48px;
   }
 
-  .pie-navs {
-    grid-column: 1 / -1;
-    grid-row: 2;
+  .pie-contactos {
+    max-width: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 48px;
   }
 
-  .pie-garantias {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .pie-garantias li:nth-child(3) {
-    border-left: none;
-    padding-left: 0;
-  }
-
-  .pie-garantias li:nth-child(n + 3) {
-    border-top: 1px solid var(--pie-linea);
-  }
-}
-
-/* Footer en celular */
-
-@media (max-width: 760px) {
-  .pie-cta-interior {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 28px;
-  }
-
-  .pie-cta-acciones {
-    align-items: flex-start;
-    width: 100%;
-  }
-
-  .pie-cta-acciones .boton {
-    width: 100%;
-  }
-
-  .pie-grid {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-
-  .pie-navs {
-    grid-row: auto;
-    grid-template-columns: 1fr;
-    gap: 0;
-    border-top: 1px solid var(--pie-linea);
-  }
-
-  .pie-col {
-    border-bottom: 1px solid var(--pie-linea);
-  }
-
-  .pie-col summary {
-    min-height: 56px;
-    margin: 0;
-    cursor: pointer;
-  }
-
-  .pie-col-flecha {
-    display: block;
-  }
-
-  .pie-col[open] .pie-col-flecha {
-    transform: rotate(180deg);
-  }
-
-  .pie-col ul {
-    padding-bottom: 16px;
-  }
-
-  .pie-news {
-    order: 3;
-  }
-
-  .pie-garantias li,
-  .pie-garantias li:nth-child(3) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 20px 14px 20px 0;
-  }
-
-  .pie-garantias li:nth-child(even) {
-    padding-left: 16px;
-  }
-
-  .pie-pagos {
-    align-items: flex-start;
-  }
-
-  .pie-legal-interior {
-    flex-direction: column;
-    align-items: flex-start;
+  .pie-indice {
+    max-width: none;
   }
 }
 
