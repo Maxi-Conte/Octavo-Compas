@@ -199,7 +199,7 @@ function pintarTalles() {
     El botón solo se apaga si no hay nada para vender. Sin talle elegido
     sigue activo: al tocarlo, lleva a elegir el talle.
   */
-  let texto = "Agregar al carrito";
+  let texto = "Agregar a tu compra";
   let apagado = false;
 
   if (conStock.length === 0) {

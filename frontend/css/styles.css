@@ -6108,3 +6108,151 @@ dialog::backdrop {
     scroll-snap-align: start;
   }
 }
+
+/* ---------- Tu compra (panel) ----------
+   Las prendas van numeradas como un reparto y el resumen es una entrada:
+   cuerpo con el detalle, troquel con muescas y talón con el total. */
+
+.bolsa-titulos {
+  display: grid;
+  gap: 4px;
+}
+
+.bolsa-guardada {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--c-texto-2);
+}
+
+.bolsa-item {
+  grid-template-columns: 26px 88px minmax(0, 1fr);
+  gap: 14px;
+}
+
+.bolsa-numero {
+  padding-top: 2px;
+  font-family: var(--f-titulos);
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--c-oro);
+}
+
+.panel-pie {
+  gap: 12px;
+  box-shadow: none;
+  border-top: 0;
+}
+
+.bolsa-problema {
+  margin: 0;
+}
+
+.ticket-compra {
+  background:
+    radial-gradient(ellipse 90% 70% at 0% 0%, rgba(255, 255, 255, 0.07), transparent 60%),
+    var(--c-vino);
+  color: #F6EEF1;
+}
+
+.ticket-cuerpo {
+  padding: 18px 20px 16px;
+}
+
+.ticket-fila {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #EBD3A4;
+}
+
+.ticket-compra .bolsa-totales {
+  color: #EADDE3;
+}
+
+.ticket-compra .bolsa-totales dd {
+  color: #F6EEF1;
+}
+
+/* Troquel: línea punteada y dos muescas del color del panel */
+.ticket-talon {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  padding: 18px 20px 18px;
+  border-top: 2px dashed rgba(246, 238, 241, 0.45);
+}
+
+.ticket-talon::before,
+.ticket-talon::after {
+  content: "";
+  position: absolute;
+  top: -15px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--c-fondo);
+}
+
+.ticket-talon::before {
+  left: -14px;
+}
+
+.ticket-talon::after {
+  right: -14px;
+}
+
+.ticket-compra .bolsa-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ticket-compra .bolsa-total span {
+  font-family: var(--f-titulos);
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.ticket-compra .bolsa-total strong {
+  font-size: 1.45rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ticket-compra .bolsa-cuotas {
+  margin: -6px 0 4px;
+  text-align: right;
+  font-size: 0.8rem;
+  color: #EADDE3;
+}
+
+.ticket-compra .bolsa-pagar {
+  justify-content: space-between;
+  color: var(--c-vino);
+}
+
+.ticket-seguro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  color: #EADDE3;
+}
+
+.ticket-seguro svg {
+  width: 15px;
+  height: 15px;
+}
+
+.panel-pie > .bolsa-seguir {
+  justify-self: center;
+}

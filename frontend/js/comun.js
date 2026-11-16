@@ -341,7 +341,7 @@ function armarHeader() {
         <button class="boton-icono boton-tema" type="button">${icono("sol", "icono-sol")}${icono("luna", "icono-luna")}</button>
         <button class="boton-icono boton-buscar" type="button" aria-label="Buscar"
                 aria-expanded="false" aria-controls="panel-busqueda">${icono("buscar")}</button>
-        <button class="boton-icono boton-carrito" type="button" aria-label="Abrir carrito">
+        <button class="boton-icono boton-carrito" type="button" aria-label="Ver tu compra">
           ${icono("bolsa")}<span class="contador-carrito" hidden>0</span>
         </button>
       </div>
@@ -635,9 +635,12 @@ function crearPanelCarrito() {
     `<div class="fondo-oscuro"></div>
      <aside class="panel-carrito" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito" inert>
        <header class="bolsa-cabecera">
-         <h2 id="titulo-carrito">Tu carrito</h2>
+         <div class="bolsa-titulos">
+           <h2 id="titulo-carrito">Tu compra</h2>
+           <p class="bolsa-guardada">Guardamos tu compra por 60 días</p>
+         </div>
          <span class="bolsa-cuenta" id="bolsa-cuenta"></span>
-         <button class="boton-icono cerrar-carrito" type="button" aria-label="Cerrar carrito">${icono("cerrar")}</button>
+         <button class="boton-icono cerrar-carrito" type="button" aria-label="Cerrar tu compra">${icono("cerrar")}</button>
        </header>
        <div class="bolsa-envio" id="bolsa-envio" hidden>
          <p id="bolsa-envio-texto"></p>
@@ -725,6 +728,7 @@ function itemDelCarrito(i, orden) {
 
   return `
     <li class="bolsa-item ${i.disponible ? "" : "no-disponible"}" style="--orden:${orden}">
+      <span class="bolsa-numero" aria-hidden="true">${String(orden + 1).padStart(2, "0")}</span>
       <a class="foto bolsa-foto" data-foto="" href="${url}" data-cerrar-carrito tabindex="-1" aria-hidden="true">
         ${i.imagen ? `<img src="${esc(i.imagen)}" alt="" width="200" height="250">` : ""}
       </a>
@@ -750,7 +754,7 @@ function itemDelCarrito(i, orden) {
         </div>
       </div>
       <button type="button" class="bolsa-quitar" data-accion="quitar" data-id="${i.variante_id}"
-              aria-label="Quitar ${esc(i.nombre)} del carrito" title="Quitar">${icono("cerrar")}</button>
+              aria-label="Quitar ${esc(i.nombre)} de tu compra" title="Quitar">${icono("cerrar")}</button>
     </li>`;
 }
 
@@ -815,7 +819,7 @@ function pintarCarrito(carrito) {
     cuerpo.innerHTML = `
       <div class="bolsa-vacia">
         <svg class="bolsa-vacia-isotipo" viewBox="0 0 64 64" aria-hidden="true">${ISOTIPO_TRAZO}</svg>
-        <p class="bolsa-vacia-titulo">Tu carrito espera su primera prenda</p>
+        <p class="bolsa-vacia-titulo">Tu compra espera su primera prenda</p>
         <p>Elegí por disciplina y armá el look para tu próxima función.</p>
         <ul class="bolsa-accesos">
           ${ACCESOS_CARRITO.map(([nombre, url]) => `<li><a href="${url}" data-cerrar-carrito>${esc(nombre)}${icono("flechaDer")}</a></li>`).join("")}
@@ -840,21 +844,27 @@ function pintarCarrito(carrito) {
   const envio = gratisDesde > 0 && carrito.subtotal >= gratisDesde ? 0 : costo || 0;
   const total = carrito.subtotal + envio;
 
+  /* El resumen es una entrada: cuerpo con el detalle, troquel y talón con el total */
   pie.innerHTML = `
-    <dl class="bolsa-totales">
-      <div><dt>Subtotal</dt><dd>${pesos(carrito.subtotal)}</dd></div>
-      <div><dt>Envío a domicilio</dt><dd>${envio === 0 ? "Gratis" : pesos(envio)}</dd></div>
-      <div class="bolsa-total"><dt>Total</dt><dd>${pesos(total)}</dd></div>
-    </dl>
-    <p class="bolsa-cuotas">Hasta 12 cuotas de ${pesos(total / 12)} con Mercado Pago</p>
-    ${hayProblemas ? `<p class="texto-error">Quitá o ajustá las prendas sin stock para continuar.</p>` : ""}
-    <a class="boton boton-ancho bolsa-pagar ${hayProblemas ? "deshabilitado" : ""}" href="/checkout.html" data-cerrar-carrito>
-      Finalizar compra${icono("flechaDer")}
-    </a>
-    <div class="bolsa-pie-links">
-      <button type="button" class="bolsa-seguir" data-cerrar-carrito>Seguir comprando</button>
-      <span class="bolsa-seguro">${icono("escudo")}Pago seguro</span>
-    </div>`;
+    ${hayProblemas ? `<p class="texto-error bolsa-problema">Quitá o ajustá las prendas sin stock para continuar.</p>` : ""}
+    <div class="ticket-compra">
+      <div class="ticket-cuerpo">
+        <p class="ticket-fila"><span>Tu entrada</span><span>${carrito.cantidad} ${carrito.cantidad === 1 ? "prenda" : "prendas"}</span></p>
+        <dl class="bolsa-totales">
+          <div><dt>Subtotal</dt><dd>${pesos(carrito.subtotal)}</dd></div>
+          <div><dt>Envío a domicilio</dt><dd>${envio === 0 ? "Gratis" : pesos(envio)}</dd></div>
+        </dl>
+      </div>
+      <div class="ticket-talon">
+        <div class="bolsa-total"><span>Total</span><strong>${pesos(total)}</strong></div>
+        <p class="bolsa-cuotas">o hasta 12 cuotas con Mercado Pago</p>
+        <a class="boton boton-claro boton-ancho bolsa-pagar ${hayProblemas ? "deshabilitado" : ""}" href="/checkout.html" data-cerrar-carrito>
+          Continuar${icono("flechaDer")}
+        </a>
+        <p class="ticket-seguro">${icono("escudo")}Pago 100 % seguro con Mercado Pago</p>
+      </div>
+    </div>
+    <button type="button" class="bolsa-seguir" data-cerrar-carrito>Seguir comprando</button>`;
 }
 
 /* Con el carrito abierto, el resto de la página no recibe foco ni clics */
