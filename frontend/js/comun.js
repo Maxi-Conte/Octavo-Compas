@@ -943,9 +943,10 @@ document.addEventListener("click", (e) => {
 
 const MOVIMIENTO = [
   [".hero", "hero"],
-  [".a-medida-foto, .reinas-foto, .escena-grilla .foto", "telon"],
+  [".reinas-foto, .escena-grilla .foto", "telon"],
+  [".entrada", "entrada"],
   [".seccion-cabecera > *, .disc-titulos > *, .disc-controles, .seccion-pie", "sube"],
-  [".a-medida-texto > .sobretitulo, .a-medida-texto > h2, .a-medida-texto > p, .a-medida-texto > .boton", "sube"],
+  [".entrada-cuerpo > *, .entrada-talon > *", "sube"],
   [".reinas-texto > *, .pie-cta-interior > *, .tienda-cabecera > *", "sube"],
   [".beneficios li, .pasos li, .pie-garantias li", "sube"],
   [".tarjeta", "sube"]

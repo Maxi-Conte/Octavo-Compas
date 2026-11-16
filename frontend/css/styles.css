@@ -351,7 +351,7 @@ p, li {
   --relleno: var(--c-acento-claro);
   background-color: #fff;
   border-color: #fff;
-  color: var(--c-texto);
+  color: #141217; /* siempre va sobre fondo oscuro: el texto no cambia con el modo */
 }
 
 .boton-ancho {
@@ -2784,69 +2784,82 @@ p, li {
 /* ---------- Vestuarios a medida (sección oscura) ---------- */
 
 .a-medida {
-  background: var(--c-oscuro-2);
-  color: #fff;
   padding: clamp(64px, 9vw, 120px) 0;
   scroll-margin-top: var(--alto-header);
 }
 
-.a-medida-grid {
+/* La entrada: cuerpo con los pasos, troquel punteado y talón con el botón.
+   Es vino en los dos modos: es la marca. */
+.entrada {
+  position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(40px, 7vw, 112px);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  max-width: 1080px;
+  margin: 0 auto;
+  background:
+    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(255, 255, 255, 0.06), transparent 60%),
+    var(--c-vino);
+  color: #F6EEF1;
+  box-shadow: 0 50px 90px -60px rgba(0, 0, 0, 0.7);
 }
 
-.a-medida-foto {
-  aspect-ratio: 4 / 5;
-  background: #2A2430;
+.entrada-cuerpo {
+  padding: clamp(28px, 4.5vw, 64px);
 }
 
-.a-medida-foto::before {
-  color: var(--c-texto-oscuro-2);
-  outline-color: rgba(255, 255, 255, 0.1);
+.entrada-fila {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #EBD3A4;
 }
 
-.a-medida .sobretitulo {
-  color: var(--c-acento-claro);
+.entrada h2 {
+  margin: 22px 0 14px;
+  font-size: clamp(2.6rem, 5.2vw, 4.2rem);
+  line-height: 0.96;
 }
 
-.a-medida h2 {
-  font-size: clamp(2.2rem, 4.2vw, 3.6rem);
-  margin-bottom: 20px;
+.entrada h2 em {
+  font-weight: 400;
 }
 
-.a-medida-texto > p {
-  color: var(--c-texto-oscuro-2);
-  max-width: 500px;
-  margin: 0 0 40px;
+.entrada-intro {
+  max-width: 520px;
+  margin: 0 0 30px;
+  color: #EADDE3;
 }
 
-.pasos {
+.entrada .pasos {
   list-style: none;
-  margin: 0 0 44px;
+  margin: 0;
   padding: 0;
-  border-top: 1px solid #3A3340;
+  border-top: 1px solid rgba(235, 211, 164, 0.3);
 }
 
-.pasos li {
+.entrada .pasos li {
   display: grid;
-  grid-template-columns: 56px 1fr;
+  grid-template-columns: 52px 1fr;
   gap: 8px;
-  padding: 22px 0;
-  border-bottom: 1px solid #3A3340;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(235, 211, 164, 0.3);
 }
 
 .paso-numero {
   font-family: var(--f-titulos);
-  font-size: 1.5rem;
-  line-height: 1.1;
-  color: var(--c-acento-claro);
+  font-size: 1.6rem;
+  line-height: 1.05;
+  color: #EBD3A4;
 }
 
 .pasos h3 {
   font-family: var(--f-texto);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -2855,8 +2868,126 @@ p, li {
 
 .pasos p {
   margin: 0;
-  color: var(--c-texto-oscuro-2);
-  font-size: 0.9rem;
+  color: #EADDE3;
+  font-size: 0.92rem;
+}
+
+/* Talón: separado por el troquel, con dos muescas del color de la página */
+.entrada-talon {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  padding: clamp(28px, 4vw, 48px);
+  border-left: 2px dashed rgba(246, 238, 241, 0.45);
+}
+
+.entrada-talon::before,
+.entrada-talon::after {
+  content: "";
+  position: absolute;
+  left: -17px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--c-fondo);
+}
+
+.entrada-talon::before {
+  top: -16px;
+}
+
+.entrada-talon::after {
+  bottom: -16px;
+}
+
+.entrada-valido {
+  margin: 0 0 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #EBD3A4;
+}
+
+.entrada-para {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--f-titulos);
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.entrada-sello {
+  margin: 0;
+  font-family: var(--f-titulos);
+  font-size: clamp(2.6rem, 4vw, 3.4rem);
+  line-height: 0.9;
+  color: rgba(235, 211, 164, 0.5);
+}
+
+.entrada-talon .boton svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Al aparecer: la entrada sube apenas inclinada y se acomoda, y el troquel se "corta" */
+.con-movimiento [data-mov="entrada"]:not(.en-vista) {
+  opacity: 0;
+}
+
+.con-movimiento [data-mov="entrada"].en-vista {
+  animation: mov-entrada 1.3s var(--suave) backwards;
+}
+
+@keyframes mov-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(60px) rotate(-2deg);
+  }
+}
+
+@media (max-width: 760px) {
+  .entrada {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .entrada-talon {
+    border-left: 0;
+    border-top: 2px dashed rgba(246, 238, 241, 0.45);
+    gap: 22px;
+  }
+
+  .entrada-talon::before,
+  .entrada-talon::after {
+    top: -17px;
+    bottom: auto;
+  }
+
+  .entrada-talon::before {
+    left: -16px;
+  }
+
+  .entrada-talon::after {
+    left: auto;
+    right: -16px;
+  }
+
+  .entrada-para {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    font-size: 1.3rem;
+  }
+
+  .entrada-sello {
+    display: none;
+  }
 }
 
 /* ---------- Reinas 2026 ---------- */
@@ -3010,13 +3141,18 @@ p, li {
 }
 
 @media (max-width: 760px) {
+  /* ---- Hero Telón: la foto ocupa todo el ancho y el texto va encima ---- */
+  .hero {
+    background: var(--c-fondo);
+  }
+
   .hero-palabra {
-    top: 16px;
-    font-size: 22vw;
+    display: none;
   }
 
   .hero-grid {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto;
     min-height: 0;
     gap: 0;
   }
@@ -3025,38 +3161,76 @@ p, li {
     grid-column: 1;
     grid-row: 1;
     min-height: 0;
-    height: min(92vw, 460px);
+    height: clamp(400px, 66svh, 580px);
+    margin-inline: calc(var(--margen) * -1);
+  }
+
+  /* Velo para leer el texto: se funde con el fondo de la página */
+  .hero-figura::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(180deg,
+      transparent 55%,
+      color-mix(in srgb, var(--c-fondo) 55%, transparent) 76%,
+      var(--c-fondo) 97%);
+    pointer-events: none;
   }
 
   .hero-look {
-    inset: 32px 10% 0;
+    inset: 0;
   }
 
   .foto-marco {
     height: 100%;
+    box-shadow: none;
   }
 
+  .foto-marco::after {
+    display: none;
+  }
+
+  .hero-texto,
+  .hero-acciones {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* El título se monta sobre el borde de la foto, donde ya se fundió con el fondo */
   .hero-texto {
     grid-row: 2;
-    padding: 32px 0 0;
+    padding: 0;
+    margin-top: -104px;
+  }
+
+  .hero-texto h1 {
+    font-size: clamp(2.7rem, 12.5vw, 3.4rem);
+    line-height: 0.98;
+    margin-bottom: 14px;
   }
 
   .hero-texto p {
-    margin-bottom: 24px;
+    margin-bottom: 22px;
+    max-width: 320px;
   }
 
   .hero-acciones {
-    grid-row: 4;
-    padding-bottom: 36px;
+    grid-row: 3;
+    padding-bottom: 28px;
+    flex-wrap: nowrap;
   }
 
   .hero-botones .boton {
-    flex: 1 1 auto;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 12px;
   }
 
   .hero-prendas {
-    grid-row: 3;
-    padding-bottom: 24px;
+    grid-row: 4;
+    padding: 22px 0 28px;
+    border-top: 1px solid var(--c-borde);
   }
 
   .hero-lista {
@@ -3080,7 +3254,6 @@ p, li {
     gap: 36px 12px;
   }
 
-  .a-medida-grid,
   .reinas-grid {
     grid-template-columns: 1fr;
   }
