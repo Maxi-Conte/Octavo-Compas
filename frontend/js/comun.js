@@ -879,6 +879,13 @@ function cerrarCarrito() {
 /* Para que otras páginas (producto) actualicen el carrito */
 window.tienda = { abrirCarrito, pintarCarrito, actualizarContador };
 
+/* Cualquier link con data-abrir-compra abre el panel "Tu compra" (p. ej. el paso 1 del checkout) */
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("[data-abrir-compra]")) return;
+  e.preventDefault();
+  abrirCarrito();
+});
+
 /* ---------- De la tarjeta a la ficha ----------
    Al tocar una tarjeta, su foto "viaja" hasta la ficha del producto
    (en navegadores con transiciones entre páginas). Guardamos qué foto
@@ -924,7 +931,8 @@ const MOVIMIENTO = [
   [".entrada-cuerpo > *, .entrada-talon > *", "sube"],
   [".reinas-texto > *, .pie-banda-interior > *, .tienda-cabecera > *", "sube"],
   [".beneficios li, .pasos li", "sube"],
-  [".tarjeta", "sube"]
+  [".tarjeta", "sube"],
+  [".ficha-titulo, .ficha-nota, .creditos", "sube"]
 ];
 
 function iniciarMovimiento() {

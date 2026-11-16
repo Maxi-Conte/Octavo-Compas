@@ -5948,3 +5948,76 @@ dialog::backdrop {
 .panel-pie > .bolsa-seguir {
   justify-self: center;
 }
+
+/* ---------- Detalles de movimiento Telón ---------- */
+
+/* Créditos: la línea de puntos se dibuja de izquierda a derecha, renglón por renglón */
+.con-movimiento .creditos[data-mov].en-vista > div::after {
+  transform-origin: left center;
+  animation: puntos-guia 1.1s var(--suave) calc(0.25s + var(--renglon, 0) * 90ms) backwards;
+}
+
+.creditos > div:nth-child(2) { --renglon: 1; }
+.creditos > div:nth-child(3) { --renglon: 2; }
+.creditos > div:nth-child(4) { --renglon: 3; }
+.creditos > div:nth-child(5) { --renglon: 4; }
+.creditos > div:nth-child(6) { --renglon: 5; }
+
+@keyframes puntos-guia {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* Tu compra: al abrir el panel, la entrada del total sube y se acomoda */
+@media (prefers-reduced-motion: no-preference) {
+  .panel-carrito.abierto .ticket-compra {
+    animation: entrada-sube 0.9s var(--suave) 0.18s backwards;
+  }
+
+  .panel-carrito.abierto .bolsa-item {
+    animation: mov-sube 0.8s var(--suave) calc(0.1s + var(--orden, 0) * 70ms) backwards;
+  }
+}
+
+@keyframes entrada-sube {
+  from {
+    opacity: 0;
+    transform: translateY(28px) rotate(-1deg);
+  }
+}
+
+/* Pasos de la compra (checkout): Tu compra · Datos · Pago */
+.pasos-compra {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0 28px;
+  padding: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-texto-2);
+}
+
+.pasos-compra li {
+  padding-top: 10px;
+  border-top: 2px solid var(--c-borde);
+}
+
+.pasos-compra li.hecho {
+  border-top-color: var(--c-oro);
+}
+
+.pasos-compra li[aria-current="step"] {
+  border-top-color: var(--c-texto);
+  color: var(--c-texto);
+}
+
+.pasos-compra a {
+  text-decoration: underline;
+  text-decoration-color: var(--c-oro);
+  text-underline-offset: 3px;
+}
