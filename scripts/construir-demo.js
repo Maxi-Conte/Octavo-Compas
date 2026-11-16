@@ -126,6 +126,7 @@ const scriptsVistas = Object.entries(SCRIPTS_VISTA)
   .join(",\n");
 
 const comun = adaptarRutas(leer("js", "comun.js")).split("location.search").join("DEMO.busqueda()");
+const tema = leer("js", "tema.js");
 const telon = adaptarRutas(leer("js", "telon.js"));
 const runtime = fs.readFileSync(path.join(__dirname, "demo", "runtime.js"), "utf8");
 const css = leer("css", "styles.css");
@@ -178,6 +179,7 @@ ${css}
 ${CSS_DEMO}
   </style>
   <script>
+${seguro(tema)}
 ${seguro(telon)}
   </script>
 </head>

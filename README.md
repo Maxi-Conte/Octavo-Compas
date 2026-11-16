@@ -207,6 +207,17 @@ es normal).
 
 Si cambiás un logo `.svg` por un `.png`, actualizá la ruta en `frontend/js/comun.js` (`armarHeader` / `armarFooter`).
 
+### Diseño Telón: modo claro y oscuro
+
+- La tienda arranca en **modo oscuro** (noche de función). El botón ☀/☾ del header
+  pasa a claro y el navegador lo recuerda. Lo maneja `frontend/js/tema.js`, que corre
+  antes de dibujar la página para que no haya destellos.
+- Todos los colores salen de las variables de `:root` en `css/styles.css`; el modo
+  oscuro las redefine en `:root[data-tema="oscuro"]`. Para cambiar un color, cambialo ahí.
+- El vino (`--c-vino`) no cambia con el modo: barra de anuncios, la entrada de
+  "Vestuarios a medida", el resumen de "Tu compra" y las bandas del footer.
+- El pago es **solo con Mercado Pago**: la tienda nunca ve los datos de la tarjeta.
+
 ### Looks del hero
 
 En `frontend/js/inicio.js`, el array `LOOKS` define cada look: imagen, nombre, texto alternativo
