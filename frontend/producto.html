@@ -37,8 +37,10 @@
       <div class="producto-info">
         <span class="sobretitulo" id="etiqueta-producto"></span>
         <h1 id="nombre" class="cargando">&nbsp;</h1>
-        <p class="precio precio-producto" id="precio"></p>
-        <p class="cuotas" id="cuotas"></p>
+        <div class="precio-fila">
+          <p class="precio precio-producto" id="precio"></p>
+          <p class="cuotas" id="cuotas"></p>
+        </div>
 
         <div class="selector">
           <div class="selector-titulo"><span>Color: <strong id="color-elegido"></strong></span></div>
@@ -52,6 +54,7 @@
           </div>
           <div class="opciones-talle" id="talles" role="group" aria-label="Talle"></div>
           <p class="aviso-stock" id="aviso-stock" aria-live="polite"></p>
+          <p class="otro-talle">¿Necesitás otro talle o color? <a class="link-medida" id="link-medida" data-whatsapp="Hola Octavo Compás, quiero consultar por una prenda a medida.">Lo hacemos a medida</a>.</p>
         </div>
 
         <div class="fila-compra">
@@ -78,20 +81,20 @@
           </li>
         </ul>
 
-        <div class="bloque-medida">
-          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5 8.5 15.5"/><path d="M16.5 4.5a1.8 1.8 0 0 1 3 3"/><path d="M8.5 15.5 5 19"/><path d="M4 9c3-3 8-4 11-2M10 20c3-1 6-3 7-7"/></svg>
-          <div>
-            <p class="bloque-medida-titulo">¿No encontrás tu talle o querés otro color?</p>
-            <p>Lo confeccionamos a medida para vos o para todo tu grupo.</p>
-            <a class="link-subrayado" id="link-medida" data-whatsapp="Hola Octavo Compás, quiero consultar por una prenda a medida.">Consultanos por WhatsApp</a>
-          </div>
-        </div>
+        
+        <section class="ficha" aria-labelledby="titulo-ficha">
+          <h2 class="ficha-titulo" id="titulo-ficha">Ficha</h2>
+          <p class="ficha-nota descripcion" id="descripcion"></p>
+          <dl class="creditos">
+            <div><dt>Disciplina</dt><dd id="ficha-disciplina">—</dd></div>
+            <div><dt>Despacho</dt><dd>24 a 48 h hábiles</dd></div>
+            <div><dt>Envío</dt><dd id="ficha-envio">A todo el país</dd></div>
+            <div><dt>Cambios</dt><dd>Dentro de los 30 días</dd></div>
+            <div><dt>Pago</dt><dd>Solo Mercado Pago</dd></div>
+          </dl>
+        </section>
 
         <div class="acordeones">
-          <details open>
-            <summary>Descripción</summary>
-            <div class="acordeon-cuerpo descripcion" id="descripcion"></div>
-          </details>
           <details>
             <summary>Envíos</summary>
             <div class="acordeon-cuerpo">
@@ -112,7 +115,8 @@
 
     <section class="seccion seccion-relacionados" id="seccion-relacionados" aria-labelledby="titulo-relacionados" hidden>
       <div class="seccion-cabecera">
-        <h2 id="titulo-relacionados">También te puede gustar</h2>
+        <span class="sobretitulo">Completá el look</span>
+        <h2 id="titulo-relacionados">En el mismo acto</h2>
       </div>
       <div class="grilla" id="relacionados"></div>
     </section>

@@ -5854,3 +5854,257 @@ dialog::backdrop {
     clip-path: circle(150vmax at var(--tema-x, 100%) var(--tema-y, 0%));
   }
 }
+
+/* ---------- Ficha de producto Telón ----------
+   Arriba (de "Atelier"): fotos con tira de detalles, título, precio con
+   filete y colores con nombre. Desde el talle (de "Programa de mano"):
+   talles en cuadros, ficha como créditos y barra con forma de entrada. */
+
+.producto-info h1 {
+  font-size: clamp(2.3rem, 4vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.precio-fila {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 16px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--c-texto);
+}
+
+.precio-fila .precio-producto {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.precio-fila .cuotas {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--c-texto-2);
+}
+
+/* Colores: pastillas con la muestra y el nombre */
+.opciones-color {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pastilla-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 16px 0 10px;
+  border: 1px solid var(--c-borde);
+  background: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.pastilla-color:hover {
+  border-color: var(--c-texto-2);
+}
+
+.pastilla-color.activo {
+  border-color: var(--c-texto);
+  background: var(--c-superficie);
+}
+
+.pastilla-color.sin-stock {
+  color: var(--c-texto-2);
+  text-decoration: line-through;
+}
+
+.pastilla-muestra {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--c-linea-color);
+  flex-shrink: 0;
+}
+
+/* Talles: cuadros grandes, el elegido lleno, el agotado tachado y punteado */
+.opciones-talle {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 8px;
+}
+
+.chip-talle {
+  min-height: 52px;
+  font-size: 0.98rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.chip-talle:disabled {
+  border-style: dashed;
+  background: none;
+}
+
+.otro-talle {
+  margin: 12px 0 0;
+  font-size: 0.88rem;
+  color: var(--c-texto-2);
+}
+
+.otro-talle a {
+  color: var(--c-texto);
+  text-decoration: underline;
+  text-decoration-color: var(--c-oro);
+  text-underline-offset: 3px;
+}
+
+/* La ficha, como los créditos de un programa */
+.ficha {
+  margin-top: 40px;
+}
+
+.ficha-titulo {
+  margin: 0 0 16px;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.ficha-nota {
+  margin: 0 0 22px;
+  font-family: var(--f-titulos);
+  font-size: 1.22rem;
+  line-height: 1.4;
+}
+
+.creditos {
+  display: grid;
+  gap: 13px;
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.creditos > div {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+}
+
+/* La línea de puntos que une el dato con su valor */
+.creditos > div::after {
+  content: "";
+  grid-column: 2;
+  grid-row: 1;
+  border-bottom: 1px dotted var(--c-linea-color);
+}
+
+.creditos dt {
+  grid-column: 1;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-texto-2);
+}
+
+.creditos dd {
+  grid-column: 3;
+  margin: 0;
+  text-align: right;
+}
+
+.ficha + .acordeones {
+  margin-top: 28px;
+}
+
+/* Barra de compra fija con forma de entrada (celular) */
+@media (max-width: 900px) {
+  .compra-fija {
+    gap: 0;
+    padding: 0 0 env(safe-area-inset-bottom);
+    background: var(--c-vino);
+    color: #F6EEF1;
+    border-top: 0;
+    box-shadow: 0 -18px 40px -20px rgba(0, 0, 0, 0.5);
+  }
+
+  .compra-fija-datos {
+    padding: 12px 16px 12px var(--margen);
+    border-right: 2px dashed rgba(246, 238, 241, 0.5);
+  }
+
+  .compra-fija-precio {
+    color: #EADDE3;
+  }
+
+  .compra-fija .boton {
+    align-self: stretch;
+    min-height: 64px;
+    padding: 0 22px;
+    border: 0;
+    background: none;
+    color: #F6EEF1;
+    --relleno: rgba(255, 255, 255, 0.12);
+  }
+
+  .compra-fija .boton:disabled {
+    opacity: 0.6;
+  }
+}
+
+/* Celular: la foto con la tira de detalles al costado, como en "Atelier" */
+@media (max-width: 760px) {
+  .galeria {
+    grid-template-columns: minmax(0, 1fr) 64px;
+    gap: 8px;
+  }
+
+  .foto-principal {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .miniaturas {
+    grid-column: 2;
+    grid-row: 1;
+    flex-direction: column;
+    /* no agranda la fila: se ajusta al alto de la foto y se desliza */
+    height: 0;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 0;
+    scrollbar-width: none;
+  }
+
+  .miniaturas::-webkit-scrollbar {
+    display: none;
+  }
+
+  .miniaturas button {
+    width: 100%;
+  }
+
+  /* "En el mismo acto": tarjetas que se deslizan */
+  .seccion-relacionados .grilla {
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-auto-columns: 64%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-right: calc(var(--margen) * -1);
+    padding-right: var(--margen);
+    scrollbar-width: none;
+  }
+
+  .seccion-relacionados .grilla::-webkit-scrollbar {
+    display: none;
+  }
+
+  .seccion-relacionados .tarjeta {
+    scroll-snap-align: start;
+  }
+}

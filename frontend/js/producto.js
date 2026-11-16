@@ -162,9 +162,9 @@ function pintarColores() {
       (c) => {
         const activo = c.nombre === estado.color;
         const nombre = `${c.nombre}${c.hayStock ? "" : " (sin stock)"}`;
-        return `<button type="button" class="muestra-color ${activo ? "activo" : ""} ${c.hayStock ? "" : "sin-stock"}"
-          data-color="${esc(c.nombre)}" style="background:${colorSeguro(c.hex)}" aria-pressed="${activo}"
-          title="${esc(nombre)}" aria-label="${esc(nombre)}"></button>`;
+        return `<button type="button" class="pastilla-color ${activo ? "activo" : ""} ${c.hayStock ? "" : "sin-stock"}"
+          data-color="${esc(c.nombre)}" aria-pressed="${activo}" title="${esc(nombre)}">
+          <span class="pastilla-muestra" style="background:${colorSeguro(c.hex)}" aria-hidden="true"></span>${esc(c.nombre)}${c.hayStock ? "" : '<span class="oculto-visual"> (sin stock)</span>'}</button>`;
       }
     )
     .join("");
@@ -225,7 +225,8 @@ function pintarPrecio() {
 
   $("precio").innerHTML = precio;
   $("precio-fijo").innerHTML = precio;
-  $("cuotas").textContent = `Hasta 12 cuotas de ${pesos(actual / 12)} con Mercado Pago (según tu tarjeta)`;
+  $("cuotas").textContent = `12 cuotas de ${pesos(actual / 12)}`;
+  $("cuotas").title = "Con Mercado Pago, según tu tarjeta";
 }
 
 /* Title, description y Open Graph con los datos del producto */
@@ -278,6 +279,8 @@ function pintarTodo() {
   $("nombre").classList.remove("cargando");
   $("nombre-fijo").textContent = p.nombre;
   $("descripcion").textContent = p.descripcion || "";
+  $("descripcion").hidden = !p.descripcion;
+  $("ficha-disciplina").textContent = p.categoria_nombre || "—";
 
   const linkMedida = $("link-medida");
   linkMedida.dataset.whatsapp =
@@ -423,6 +426,7 @@ obtenerConfig().then((config) => {
     const desde = pesos(config.envio.gratisDesde);
     $("texto-envio-gratis").textContent = `Envío gratis en compras desde ${desde}.`;
     $("garantia-envio").textContent = `Gratis desde ${desde}`;
+    $("ficha-envio").textContent = `Gratis desde ${desde}`;
   }
 });
 
