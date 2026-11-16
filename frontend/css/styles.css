@@ -1061,6 +1061,13 @@ p, li {
   color: #E4DDE6;
 }
 
+.pie-pago-nota {
+  margin: 10px 0 0;
+  max-width: 320px;
+  font-size: 0.8rem;
+  color: var(--pie-texto-2);
+}
+
 .pie-fiscal {
   display: grid;
   place-items: center;

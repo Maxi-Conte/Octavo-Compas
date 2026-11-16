@@ -515,11 +515,11 @@ function armarFooter() {
 
       <div class="pie-pagos">
         <div>
-          <h2 class="pie-titulo">Medios de pago</h2>
+          <h2 class="pie-titulo">Pago</h2>
           <ul class="pie-medios">
-            <li>Mercado Pago</li><li>Visa</li><li>Mastercard</li><li>American Express</li>
-            <li>Naranja X</li><li>Débito</li><li>Efectivo</li>
+            <li>Solo Mercado Pago</li>
           </ul>
+          <p class="pie-pago-nota">Pagás dentro de Mercado Pago: nunca vemos los datos de tu tarjeta.</p>
         </div>
         <!-- [DATA FISCAL]: reemplazar por el QR de ARCA con su link -->
         <div class="pie-fiscal" role="img" aria-label="Espacio para el QR de data fiscal">[QR DATA<br>FISCAL]</div>
